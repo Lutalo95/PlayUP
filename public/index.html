@@ -9,242 +9,11 @@
 <!-- Socket.IO Client für Live Updates -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
-<script src="https://cdn.tailwindcss.com">
-
-function getRushHourData() {
-  const sales = loadSales();
-  const hourlyTotals = Array(24).fill(0);
-  Object.values(sales).forEach(day => {
-    day.entries.forEach(entry => {
-      if (entry.ts) {
-        const hour = new Date(entry.ts).getHours();
-        hourlyTotals[hour] += entry.betrag;
-      }
-    });
-  });
-  return hourlyTotals;
-}
-
-function buildRushHourChart() {
-  const ctx = document.getElementById('rushHourDropdownChart');
-  if (!ctx) return;
-  const data = getRushHourData();
-  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
-  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
-  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
-  if (window._rushHourChart) {
-    window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = data;
-    window._rushHourChart.update();
-  } else {
-    window._rushHourChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Umsatz pro Stunde ($)',
-          data: data,
-          backgroundColor: bgColors
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#999' } },
-          y: { beginAtZero: true, ticks: { color: '#999' } }
-        }
-      }
-    });
-  }
-}
-
-function toggleRushHourDropdown() {
-  const dropdown = document.getElementById('rushHourDropdown');
-  dropdown.classList.toggle('show');
-  if (dropdown.classList.contains('show')) buildRushHourChart();
-}
-
-
-function closeWelcome() {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.opacity = '1';
-    modal.style.transition = 'opacity 0.5s ease';
-    modal.style.opacity = '0';
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 500);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.style.opacity = '1';
-  }
-});
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js">
-
-function getRushHourData() {
-  const sales = loadSales();
-  const hourlyTotals = Array(24).fill(0);
-  Object.values(sales).forEach(day => {
-    day.entries.forEach(entry => {
-      if (entry.ts) {
-        const hour = new Date(entry.ts).getHours();
-        hourlyTotals[hour] += entry.betrag;
-      }
-    });
-  });
-  return hourlyTotals;
-}
-
-function buildRushHourChart() {
-  const ctx = document.getElementById('rushHourDropdownChart');
-  if (!ctx) return;
-  const data = getRushHourData();
-  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
-  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
-  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
-  if (window._rushHourChart) {
-    window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = data;
-    window._rushHourChart.update();
-  } else {
-    window._rushHourChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Umsatz pro Stunde ($)',
-          data: data,
-          backgroundColor: bgColors
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#999' } },
-          y: { beginAtZero: true, ticks: { color: '#999' } }
-        }
-      }
-    });
-  }
-}
-
-function toggleRushHourDropdown() {
-  const dropdown = document.getElementById('rushHourDropdown');
-  dropdown.classList.toggle('show');
-  if (dropdown.classList.contains('show')) buildRushHourChart();
-}
-
-
-function closeWelcome() {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.opacity = '1';
-    modal.style.transition = 'opacity 0.5s ease';
-    modal.style.opacity = '0';
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 500);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.style.opacity = '1';
-  }
-});
-
-</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     tailwind.config = { darkMode: 'class' };
-  
-
-function getRushHourData() {
-  const sales = loadSales();
-  const hourlyTotals = Array(24).fill(0);
-  Object.values(sales).forEach(day => {
-    day.entries.forEach(entry => {
-      if (entry.ts) {
-        const hour = new Date(entry.ts).getHours();
-        hourlyTotals[hour] += entry.betrag;
-      }
-    });
-  });
-  return hourlyTotals;
-}
-
-function buildRushHourChart() {
-  const ctx = document.getElementById('rushHourDropdownChart');
-  if (!ctx) return;
-  const data = getRushHourData();
-  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
-  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
-  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
-  if (window._rushHourChart) {
-    window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = data;
-    window._rushHourChart.update();
-  } else {
-    window._rushHourChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Umsatz pro Stunde ($)',
-          data: data,
-          backgroundColor: bgColors
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#999' } },
-          y: { beginAtZero: true, ticks: { color: '#999' } }
-        }
-      }
-    });
-  }
-}
-
-function toggleRushHourDropdown() {
-  const dropdown = document.getElementById('rushHourDropdown');
-  dropdown.classList.toggle('show');
-  if (dropdown.classList.contains('show')) buildRushHourChart();
-}
-
-
-function closeWelcome() {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.opacity = '1';
-    modal.style.transition = 'opacity 0.5s ease';
-    modal.style.opacity = '0';
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 500);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.style.opacity = '1';
-  }
-});
-
-</script>
+  </script>
 <style>
     :root {
       --accent: #4B0082;
@@ -587,6 +356,351 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Live Update Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flashHighlight {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(75, 0, 130, 0.2); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes pointsFloat {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-50px) scale(1.5); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes chartUpdate {
+  0% { opacity: 0.5; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Utility Classes */
+.fade-in { animation: fadeIn 0.3s ease-out forwards; }
+.flash-highlight { animation: flashHighlight 2s ease-out; }
+.pulse-animation { animation: pulse 1s ease-in-out 3; }
+
+/* Notification Toast */
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  animation: slideInRight 0.3s ease-out;
+  max-width: 400px;
+}
+
+body.dark .notification-toast {
+  background: #2d2d2f;
+  color: #f5f5f7;
+}
+
+.notification-toast .icon {
+  font-size: 1.5em;
+  flex-shrink: 0;
+}
+
+.notification-toast .message {
+  flex: 1;
+  font-size: 0.95em;
+}
+
+.notification-toast .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-toast .close-btn:hover {
+  opacity: 1;
+}
+
+.notification-toast.success { border-left: 4px solid #10b981; }
+.notification-toast.warning { border-left: 4px solid #f59e0b; }
+.notification-toast.error { border-left: 4px solid #ef4444; }
+.notification-toast.info { border-left: 4px solid #3b82f6; }
+
+/* Level Badges */
+.level-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.points-badge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.level-bronze,
+.points-badge.level-bronze {
+  background: linear-gradient(135deg, #CD7F32, #8B4513);
+  color: white;
+}
+
+.level-silver,
+.points-badge.level-silver {
+  background: linear-gradient(135deg, #C0C0C0, #808080);
+  color: white;
+}
+
+.level-gold,
+.points-badge.level-gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1d1d1f;
+}
+
+.level-platinum,
+.points-badge.level-platinum {
+  background: linear-gradient(135deg, #E5E4E2, #8B8B8B);
+  color: white;
+}
+
+/* Points Animation */
+.points-animation {
+  position: fixed;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #4B0082;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.points-animation.animate {
+  animation: pointsFloat 2s ease-out forwards;
+}
+
+/* Level Up Modal */
+.level-up-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.level-up-content {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.5s ease-out;
+  max-width: 400px;
+}
+
+body.dark .level-up-content {
+  background: #1d1d1f;
+}
+
+.level-up-content h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #4B0082;
+}
+
+body.dark .level-up-content h2 {
+  color: #8B00FF;
+}
+
+.level-up-content .new-level {
+  font-size: 2em;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.level-up-content .confetti {
+  font-size: 4em;
+  margin-bottom: 20px;
+  animation: bounce 1s infinite;
+}
+
+.level-up-content .close-btn {
+  background: linear-gradient(135deg, #4B0082, #8B00FF);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-top: 20px;
+}
+
+.level-up-content .close-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Connection Status Indicator */
+.connection-status {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+  z-index: 9998;
+  transition: opacity 0.3s;
+}
+
+body.dark .connection-status {
+  background: #2d2d2f;
+}
+
+.connection-status.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.connection-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.connection-status.disconnected .dot {
+  background: #ef4444;
+  animation: none;
+}
+
+.connection-status.connecting .dot {
+  background: #f59e0b;
+}
+
+/* Rank Badge */
+.rank-badge {
+  display: inline-block;
+  min-width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(75, 0, 130, 0.1);
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-right: 8px;
+}
+
+.rank-badge.rank-top {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: white;
+}
+
+/* Top Customer Indicator */
+.top-customer {
+  position: relative;
+}
+
+.top-customer::before {
+  content: '⭐';
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+}
+
+/* Chart Update Animation */
+.chart-updating {
+  animation: chartUpdate 0.5s ease-out;
+}
+
+/* Stats List Entry Animation */
+.stats-entry {
+  transition: all 0.3s ease;
+}
+
+.stats-entry.new-entry {
+  background: rgba(75, 0, 130, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.stats-entry.removed-entry {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .notification-toast {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .connection-status {
+    left: 10px;
+    bottom: 10px;
+  }
+  
+  .level-up-content {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+}
+
 </style>
 </head>
 <body class="min-h-full dark:bg-black dark:text-gray-100">
@@ -595,12 +709,12 @@ html {
 <div class="modal-card text-center">
 <h2 class="text-2xl font-bold mb-3 text-[color:var(--accent)]">👋 Willkommen bei Play UP!</h2>
 <p class="text-sm mb-4 opacity-80">Check immer mal wieder den Changelog! Einfach unten Rechts den Button Klicken. Meist kommen direkt nützliche und Interessante Sachen! Viel Spaß beim Verkauf! Lutalo#1</p>
-<button class="bg-[color:var(--accent)] text-white px-4 py-2 rounded-full font-semibold" onclick="closeWelcome()">Los geht’s 🚀</button>
+<button class="bg-[color:var(--accent)] text-white px-4 py-2 rounded-full font-semibold" onclick="closeWelcome()">Los geht's 🚀</button>
 </div>
 </div>
 <div id="versionBadge">
-<div>v1.5.0</div>
-<div>Stand: 28.10.2025 🔔</div>
+<div>v1.6.0</div>
+<div>Stand: 29.10.2025 🔔</div>
 </div>
 <div class="modal-backdrop" id="statsModal">
 <div class="modal-card">
@@ -634,50 +748,34 @@ html {
 <div class="modal-backdrop" id="changelogModal">
 <div class="modal-card">
 <button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeChangelog()">X</button>
-<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.5.0 </h3>
+<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.6.0 </h3>
 <ul class="text-sm space-y-2 leading-5">
-<br/>
-<br/>
 <br/>
 <h3>📝 Changelog</h3>
 <ul>
-<li>📍 NEUER CHANGELOG VOM 28.10.25 📍</li>
+<li>📍 NEUER CHANGELOG VOM 29.10.25 📍</li>
+<li>🔴 LIVE-UPDATES für Umsatzverlauf aktiviert</li>
+<li>🔴 LIVE-UPDATES für Produktstatistik aktiviert</li>
+<li>🔴 LIVE-UPDATES für Löschfunktionen aktiviert</li>
+<li>📊 Echtzeit-Synchronisation aller Clients</li>
+<li>✨ Animierte Chart-Updates bei neuen Verkäufen</li>
+<li>🎨 Verbesserte Visualisierung bei Datenänderungen</li>
+<br/>
+<br/>
+<li>📍 LETZTER CHANGELOG VOM 28.10.25 WAR: 📍</li>
 <li>🎨White/Darkmode Toggel Funktioniert</li>
 <li>🎨Neue Animationen</li>
 <li>📊 Rush Hour Analyse im Umsatzverlauf</li>
 <li>🖥️ UI Fix</li>
 <br/>
 <br/>
-<br/>
-<li>📍 NEUER CHANGELOG VOM 27.10.25 📍</li>
-<li>📦 Kategorien getrennt: "STICKER" und "FIGUREN" statt "STICKER &amp; FIGUREN"</li>
-<li>🧾 Beide Kategorien werden separat gerendert und in die Berechnung übernommen</li>
-<li>📊 Statistik &amp; Auswertung gefixt.</li>
-<br/>
-<br/>
-<br/>
-<br/>
-<li>📍 LETZTER CHANGELOG VOM 26.10.25 WAR: 📍</li>
-<li>🎨 Themes &amp; Design (Abänderungen im Farbcode, Darkmode-Verhalten bei Themewechsel verbessert)</li>
-<li>📊 Statistik &amp; Auswertung ( Umsatz je Produkt, Top Produkte)</li>
-<li>💾 Datenstruktur &amp; Code (Code Verkleinert und effizienter gemacht.)</li>
-<li>🖼️ UI / UX (Modalfenster und Dropdowns neu gestylt)</li>
-<br/>
-<br/>
-<br/>
-<br/>
-<li>📍 LETZTER CHANGELOG VOM 26.10.25 WAR: 📍</li>
-<li>↩️ Revoke holt den letzten Zustand zurück</li>
-<li>💸 „Lutalo Rabatt“ setzt den Preis auf 1 $</li>
-<li>🧾 Kassenbon-Animation unten rechts</li>
-<li>🧾 Seitenanzahl hinzugefügt um mehrere Kunden gleichzeitig bedienen zu können</li>
-<li>📈 Umsatzverlauf (täglich gruppiert) inkl. Chart, mit korrektem Betrag – Erstellt erst den Umsatz wenn man die Rechnung kopiert hat!</li>
-<li>🎨 Theme-Auswahl</li>
-<li>🌗 Themes passen sich an Light/Dark an</li>
-<li>🧩 Dieses Changelog-Badge</li>
+<li>📍 LETZTER CHANGELOG VOM 27.10.25 WAR: 📍</li>
+<li>📦 Kategorien getrennt: "STICKER" und "FIGUREN"</li>
+<li>🧾 Separate Rendering und Berechnung</li>
+<li>📊 Statistik & Auswertung gefixt</li>
 </ul>
 </ul>
-<div class="text-[10px] text-right mt-4 opacity-60 select-none">28.10.25 1.5.0</div>
+<div class="text-[10px] text-right mt-4 opacity-60 select-none">29.10.25 1.6.0</div>
 </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-8 py-6">
@@ -815,6 +913,22 @@ html {
 </div>
 </div>
 </div>
+
+<!-- 🧩 Treuepunkte System -->
+<div class="surface w-full max-w-3xl mx-auto p-6 mt-10 shadow-md border border-black/10 dark:border-white/10 rounded-2xl">
+  <h3 class="text-2xl font-extrabold text-[color:var(--accent)] mb-4 flex items-center gap-2">🎁 Treuepunkte System</h3>
+
+  <div class="flex flex-col sm:flex-row gap-3 mb-6">
+    <input id="punkteName" type="text" placeholder="Kundenname" class="flex-1 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
+    <input id="punkteAnzahl" type="number" placeholder="Punkte" class="w-32 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
+    <button onclick="addPunkte()" class="bg-[color:var(--accent)] hover:opacity-90 text-white font-semibold px-6 py-3 rounded-full shadow transition">Hinzufügen</button>
+  </div>
+
+  <div id="punkteListe" class="bg-black/5 dark:bg-white/10 rounded-2xl p-4 text-sm shadow-inner border border-black/10 dark:border-white/10">
+    Noch keine Punkte vergeben.
+  </div>
+</div>
+
 <script>
    
     const PASSWORD = "fickdeinemutterwenndudenkstdukannsthierpwauslesen";
@@ -823,6 +937,7 @@ html {
     const THEME_KEY   = "lutalo.theme";
     const DARKMODE_KEY = "darkmode";
     const DEFAULT_IMAGE_URL = "https://s12.gifyu.com/images/b3dSM.png";
+    const PUNKTE_KEY = "treuepunkte";
     const itemsPerPerson = 5;
     const numTabs = 5;
 
@@ -1007,13 +1122,14 @@ html {
 
     
     let currentPreise = {};
-    let categories = ['ESSEN', 'TRINKEN', 'COINS', 'STICKER', 'FIGUREN'];   // 'ALKOHOL' 'SONSTIGES'
+    let categories = ['ESSEN', 'TRINKEN', 'COINS', 'STICKER', 'FIGUREN'];
     let foodCategories = ['ESSEN'];
     let drinkCategories = ['TRINKEN', 'ALKOHOL'];
     let rauchwarenCategories = ['COINS'];
     let miscellaneousCategories = ['STICKER', 'FIGUREN'];
     let customTitle = 'Play UP Kassenblatt';
     let customImage = DEFAULT_IMAGE_URL;
+    let previousCustomers = [];
 
 
     function todayKey() {
@@ -1052,7 +1168,7 @@ html {
     
     function applyConfig(data) {
       currentPreise = data.items || { ...defaultPreise };
-      categories = data.categories || ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER']; //'ALKOHOL' 'SONSTIGES'
+      categories = data.categories || ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'];
       foodCategories = data.foodCategories || ['ESSEN'];
       drinkCategories = data.drinkCategories || ['TRINKEN', 'ALKOHOL'];
       rauchwarenCategories = data.rauchwarenCategories || ['COINS'];
@@ -1077,7 +1193,7 @@ html {
     function loadPreise() {
       applyConfig({
         items: { ...defaultPreise },
-        categories: ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'], //'ALKOHOL', 'SONSTIGES'
+        categories: ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'],
         foodCategories: ['ESSEN'],
         drinkCategories: ['TRINKEN', 'ALKOHOL'],
         rauchwarenCategories: ['COINS'],
@@ -1326,7 +1442,7 @@ html {
       if (window._statsChart) {
         window._statsChart.data.labels = labels;
         window._statsChart.data.datasets[0].data = data;
-        window._statsChart.update();
+        window._statsChart.update('active');
       } else {
         window._statsChart = new Chart(ctx, {
           type: 'bar',
@@ -1436,7 +1552,7 @@ function buildProductStatsChart() {
   if (window._productStatsChart) {
     window._productStatsChart.data.labels = labels;
     window._productStatsChart.data.datasets[0].data = data;
-    window._productStatsChart.update();
+    window._productStatsChart.update('active');
   } else {
     window._productStatsChart = new Chart(ctx, {
       type: 'bar',
@@ -1461,8 +1577,21 @@ function buildProductStatsChart() {
 
 function resetProductStats() {
   if (!confirm('Produktstatistik wirklich löschen?')) return;
-  localStorage.removeItem('lutalo.productStats');
-  buildProductStatsChart();
+  
+  fetch('/api/stats', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scope: 'products' })
+  }).then(() => {
+    localStorage.removeItem('lutalo.productStats');
+    buildProductStatsChart();
+    showNotification('Produktstatistik gelöscht! 🗑️', 'success');
+  }).catch(err => {
+    console.error('Error deleting product stats:', err);
+    localStorage.removeItem('lutalo.productStats');
+    buildProductStatsChart();
+    showNotification('Produktstatistik gelöscht (Offline)', 'warning');
+  });
 }
 
 function openStats() {
@@ -1476,10 +1605,25 @@ function closeStats() {
 }
 function resetStats() {
   if (!confirm('Verlauf wirklich löschen?')) return;
-  localStorage.removeItem(SALES_KEY);
-  buildStatsChart();
-  buildProductStatsChart();
-  updateTopProductsDropdown();
+  
+  fetch('/api/stats', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scope: 'all' })
+  }).then(() => {
+    localStorage.removeItem(SALES_KEY);
+    buildStatsChart();
+    buildProductStatsChart();
+    updateTopProductsDropdown();
+    showNotification('Alle Statistiken gelöscht! 🗑️', 'success');
+  }).catch(err => {
+    console.error('Error deleting stats:', err);
+    localStorage.removeItem(SALES_KEY);
+    buildStatsChart();
+    buildProductStatsChart();
+    updateTopProductsDropdown();
+    showNotification('Statistiken gelöscht (Offline)', 'warning');
+  });
 }
 
 function showReceipt(grund, betrag, rabatt=false) {
@@ -1659,78 +1803,38 @@ function toggleDropdown() {
   document.getElementById('unternehmenDropdown').classList.toggle('show');
 }
 
-document.getElementById('versionBadge').addEventListener('click', ()=>{
-  document.getElementById('changelogModal').style.display = 'flex';
-});
-function closeChangelog(){
-  document.getElementById('changelogModal').style.display = 'none';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initDarkToggle();
-  populateThemeSelect();
-  loadTheme();
-  loadPreise();
-
-  initializeCalculatorStates();
-  const savedTab = localStorage.getItem('activeTab');
-  if (savedTab) activeTab = parseInt(savedTab);
-  const initialBtn = document.querySelector(`.tab-button[data-tab="${'${'}activeTab${'}'}"]`) || document.querySelector('.tab-button[data-tab="1"]');
-  if (initialBtn) {
-    initialBtn.classList.add('active');
-    updateSliderPosition(initialBtn);
-  }
-  loadCalculatorStateForTab();
-
-  document.querySelectorAll('.tab-button').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
-  });
-});
-
-window.addEventListener('resize', () => {
-  const btn = document.querySelector(`.tab-button[data-tab="${'${'}activeTab${'}'}"]`);
-  if (btn) updateSliderPosition(btn);
-});
-
-window.toggleDropdown = toggleDropdown;
-window.changeQuantity = changeQuantity;
-window.copyText = copyText;
-window.copyPriceText = copyPriceText;
-window.resetRechner = resetRechner;
-window.undoLast = undoLast;
-window.applyLutaloRabatt = applyLutaloRabatt;
-window.berechne = berechne;
-window.openStats = openStats;
-window.closeStats = closeStats;
-window.resetStats = resetStats;
-window.closeChangelog = closeChangelog;
-  
-
-function getRushHourData() {
-  const sales = loadSales();
-  const hourlyTotals = Array(24).fill(0);
-  Object.values(sales).forEach(day => {
-    day.entries.forEach(entry => {
-      if (entry.ts) {
-        const hour = new Date(entry.ts).getHours();
-        hourlyTotals[hour] += entry.betrag;
-      }
-    });
-  });
-  return hourlyTotals;
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
 }
 
 function buildRushHourChart() {
   const ctx = document.getElementById('rushHourDropdownChart');
   if (!ctx) return;
-  const data = getRushHourData();
-  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
-  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
-  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  const sales = loadSales();
+  const hourlyTotals = Array(24).fill(0);
+  
+  Object.values(sales).forEach(day => {
+    if (day.entries) {
+      day.entries.forEach(entry => {
+        if (entry.ts) {
+          const hour = new Date(entry.ts).getHours();
+          hourlyTotals[hour] += entry.betrag;
+        }
+      });
+    }
+  });
+  
+  const labels = hourlyTotals.map((_, i) => i.toString().padStart(2,'0') + ':00');
+  const top3 = [...hourlyTotals].sort((a,b)=>b-a).slice(0,3);
+  const bgColors = hourlyTotals.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  
   if (window._rushHourChart) {
     window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = data;
-    window._rushHourChart.update();
+    window._rushHourChart.data.datasets[0].data = hourlyTotals;
+    window._rushHourChart.data.datasets[0].backgroundColor = bgColors;
+    window._rushHourChart.update('active');
   } else {
     window._rushHourChart = new Chart(ctx, {
       type: 'bar',
@@ -1738,7 +1842,7 @@ function buildRushHourChart() {
         labels,
         datasets: [{
           label: 'Umsatz pro Stunde ($)',
-          data: data,
+          data: hourlyTotals,
           backgroundColor: bgColors
         }]
       },
@@ -1754,13 +1858,6 @@ function buildRushHourChart() {
   }
 }
 
-function toggleRushHourDropdown() {
-  const dropdown = document.getElementById('rushHourDropdown');
-  dropdown.classList.toggle('show');
-  if (dropdown.classList.contains('show')) buildRushHourChart();
-}
-
-
 function closeWelcome() {
   const modal = document.getElementById('welcomeModal');
   if (modal) {
@@ -1773,34 +1870,14 @@ function closeWelcome() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    modal.style.opacity = '1';
-  }
+document.getElementById('versionBadge').addEventListener('click', ()=>{
+  document.getElementById('changelogModal').style.display = 'flex';
 });
+function closeChangelog(){
+  document.getElementById('changelogModal').style.display = 'none';
+}
 
-</script>
-
-<!-- 🧩 Treuepunkte System -->
-<div class="surface w-full max-w-3xl mx-auto p-6 mt-10 shadow-md border border-black/10 dark:border-white/10 rounded-2xl">
-  <h3 class="text-2xl font-extrabold text-[color:var(--accent)] mb-4 flex items-center gap-2">🎁 Treuepunkte System</h3>
-
-  <div class="flex flex-col sm:flex-row gap-3 mb-6">
-    <input id="punkteName" type="text" placeholder="Kundenname" class="flex-1 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
-    <input id="punkteAnzahl" type="number" placeholder="Punkte" class="w-32 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
-    <button onclick="addPunkte()" class="bg-[color:var(--accent)] hover:opacity-90 text-white font-semibold px-6 py-3 rounded-full shadow transition">Hinzufügen</button>
-  </div>
-
-  <div id="punkteListe" class="bg-black/5 dark:bg-white/10 rounded-2xl p-4 text-sm shadow-inner border border-black/10 dark:border-white/10">
-    Noch keine Punkte vergeben.
-  </div>
-</div>
-
-<script>
-const PUNKTE_KEY = "treuepunkte";
-
+// Treuepunkte Functions
 function loadPunkte() {
   try {
     const raw = localStorage.getItem(PUNKTE_KEY);
@@ -1812,25 +1889,74 @@ function savePunkte(data) {
   localStorage.setItem(PUNKTE_KEY, JSON.stringify(data));
 }
 
-function addPunkte() {
+window.addPunkte = async function() {
   const nameEl = document.getElementById("punkteName");
   const punkteEl = document.getElementById("punkteAnzahl");
   const name = nameEl.value.trim();
   const punkte = parseInt(punkteEl.value);
 
   if (!name || isNaN(punkte)) {
-    alert("Bitte Namen und Punktezahl eingeben!");
+    showNotification("Bitte Namen und Punktezahl eingeben!", "warning");
     return;
   }
 
-  const daten = loadPunkte();
-  daten[name] = (daten[name] || 0) + punkte;
-  savePunkte(daten);
-  renderPunkteListe();
+  try {
+    const response = await fetch('/api/loyalty', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, points: punkte })
+    });
 
-  nameEl.value = "";
-  punkteEl.value = "";
-}
+    if (!response.ok) {
+      throw new Error('API call failed');
+    }
+
+    const result = await response.json();
+    
+    const daten = loadPunkte();
+    daten[name] = (daten[name] || 0) + punkte;
+    savePunkte(daten);
+    
+    renderPunkteListe();
+
+    showNotification(`${punkte} Punkte an ${name} vergeben! 🎁`, "success");
+
+    nameEl.value = "";
+    punkteEl.value = "";
+    
+  } catch (error) {
+    console.error('Error adding points:', error);
+    
+    const daten = loadPunkte();
+    const oldPoints = daten[name] || 0;
+    daten[name] = oldPoints + punkte;
+    savePunkte(daten);
+    renderPunkteListe();
+    
+    const customer = {
+      name: name,
+      points: daten[name],
+      pointsChange: punkte,
+      level: calculateLevelForPoints(daten[name])
+    };
+    
+    showLoyaltyPointsAnimation(customer);
+    
+    const oldLevel = calculateLevelForPoints(oldPoints);
+    const newLevel = calculateLevelForPoints(daten[name]);
+    
+    if (oldLevel !== newLevel) {
+      setTimeout(() => {
+        showLevelUpCelebration(customer);
+      }, 500);
+    }
+    
+    showNotification(`${punkte} Punkte an ${name} vergeben! (Offline-Modus)`, "warning");
+    
+    nameEl.value = "";
+    punkteEl.value = "";
+  }
+};
 
 function renderPunkteListe() {
   const daten = loadPunkte();
@@ -1841,1302 +1967,707 @@ function renderPunkteListe() {
     return;
   }
 
+  const customers = Object.entries(daten).map(([name, points]) => ({
+    name,
+    points
+  })).sort((a, b) => b.points - a.points);
+  
+  const totalCustomers = customers.length;
+  const totalPoints = customers.reduce((sum, c) => sum + c.points, 0);
+  const avgPoints = totalPoints / totalCustomers;
+  
   listEl.innerHTML = `
+    <div class="loyalty-statistics mb-4 p-3 bg-black/5 dark:bg-white/10 rounded-lg">
+      <div class="grid grid-cols-3 gap-2 text-sm">
+        <div>
+          <div class="opacity-70">Kunden</div>
+          <div class="font-bold text-lg">${totalCustomers}</div>
+        </div>
+        <div>
+          <div class="opacity-70">Ø Punkte</div>
+          <div class="font-bold text-lg">${avgPoints.toFixed(1)}</div>
+        </div>
+        <div>
+          <div class="opacity-70">Gesamt</div>
+          <div class="font-bold text-lg">${totalPoints}</div>
+        </div>
+      </div>
+    </div>
+    
     <table class="w-full text-left text-sm">
       <thead>
         <tr class="border-b border-black/10 dark:border-white/10">
           <th class="py-2 font-semibold">Kunde</th>
           <th class="py-2 font-semibold">Punkte</th>
+          <th class="py-2 font-semibold">Level</th>
           <th class="py-2"></th>
         </tr>
       </thead>
       <tbody>
-        ${Object.entries(daten).map(([n,p])=>`
-          <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition">
-            <td class="py-2 font-medium">${n}</td>
-            <td class="py-2 font-semibold text-[color:var(--accent)]">${p}</td>
-            <td class="py-2 text-right">
-              <button onclick="removePunkte('${n}')" class="text-xs text-red-500 hover:text-red-700 font-semibold">Löschen</button>
-            </td>
-          </tr>`).join('')}
+        ${customers.map((customer, index) => {
+          const level = calculateLevelForPoints(customer.points);
+          return `
+            <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 
+                       dark:hover:bg-white/10 transition fade-in ${index < 3 ? 'top-customer' : ''}"
+                data-customer="${customer.name}"
+                style="animation-delay: ${index * 0.05}s">
+              <td class="py-2 font-medium">
+                ${index < 3 ? `<span class="rank-badge ${index === 0 ? 'rank-top' : ''}">${index + 1}</span>` : ''}
+                ${customer.name}
+              </td>
+              <td class="py-2">
+                <span class="points-badge ${getLevelClass(level)}">
+                  ${customer.points} <span class="opacity-70">Pkt</span>
+                </span>
+              </td>
+              <td class="py-2">
+                <span class="level-badge ${getLevelClass(level)}">
+                  ${getLevelIcon(level)} ${level}
+                </span>
+              </td>
+              <td class="py-2 text-right">
+                <button onclick="removePunkte('${customer.name}')" 
+                        class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
+                  Löschen
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('')}
       </tbody>
     </table>`;
 }
 
-function removePunkte(name) {
-  const daten = loadPunkte();
-  delete daten[name];
-  savePunkte(daten);
-  renderPunkteListe();
-}
-
-document.addEventListener("DOMContentLoaded", renderPunkteListe);
-</script>
-
-<!-- ============================================
-     LIVE UPDATES SYSTEM
-     Ermöglicht Echtzeit-Updates für alle Features
-     ============================================ -->
-
-<!-- CSS für Live Updates & Animationen -->
-<style>
-/* Live Update Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes flashHighlight {
-  0%, 100% { background-color: transparent; }
-  50% { background-color: rgba(75, 0, 130, 0.2); }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(400px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideInUp {
-  from { transform: translateY(100px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeOut {
-  to { opacity: 0; transform: translateY(-20px); }
-}
-
-@keyframes pointsFloat {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-50px) scale(1.5); }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* Utility Classes */
-.fade-in { animation: fadeIn 0.3s ease-out forwards; }
-.flash-highlight { animation: flashHighlight 2s ease-out; }
-.pulse-animation { animation: pulse 1s ease-in-out 3; }
-
-/* Notification Toast */
-.notification-toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 9999;
-  animation: slideInRight 0.3s ease-out;
-  max-width: 400px;
-}
-
-body.dark .notification-toast {
-  background: #2d2d2f;
-  color: #f5f5f7;
-}
-
-.notification-toast .icon {
-  font-size: 1.5em;
-  flex-shrink: 0;
-}
-
-.notification-toast .message {
-  flex: 1;
-  font-size: 0.95em;
-}
-
-.notification-toast .close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-  opacity: 0.6;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.notification-toast .close-btn:hover {
-  opacity: 1;
-}
-
-.notification-toast.success { border-left: 4px solid #10b981; }
-.notification-toast.warning { border-left: 4px solid #f59e0b; }
-.notification-toast.error { border-left: 4px solid #ef4444; }
-.notification-toast.info { border-left: 4px solid #3b82f6; }
-
-.notification-toast .action-btn {
-  background: rgba(75, 0, 130, 0.1);
-  border: 1px solid rgba(75, 0, 130, 0.3);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.85em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.notification-toast .action-btn:hover {
-  background: rgba(75, 0, 130, 0.2);
-}
-
-/* Progress Bar */
-.progress-bar {
-  height: 4px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-body.dark .progress-bar {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4B0082, #8B00FF);
-  transition: width 0.5s ease-out;
-}
-
-/* Revenue Change Badge */
-.revenue-change {
-  font-size: 0.85em;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.revenue-change.positive {
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-}
-
-.revenue-change.negative {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.revenue-change.neutral {
-  color: #6b7280;
-  background: rgba(107, 114, 128, 0.1);
-}
-
-/* Trend Icon */
-.trend-icon {
-  font-size: 1.2em;
-  transition: transform 0.3s ease;
-  display: inline-block;
-}
-
-.trend-icon.up { color: #10b981; }
-.trend-icon.down { color: #ef4444; }
-.trend-icon.stable { color: #6b7280; }
-
-/* Rank Badge */
-.rank-badge {
-  display: inline-block;
-  min-width: 28px;
-  height: 28px;
-  line-height: 28px;
-  text-align: center;
-  border-radius: 50%;
-  background: rgba(75, 0, 130, 0.1);
-  font-weight: bold;
-  font-size: 0.9em;
-  margin-right: 8px;
-}
-
-.rank-badge.rank-top {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: white;
-}
-
-/* Level Badges */
-.level-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.85em;
-  font-weight: 600;
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.points-badge {
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 0.9em;
-  font-weight: 600;
-  display: inline-block;
-}
-
-.level-bronze,
-.points-badge.level-bronze {
-  background: linear-gradient(135deg, #CD7F32, #8B4513);
-  color: white;
-}
-
-.level-silver,
-.points-badge.level-silver {
-  background: linear-gradient(135deg, #C0C0C0, #808080);
-  color: white;
-}
-
-.level-gold,
-.points-badge.level-gold {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #1d1d1f;
-}
-
-.level-platinum,
-.points-badge.level-platinum {
-  background: linear-gradient(135deg, #E5E4E2, #8B8B8B);
-  color: white;
-}
-
-/* Points Animation */
-.points-animation {
-  position: fixed;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #4B0082;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.points-animation.animate {
-  animation: pointsFloat 2s ease-out forwards;
-}
-
-/* Level Up Modal */
-.level-up-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  animation: fadeIn 0.3s ease-out;
-}
-
-.level-up-content {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: scaleIn 0.5s ease-out;
-  max-width: 400px;
-}
-
-body.dark .level-up-content {
-  background: #1d1d1f;
-}
-
-.level-up-content h2 {
-  font-size: 2.5em;
-  margin-bottom: 20px;
-  color: #4B0082;
-}
-
-body.dark .level-up-content h2 {
-  color: #8B00FF;
-}
-
-.level-up-content .new-level {
-  font-size: 2em;
-  margin: 20px 0;
-  padding: 20px;
-  border-radius: 15px;
-}
-
-.level-up-content .confetti {
-  font-size: 4em;
-  margin-bottom: 20px;
-  animation: bounce 1s infinite;
-}
-
-.level-up-content .close-btn {
-  background: linear-gradient(135deg, #4B0082, #8B00FF);
-  color: white;
-  border: none;
-  padding: 12px 32px;
-  border-radius: 25px;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s;
-  margin-top: 20px;
-}
-
-.level-up-content .close-btn:hover {
-  transform: scale(1.05);
-}
-
-/* New Sale Notification */
-.new-sale-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #4B0082, #8B00FF);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 50px;
-  box-shadow: 0 10px 30px rgba(75, 0, 130, 0.4);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 600;
-  z-index: 9999;
-  animation: slideInUp 0.3s ease-out;
-}
-
-.new-sale-notification.fade-out {
-  animation: fadeOut 0.5s ease-out forwards;
-}
-
-.new-sale-notification .icon {
-  font-size: 1.5em;
-}
-
-.new-sale-notification .count {
-  opacity: 0.8;
-  font-size: 0.9em;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-  font-size: 1.1em;
-}
-
-/* Connection Status Indicator */
-.connection-status {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85em;
-  z-index: 9998;
-  transition: opacity 0.3s;
-}
-
-body.dark .connection-status {
-  background: #2d2d2f;
-}
-
-.connection-status.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.connection-status .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10b981;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.connection-status.disconnected .dot {
-  background: #ef4444;
-  animation: none;
-}
-
-.connection-status.connecting .dot {
-  background: #f59e0b;
-}
-
-/* Top Customer Indicator */
-.top-customer {
-  position: relative;
-}
-
-.top-customer::before {
-  content: '⭐';
-  position: absolute;
-  left: -20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2em;
-}
-
-/* Percentage Badge */
-.percentage-badge {
-  background: rgba(75, 0, 130, 0.1);
-  color: #4B0082;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.9em;
-}
-
-body.dark .percentage-badge {
-  background: rgba(139, 0, 255, 0.2);
-  color: #8B00FF;
-}
-
-/* Product Row */
-.product-row {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: background-color 0.2s;
-}
-
-.product-row:hover {
-  background: rgba(0, 0, 0, 0.03);
-}
-
-body.dark .product-row:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Loyalty Statistics Grid */
-.loyalty-statistics {
-  display: grid;
-  gap: 8px;
-}
-
-.loyalty-statistics > div {
-  text-align: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .notification-toast {
-    right: 10px;
-    left: 10px;
-    max-width: none;
+window.removePunkte = async function(name) {
+  if (!confirm(`${name} wirklich aus der Treuepunkte-Liste löschen?`)) {
+    return;
   }
   
-  .connection-status {
-    left: 10px;
-    bottom: 10px;
-  }
-  
-  .new-sale-notification {
-    right: 10px;
-    bottom: 10px;
-  }
-  
-  .level-up-content {
-    margin: 20px;
-    padding: 30px 20px;
-  }
-}
-</style>
-
-<!-- JavaScript für Live Updates -->
-<script>
-(function() {
-  'use strict';
-  
-  // ============================================
-  // KONFIGURATION
-  // ============================================
-  
-  const CONFIG = {
-    // Socket.IO Konfiguration
-    SOCKET_URL: window.location.origin,
-    
-    // Reconnect-Einstellungen
-    MAX_RECONNECT_ATTEMPTS: 5,
-    RECONNECT_DELAY: 1000,
-    
-    // Features aktivieren
-    ENABLE_LOYALTY_UPDATES: true,
-    ENABLE_RUSH_HOUR_UPDATES: true,
-    ENABLE_PRODUCTS_UPDATES: true,
-    
-    // Debug
-    DEBUG: false
-  };
-  
-  // ============================================
-  // SOCKET.IO LIVE UPDATES MANAGER
-  // ============================================
-  
-  class LiveUpdatesManager {
-    constructor() {
-      this.socket = null;
-      this.isConnected = false;
-      this.reconnectAttempts = 0;
-      
-      // Connection Status Indicator erstellen
-      this.createConnectionIndicator();
-    }
-    
-    createConnectionIndicator() {
-      const indicator = document.createElement('div');
-      indicator.className = 'connection-status hidden';
-      indicator.innerHTML = `
-        <div class="dot"></div>
-        <span class="status-text">Verbunden</span>
-      `;
-      document.body.appendChild(indicator);
-      this.indicator = indicator;
-    }
-    
-    updateConnectionStatus(status) {
-      this.indicator.className = `connection-status ${status}`;
-      const statusTexts = {
-        'connected': 'Live verbunden',
-        'connecting': 'Verbinde...',
-        'disconnected': 'Getrennt'
-      };
-      this.indicator.querySelector('.status-text').textContent = statusTexts[status] || '';
-      
-      // Automatisch ausblenden wenn verbunden
-      if (status === 'connected') {
-        setTimeout(() => {
-          this.indicator.classList.add('hidden');
-        }, 3000);
-      } else {
-        this.indicator.classList.remove('hidden');
-      }
-    }
-    
-    connect() {
-      if (this.socket) {
-        console.log('Socket already exists');
-        return;
-      }
-      
-      console.log('🔌 Connecting to Socket.IO server...');
-      this.updateConnectionStatus('connecting');
-      
-      // Socket.IO Client laden
-      this.socket = io(CONFIG.SOCKET_URL, {
-        transports: ['websocket', 'polling'],
-        reconnection: true,
-        reconnectionAttempts: CONFIG.MAX_RECONNECT_ATTEMPTS,
-        reconnectionDelay: CONFIG.RECONNECT_DELAY
-      });
-      
-      // Connection Events
-      this.socket.on('connect', () => {
-        console.log('✅ Socket.IO connected:', this.socket.id);
-        this.isConnected = true;
-        this.reconnectAttempts = 0;
-        this.updateConnectionStatus('connected');
-        showNotification('Live-Updates aktiviert! 🎉', 'success', { duration: 2000 });
-      });
-      
-      this.socket.on('disconnect', (reason) => {
-        console.log('❌ Socket.IO disconnected:', reason);
-        this.isConnected = false;
-        this.updateConnectionStatus('disconnected');
-      });
-      
-      this.socket.on('connect_error', (error) => {
-        console.error('Socket.IO connection error:', error);
-        this.reconnectAttempts++;
-        
-        if (this.reconnectAttempts >= CONFIG.MAX_RECONNECT_ATTEMPTS) {
-          showNotification(
-            'Verbindung zum Server fehlgeschlagen. Bitte Seite neu laden.',
-            'error',
-            { duration: 0 }
-          );
-        }
-      });
-      
-      // Daten-Events registrieren
-      this.registerEventHandlers();
-    }
-    
-    registerEventHandlers() {
-      // Loyalty Updates
-      this.socket.on('loyalty:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] loyalty:update', data);
-        if (CONFIG.ENABLE_LOYALTY_UPDATES) {
-          handleLoyaltyUpdate(data);
-        }
-      });
-      
-      // Rush Hour Updates
-      this.socket.on('rush-hour:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] rush-hour:update', data);
-        if (CONFIG.ENABLE_RUSH_HOUR_UPDATES) {
-          updateRushHourChart(data);
-        }
-      });
-      
-      // Products Updates
-      this.socket.on('products:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] products:update', data);
-        if (CONFIG.ENABLE_PRODUCTS_UPDATES) {
-          handleProductsUpdate(data);
-        }
-      });
-      
-      // Top Products Updates
-      this.socket.on('top-products:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] top-products:update', data);
-        // Handler bei Bedarf implementieren
-      });
-      
-      // Sales Updates
-      this.socket.on('sales:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] sales:update', data);
-        // Handler bei Bedarf implementieren
-      });
-      
-      // Stats Deleted
-      this.socket.on('stats:deleted', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] stats:deleted', data);
-        handleStatsDeleted(data);
-      });
-      
-      // Config Updates
-      this.socket.on('config:update', (data) => {
-        if (CONFIG.DEBUG) console.log('[Socket] config:update', data);
-        // Handler bei Bedarf implementieren
-      });
-    }
-    
-    disconnect() {
-      if (this.socket) {
-        console.log('🔌 Disconnecting Socket.IO');
-        this.socket.disconnect();
-        this.socket = null;
-        this.isConnected = false;
-        this.updateConnectionStatus('disconnected');
-      }
-    }
-    
-    getConnectionInfo() {
-      return {
-        connected: this.isConnected,
-        socketId: this.socket ? this.socket.id : null,
-        reconnectAttempts: this.reconnectAttempts
-      };
-    }
-  }
-  
-  // Globale Instanz
-  window.liveUpdates = new LiveUpdatesManager();
-  
-  // ============================================
-  // NOTIFICATION SYSTEM
-  // ============================================
-  
-  window.showNotification = function(message, type = 'info', options = {}) {
-    const { duration = 3000, action = null } = options;
-    
-    // Altes Notification entfernen wenn vorhanden
-    const existing = document.querySelector('.notification-toast');
-    if (existing) {
-      existing.remove();
-    }
-    
-    const notification = document.createElement('div');
-    notification.className = `notification-toast ${type}`;
-    
-    const icons = {
-      success: '✅',
-      warning: '⚠️',
-      error: '❌',
-      info: 'ℹ️'
-    };
-    
-    notification.innerHTML = `
-      <span class="icon">${icons[type] || icons.info}</span>
-      <span class="message">${message}</span>
-      ${action ? `
-        <button class="action-btn">
-          ${action.label}
-        </button>
-      ` : ''}
-      <button class="close-btn">×</button>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Event Listener für Action Button
-    if (action && action.callback) {
-      const actionBtn = notification.querySelector('.action-btn');
-      actionBtn.addEventListener('click', () => {
-        action.callback();
-        notification.remove();
-      });
-    }
-    
-    // Event Listener für Close Button
-    notification.querySelector('.close-btn').addEventListener('click', () => {
-      notification.remove();
+  try {
+    const response = await fetch('/api/loyalty', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
     });
-    
-    // Auto-remove
-    if (duration > 0) {
-      setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 500);
-      }, duration);
+
+    if (!response.ok) {
+      throw new Error('API call failed');
     }
-    
-    return notification;
-  };
-  
-  // ============================================
-  // RUSH HOUR LIVE UPDATES
-  // ============================================
-  
-  window.initRushHourLiveUpdates = function() {
-    console.log('Rush Hour Live Updates aktiviert');
-    // Updates kommen automatisch über Socket.IO
-  };
-  
-  function updateRushHourChart(data) {
-    if (!window._rushHourChart) return;
-    
-    const labels = data.hourlyData.map((_, i) => 
-      i.toString().padStart(2,'0') + ':00'
-    );
-    
-    const topValues = data.topHours.map(h => data.hourlyData[h.hour]);
-    const bgColors = data.hourlyData.map(v => 
-      topValues.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)'
-    );
-    
-    window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = data.hourlyData;
-    window._rushHourChart.data.datasets[0].backgroundColor = bgColors;
-    window._rushHourChart.update('active');
-    
-    // Zeige Notification für aktuelle Stunde
-    if (data.currentHourRevenue > 0) {
-      console.log(`💰 Aktuelle Stunde: ${data.currentHourRevenue.toFixed(2)}$`);
-    }
-  }
-  
-  // ============================================
-  // TREUEPUNKTE LIVE UPDATES
-  // ============================================
-  
-  let previousCustomers = [];
-  
-  window.initLoyaltyPointsLiveUpdates = function() {
-    console.log('Loyalty Points Live Updates aktiviert');
-    // Updates kommen automatisch über Socket.IO
-  };
-  
-  function handleLoyaltyUpdate(data) {
-    updateLoyaltyPointsListLive(data);
-    
-    if (data.action === 'add' && data.customer && data.customer.pointsChange > 0) {
-      showLoyaltyPointsAnimation(data.customer);
-      
-      // Check für Level-Up
-      if (data.levelUp || isLevelUp(data.customer)) {
-        showLevelUpCelebration(data.customer);
-      }
-    }
-  }
-  
-  function handleProductsUpdate(data) {
-    // Handler für Produkt-Updates
-    console.log('Products updated:', data);
-    // Hier kannst du die Produkt-Statistiken aktualisieren
-  }
-  
-  function handleStatsDeleted(data) {
-    // Sofortige UI-Aktualisierung
-    showNotification(
-      `Statistiken gelöscht: ${data.scope} (${data.affectedRecords} Einträge)`,
-      'warning',
-      { duration: 5000 }
-    );
-    
-    // Aktualisiere Charts wenn vorhanden
-    if (window._rushHourChart) {
-      window._rushHourChart.data.datasets[0].data = Array(24).fill(0);
-      window._rushHourChart.update();
-    }
-  }
-  
-  function updateLoyaltyPointsListLive(data) {
-    const listEl = document.getElementById("punkteListe");
-    if (!listEl) return;
-    
-    const customers = data.allCustomers || [];
-    
-    if (customers.length === 0) {
-      listEl.innerHTML = "Noch keine Punkte vergeben.";
-      return;
-    }
-    
-    const sortedCustomers = [...customers].sort((a, b) => b.points - a.points);
-    
-    const stats = data.statistics || {
-      totalCustomers: customers.length,
-      totalPointsGiven: customers.reduce((sum, c) => sum + c.points, 0),
-      averagePoints: customers.reduce((sum, c) => sum + c.points, 0) / customers.length
-    };
-    
-    listEl.innerHTML = `
-      <div class="loyalty-statistics mb-4 p-3 bg-black/5 dark:bg-white/10 rounded-lg">
-        <div class="grid grid-cols-3 gap-2 text-sm">
-          <div>
-            <div class="opacity-70">Kunden</div>
-            <div class="font-bold text-lg">${stats.totalCustomers}</div>
-          </div>
-          <div>
-            <div class="opacity-70">Ø Punkte</div>
-            <div class="font-bold text-lg">${stats.averagePoints.toFixed(1)}</div>
-          </div>
-          <div>
-            <div class="opacity-70">Gesamt</div>
-            <div class="font-bold text-lg">${stats.totalPointsGiven}</div>
-          </div>
-        </div>
-      </div>
-      
-      <table class="w-full text-left text-sm">
-        <thead>
-          <tr class="border-b border-black/10 dark:border-white/10">
-            <th class="py-2 font-semibold">Kunde</th>
-            <th class="py-2 font-semibold">Punkte</th>
-            <th class="py-2 font-semibold">Level</th>
-            <th class="py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sortedCustomers.map((customer, index) => {
-            const level = calculateLevelForPoints(customer.points);
-            return `
-              <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 
-                         dark:hover:bg-white/10 transition fade-in ${index < 3 ? 'top-customer' : ''}"
-                  data-customer="${customer.name}"
-                  style="animation-delay: ${index * 0.05}s">
-                <td class="py-2 font-medium">
-                  ${index < 3 ? `<span class="rank-badge ${index === 0 ? 'rank-top' : ''}">${index + 1}</span>` : ''}
-                  ${customer.name}
-                </td>
-                <td class="py-2">
-                  <span class="points-badge ${getLevelClass(level)}">
-                    ${customer.points} <span class="opacity-70">Pkt</span>
-                  </span>
-                </td>
-                <td class="py-2">
-                  <span class="level-badge ${getLevelClass(level)}">
-                    ${getLevelIcon(level)} ${level}
-                  </span>
-                </td>
-                <td class="py-2 text-right">
-                  <button onclick="removePunkte('${customer.name}')" 
-                          class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
-                    Löschen
-                  </button>
-                </td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-    `;
-    
-    previousCustomers = sortedCustomers.map(c => ({ name: c.name, points: c.points }));
-  }
-  
-  function showLoyaltyPointsAnimation(customer) {
-    const row = document.querySelector(`[data-customer="${CSS.escape(customer.name)}"]`);
-    
-    // Punkte-Animation
-    const animation = document.createElement('div');
-    animation.className = 'points-animation';
-    animation.innerHTML = `+${customer.pointsChange} 🎁`;
-    
-    if (row) {
-      const rect = row.getBoundingClientRect();
-      animation.style.left = (rect.left + rect.width / 2) + 'px';
-      animation.style.top = rect.top + 'px';
-    } else {
-      animation.style.left = '50%';
-      animation.style.top = '50%';
-    }
-    
-    document.body.appendChild(animation);
-    
-    setTimeout(() => {
-      animation.classList.add('animate');
-      setTimeout(() => animation.remove(), 2000);
-    }, 10);
-    
-    // Row highlighten
-    if (row) {
-      row.classList.add('flash-highlight');
-      setTimeout(() => row.classList.remove('flash-highlight'), 2000);
-    }
-  }
-  
-  function showLevelUpCelebration(customer) {
-    const modal = document.createElement('div');
-    modal.className = 'level-up-modal';
-    modal.innerHTML = `
-      <div class="level-up-content">
-        <div class="confetti">🎉</div>
-        <h2>Level Up!</h2>
-        <p><strong>${customer.name}</strong> hat das</p>
-        <div class="new-level ${getLevelClass(customer.level)}">
-          ${getLevelIcon(customer.level)} ${customer.level}-Level
-        </div>
-        <p>erreicht!</p>
-        <button class="close-btn">Großartig!</button>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    modal.querySelector('.close-btn').addEventListener('click', () => {
-      modal.remove();
-    });
-    
-    // Auto-close nach 5 Sekunden
-    setTimeout(() => {
-      if (modal.parentElement) {
-        modal.remove();
-      }
-    }, 5000);
-  }
-  
-  function isLevelUp(customer) {
-    if (!customer.pointsChange) return false;
-    
-    const previousPoints = customer.points - customer.pointsChange;
-    const previousLevel = calculateLevelForPoints(previousPoints);
-    const currentLevel = customer.level || calculateLevelForPoints(customer.points);
-    
-    return previousLevel !== currentLevel;
-  }
-  
-  // ============================================
-  // HELPER FUNCTIONS
-  // ============================================
-  
-  window.calculateLevelForPoints = function(points) {
-    if (points >= 200) return 'Platinum';
-    if (points >= 150) return 'Gold';
-    if (points >= 75) return 'Silver';
-    return 'Bronze';
-  };
-  
-  window.getLevelIcon = function(level) {
-    const icons = {
-      'Bronze': '🥉',
-      'Silver': '🥈',
-      'Gold': '🥇',
-      'Platinum': '💎'
-    };
-    return icons[level] || '🎁';
-  };
-  
-  window.getLevelClass = function(level) {
-    return `level-${level.toLowerCase()}`;
-  };
-  
-  function formatRelativeTime(timestamp) {
-    const now = new Date();
-    const time = new Date(timestamp);
-    const diff = Math.floor((now - time) / 1000);
-    
-    if (diff < 60) return 'gerade eben';
-    if (diff < 3600) return `vor ${Math.floor(diff / 60)} Min`;
-    if (diff < 86400) return `vor ${Math.floor(diff / 3600)} Std`;
-    return time.toLocaleDateString('de-DE');
-  }
-  
-  // ============================================
-  // ERWEITERTE renderPunkteListe MIT ANIMATIONEN
-  // ============================================
-  
-  // Override der originalen renderPunkteListe Funktion mit erweiterten Features
-  const originalRenderPunkteListe = window.renderPunkteListe;
-  
-  window.renderPunkteListe = function() {
+
     const daten = loadPunkte();
-    const listEl = document.getElementById("punkteListe");
+    delete daten[name];
+    savePunkte(daten);
     
-    if (!listEl) return;
+    renderPunkteListe();
     
-    if (Object.keys(daten).length === 0) {
-      listEl.innerHTML = "Noch keine Punkte vergeben.";
-      return;
-    }
+    showNotification(`${name} wurde entfernt`, "info");
     
-    // Konvertiere zu Array und sortiere
-    const customers = Object.entries(daten).map(([name, points]) => ({
-      name,
-      points
-    })).sort((a, b) => b.points - a.points);
+  } catch (error) {
+    console.error('Error removing customer:', error);
     
-    // Statistiken berechnen
-    const totalCustomers = customers.length;
-    const totalPoints = customers.reduce((sum, c) => sum + c.points, 0);
-    const avgPoints = totalPoints / totalCustomers;
+    const daten = loadPunkte();
+    delete daten[name];
+    savePunkte(daten);
+    renderPunkteListe();
     
-    listEl.innerHTML = `
-      <div class="loyalty-statistics mb-4 p-3 bg-black/5 dark:bg-white/10 rounded-lg">
-        <div class="grid grid-cols-3 gap-2 text-sm">
-          <div>
-            <div class="opacity-70">Kunden</div>
-            <div class="font-bold text-lg">${totalCustomers}</div>
-          </div>
-          <div>
-            <div class="opacity-70">Ø Punkte</div>
-            <div class="font-bold text-lg">${avgPoints.toFixed(1)}</div>
-          </div>
-          <div>
-            <div class="opacity-70">Gesamt</div>
-            <div class="font-bold text-lg">${totalPoints}</div>
-          </div>
-        </div>
+    showNotification(`${name} wurde entfernt (Offline-Modus)`, "warning");
+  }
+};
+
+window.calculateLevelForPoints = function(points) {
+  if (points >= 200) return 'Platinum';
+  if (points >= 150) return 'Gold';
+  if (points >= 75) return 'Silver';
+  return 'Bronze';
+};
+
+window.getLevelIcon = function(level) {
+  const icons = {
+    'Bronze': '🥉',
+    'Silver': '🥈',
+    'Gold': '🥇',
+    'Platinum': '💎'
+  };
+  return icons[level] || '🎁';
+};
+
+window.getLevelClass = function(level) {
+  return `level-${level.toLowerCase()}`;
+};
+
+function showLoyaltyPointsAnimation(customer) {
+  const row = document.querySelector(`[data-customer="${CSS.escape(customer.name)}"]`);
+  
+  const animation = document.createElement('div');
+  animation.className = 'points-animation';
+  animation.innerHTML = `+${customer.pointsChange} 🎁`;
+  
+  if (row) {
+    const rect = row.getBoundingClientRect();
+    animation.style.left = (rect.left + rect.width / 2) + 'px';
+    animation.style.top = rect.top + 'px';
+  } else {
+    animation.style.left = '50%';
+    animation.style.top = '50%';
+  }
+  
+  document.body.appendChild(animation);
+  
+  setTimeout(() => {
+    animation.classList.add('animate');
+    setTimeout(() => animation.remove(), 2000);
+  }, 10);
+  
+  if (row) {
+    row.classList.add('flash-highlight');
+    setTimeout(() => row.classList.remove('flash-highlight'), 2000);
+  }
+}
+
+function showLevelUpCelebration(customer) {
+  const modal = document.createElement('div');
+  modal.className = 'level-up-modal';
+  modal.innerHTML = `
+    <div class="level-up-content">
+      <div class="confetti">🎉</div>
+      <h2>Level Up!</h2>
+      <p><strong>${customer.name}</strong> hat das</p>
+      <div class="new-level ${getLevelClass(customer.level)}">
+        ${getLevelIcon(customer.level)} ${customer.level}-Level
       </div>
-      
-      <table class="w-full text-left text-sm">
-        <thead>
-          <tr class="border-b border-black/10 dark:border-white/10">
-            <th class="py-2 font-semibold">Kunde</th>
-            <th class="py-2 font-semibold">Punkte</th>
-            <th class="py-2 font-semibold">Level</th>
-            <th class="py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          ${customers.map((customer, index) => {
-            const level = calculateLevelForPoints(customer.points);
-            return `
-              <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 
-                         dark:hover:bg-white/10 transition fade-in ${index < 3 ? 'top-customer' : ''}"
-                  data-customer="${customer.name}"
-                  style="animation-delay: ${index * 0.05}s">
-                <td class="py-2 font-medium">
-                  ${index < 3 ? `<span class="rank-badge ${index === 0 ? 'rank-top' : ''}">${index + 1}</span>` : ''}
-                  ${customer.name}
-                </td>
-                <td class="py-2">
-                  <span class="points-badge ${getLevelClass(level)}">
-                    ${customer.points} <span class="opacity-70">Pkt</span>
-                  </span>
-                </td>
-                <td class="py-2">
-                  <span class="level-badge ${getLevelClass(level)}">
-                    ${getLevelIcon(level)} ${level}
-                  </span>
-                </td>
-                <td class="py-2 text-right">
-                  <button onclick="removePunkte('${customer.name}')" 
-                          class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
-                    Löschen
-                  </button>
-                </td>
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-    `;
-  };
+      <p>erreicht!</p>
+      <button class="close-btn">Großartig!</button>
+    </div>
+  `;
   
-  // Erweitere addPunkte mit API-Call und Animationen
-  const originalAddPunkte = window.addPunkte;
+  document.body.appendChild(modal);
   
-  window.addPunkte = async function() {
-    const nameEl = document.getElementById("punkteName");
-    const punkteEl = document.getElementById("punkteAnzahl");
-    const name = nameEl.value.trim();
-    const punkte = parseInt(punkteEl.value);
-
-    if (!name || isNaN(punkte)) {
-      showNotification("Bitte Namen und Punktezahl eingeben!", "warning");
-      return;
-    }
-
-    try {
-      // API Call zum Backend
-      const response = await fetch('/api/loyalty', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, points: punkte })
-      });
-
-      if (!response.ok) {
-        throw new Error('API call failed');
-      }
-
-      const result = await response.json();
-      
-      // Lokale Daten aktualisieren (für Offline-Fallback)
-      const daten = loadPunkte();
-      daten[name] = (daten[name] || 0) + punkte;
-      savePunkte(daten);
-      
-      // UI wird automatisch über Socket.IO aktualisiert
-      // Aber wir rendern auch lokal für sofortiges Feedback
-      renderPunkteListe();
-
-      // Success Notification
-      showNotification(`${punkte} Punkte an ${name} vergeben! 🎁`, "success");
-
-      nameEl.value = "";
-      punkteEl.value = "";
-      
-    } catch (error) {
-      console.error('Error adding points:', error);
-      
-      // Fallback auf lokale Speicherung wenn API fehlschlägt
-      const daten = loadPunkte();
-      const oldPoints = daten[name] || 0;
-      daten[name] = oldPoints + punkte;
-      savePunkte(daten);
-      renderPunkteListe();
-      
-      // Zeige lokale Animationen
-      const customer = {
-        name: name,
-        points: daten[name],
-        pointsChange: punkte,
-        level: calculateLevelForPoints(daten[name])
-      };
-      
-      showLoyaltyPointsAnimation(customer);
-      
-      const oldLevel = calculateLevelForPoints(oldPoints);
-      const newLevel = calculateLevelForPoints(daten[name]);
-      
-      if (oldLevel !== newLevel) {
-        setTimeout(() => {
-          showLevelUpCelebration(customer);
-        }, 500);
-      }
-      
-      showNotification(`${punkte} Punkte an ${name} vergeben! (Offline-Modus)`, "warning");
-      
-      nameEl.value = "";
-      punkteEl.value = "";
-    }
-  };
-  
-  // Erweitere removePunkte mit API-Call
-  const originalRemovePunkte = window.removePunkte;
-  
-  window.removePunkte = async function(name) {
-    if (!confirm(`${name} wirklich aus der Treuepunkte-Liste löschen?`)) {
-      return;
-    }
-    
-    try {
-      // API Call zum Backend
-      const response = await fetch('/api/loyalty', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
-      });
-
-      if (!response.ok) {
-        throw new Error('API call failed');
-      }
-
-      // Lokale Daten aktualisieren
-      const daten = loadPunkte();
-      delete daten[name];
-      savePunkte(daten);
-      
-      // UI wird automatisch über Socket.IO aktualisiert
-      renderPunkteListe();
-      
-      showNotification(`${name} wurde entfernt`, "info");
-      
-    } catch (error) {
-      console.error('Error removing customer:', error);
-      
-      // Fallback auf lokale Löschung
-      const daten = loadPunkte();
-      delete daten[name];
-      savePunkte(daten);
-      renderPunkteListe();
-      
-      showNotification(`${name} wurde entfernt (Offline-Modus)`, "warning");
-    }
-  };
-  
-  // ============================================
-  // INITIALISIERUNG
-  // ============================================
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Initializing Live Updates System...');
-    
-    // Socket.IO Verbindung herstellen
-    liveUpdates.connect();
-    
-    // Aktiviere Live Updates für alle Features
-    initLoyaltyPointsLiveUpdates();
-    initRushHourLiveUpdates();
-    
-    // Cleanup beim Verlassen der Seite
-    window.addEventListener('beforeunload', () => {
-      liveUpdates.disconnect();
-    });
-    
-    // Debug-Informationen
-    if (CONFIG.DEBUG) {
-      window.getLiveUpdateInfo = () => liveUpdates.getConnectionInfo();
-      console.log('Debug mode enabled. Use getLiveUpdateInfo() for connection info.');
-    }
-    
-    console.log('✅ Live Updates System initialized');
+  modal.querySelector('.close-btn').addEventListener('click', () => {
+    modal.remove();
   });
   
-  // Debug Toggle
-  CONFIG.DEBUG = localStorage.getItem('DEBUG_LIVE_UPDATES') === 'true';
+  setTimeout(() => {
+    if (modal.parentElement) {
+      modal.remove();
+    }
+  }, 5000);
+}
+
+// ============================================
+// LIVE UPDATES SYSTEM
+// ============================================
+
+window.showNotification = function(message, type = 'info', options = {}) {
+  const { duration = 3000, action = null } = options;
   
-  // Expose utilities for debugging
-  window.LiveUpdatesConfig = CONFIG;
-  window.toggleDebug = () => {
-    CONFIG.DEBUG = !CONFIG.DEBUG;
-    localStorage.setItem('DEBUG_LIVE_UPDATES', CONFIG.DEBUG);
-    console.log('Debug mode:', CONFIG.DEBUG ? 'enabled' : 'disabled');
+  const existing = document.querySelector('.notification-toast');
+  if (existing) {
+    existing.remove();
+  }
+  
+  const notification = document.createElement('div');
+  notification.className = `notification-toast ${type}`;
+  
+  const icons = {
+    success: '✅',
+    warning: '⚠️',
+    error: '❌',
+    info: 'ℹ️'
   };
   
-})();
+  notification.innerHTML = `
+    <span class="icon">${icons[type] || icons.info}</span>
+    <span class="message">${message}</span>
+    ${action ? `<button class="action-btn">${action.label}</button>` : ''}
+    <button class="close-btn">×</button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  if (action && action.callback) {
+    const actionBtn = notification.querySelector('.action-btn');
+    actionBtn.addEventListener('click', () => {
+      action.callback();
+      notification.remove();
+    });
+  }
+  
+  notification.querySelector('.close-btn').addEventListener('click', () => {
+    notification.remove();
+  });
+  
+  if (duration > 0) {
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => notification.remove(), 500);
+    }, duration);
+  }
+  
+  return notification;
+};
+
+// Socket.IO Live Updates Manager
+class LiveUpdatesManager {
+  constructor() {
+    this.socket = null;
+    this.isConnected = false;
+    this.reconnectAttempts = 0;
+    this.createConnectionIndicator();
+  }
+  
+  createConnectionIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'connection-status hidden';
+    indicator.innerHTML = `
+      <div class="dot"></div>
+      <span class="status-text">Verbunden</span>
+    `;
+    document.body.appendChild(indicator);
+    this.indicator = indicator;
+  }
+  
+  updateConnectionStatus(status) {
+    this.indicator.className = `connection-status ${status}`;
+    const statusTexts = {
+      'connected': 'Live verbunden',
+      'connecting': 'Verbinde...',
+      'disconnected': 'Getrennt'
+    };
+    this.indicator.querySelector('.status-text').textContent = statusTexts[status] || '';
+    
+    if (status === 'connected') {
+      setTimeout(() => {
+        this.indicator.classList.add('hidden');
+      }, 3000);
+    } else {
+      this.indicator.classList.remove('hidden');
+    }
+  }
+  
+  connect() {
+    if (this.socket) {
+      console.log('Socket already exists');
+      return;
+    }
+    
+    console.log('🔌 Connecting to Socket.IO server...');
+    this.updateConnectionStatus('connecting');
+    
+    this.socket = io(window.location.origin, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+    
+    this.socket.on('connect', () => {
+      console.log('✅ Socket.IO connected:', this.socket.id);
+      this.isConnected = true;
+      this.reconnectAttempts = 0;
+      this.updateConnectionStatus('connected');
+      showNotification('Live-Updates aktiviert! 🎉', 'success', { duration: 2000 });
+    });
+    
+    this.socket.on('disconnect', (reason) => {
+      console.log('❌ Socket.IO disconnected:', reason);
+      this.isConnected = false;
+      this.updateConnectionStatus('disconnected');
+    });
+    
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket.IO connection error:', error);
+      this.reconnectAttempts++;
+      
+      if (this.reconnectAttempts >= 5) {
+        showNotification(
+          'Verbindung zum Server fehlgeschlagen. Bitte Seite neu laden.',
+          'error',
+          { duration: 0 }
+        );
+      }
+    });
+    
+    this.registerEventHandlers();
+  }
+  
+  registerEventHandlers() {
+    // Loyalty Updates
+    this.socket.on('loyalty:update', (data) => {
+      console.log('[Socket] loyalty:update', data);
+      handleLoyaltyUpdate(data);
+    });
+    
+    // Sales Updates - NEU
+    this.socket.on('sales:update', (data) => {
+      console.log('[Socket] sales:update', data);
+      handleSalesUpdate(data);
+    });
+    
+    // Products Updates - NEU
+    this.socket.on('products:update', (data) => {
+      console.log('[Socket] products:update', data);
+      handleProductsUpdate(data);
+    });
+    
+    // Rush Hour Updates
+    this.socket.on('rush-hour:update', (data) => {
+      console.log('[Socket] rush-hour:update', data);
+      updateRushHourChart(data);
+    });
+    
+    // Stats Deleted - NEU
+    this.socket.on('stats:deleted', (data) => {
+      console.log('[Socket] stats:deleted', data);
+      handleStatsDeleted(data);
+    });
+    
+    // Top Products Updates
+    this.socket.on('top-products:update', (data) => {
+      console.log('[Socket] top-products:update', data);
+      updateTopProductsDropdown();
+    });
+    
+    // Config Updates
+    this.socket.on('config:update', (data) => {
+      console.log('[Socket] config:update', data);
+    });
+  }
+  
+  disconnect() {
+    if (this.socket) {
+      console.log('🔌 Disconnecting Socket.IO');
+      this.socket.disconnect();
+      this.socket = null;
+      this.isConnected = false;
+      this.updateConnectionStatus('disconnected');
+    }
+  }
+  
+  getConnectionInfo() {
+    return {
+      connected: this.isConnected,
+      socketId: this.socket ? this.socket.id : null,
+      reconnectAttempts: this.reconnectAttempts
+    };
+  }
+}
+
+window.liveUpdates = new LiveUpdatesManager();
+
+// === NEUE HANDLER FUNCTIONS ===
+
+function handleSalesUpdate(sales) {
+  console.log('Updating sales data...', sales);
+  
+  // Lokale Daten aktualisieren
+  saveSales(sales);
+  
+  // Charts neu rendern wenn Stats Modal geöffnet ist
+  const modal = document.getElementById('statsModal');
+  if (modal && modal.style.display === 'flex') {
+    buildStatsChart();
+    
+    // Animiere Chart Update
+    const chartCanvas = document.getElementById('statsChart');
+    if (chartCanvas) {
+      chartCanvas.classList.add('chart-updating');
+      setTimeout(() => chartCanvas.classList.remove('chart-updating'), 500);
+    }
+    
+    // Aktualisiere statsList
+    document.getElementById('statsList').innerText = listSalesForUI().join('\n');
+    const topProducts = getTopProducts();
+    document.getElementById('statsList').innerText += "\n\n🏆 Top 3 Produkte:\n" + topProducts;
+  }
+  
+  // Zeige Notification für neuen Verkauf
+  const latestDay = Object.keys(sales).sort().pop();
+  if (latestDay && sales[latestDay].entries.length > 0) {
+    const latestEntry = sales[latestDay].entries[sales[latestDay].entries.length - 1];
+    const now = Date.now();
+    
+    // Nur wenn Verkauf vor weniger als 5 Sekunden war
+    if (now - latestEntry.ts < 5000) {
+      showNotification(
+        `Neuer Verkauf: ${latestEntry.betrag}$ 💰`,
+        'success',
+        { duration: 3000 }
+      );
+    }
+  }
+}
+
+function handleProductsUpdate(products) {
+  console.log('Updating products data...', products);
+  
+  // Berechne Stats aus products Objekt
+  const stats = {};
+  for (const [name, data] of Object.entries(products)) {
+    if (data.revenue) {
+      stats[name] = data.revenue;
+    }
+  }
+  
+  // Lokale Daten aktualisieren
+  saveProductStats(stats);
+  
+  // Chart neu rendern wenn Stats Modal geöffnet ist
+  const modal = document.getElementById('statsModal');
+  if (modal && modal.style.display === 'flex') {
+    buildProductStatsChart();
+    updateTopProductsDropdown();
+    
+    // Animiere Chart Update
+    const chartCanvas = document.getElementById('productStatsChart');
+    if (chartCanvas) {
+      chartCanvas.classList.add('chart-updating');
+      setTimeout(() => chartCanvas.classList.remove('chart-updating'), 500);
+    }
+  }
+}
+
+function handleStatsDeleted(data) {
+  console.log('Stats deleted:', data);
+  
+  // Zeige Notification
+  showNotification(
+    `Statistiken gelöscht: ${data.scope} (${data.affectedRecords} Einträge)`,
+    'warning',
+    { duration: 5000 }
+  );
+  
+  // Lösche entsprechende lokale Daten
+  if (data.scope === 'all') {
+    localStorage.removeItem(SALES_KEY);
+    localStorage.removeItem('lutalo.productStats');
+  } else if (data.scope === 'products') {
+    localStorage.removeItem('lutalo.productStats');
+  } else if (data.scope === 'today') {
+    const sales = loadSales();
+    const today = todayKey();
+    delete sales[today];
+    saveSales(sales);
+  }
+  
+  // Charts neu rendern wenn Modal geöffnet ist
+  const modal = document.getElementById('statsModal');
+  if (modal && modal.style.display === 'flex') {
+    buildStatsChart();
+    buildProductStatsChart();
+    updateTopProductsDropdown();
+    
+    // Animiere beide Charts
+    ['statsChart', 'productStatsChart'].forEach(id => {
+      const canvas = document.getElementById(id);
+      if (canvas) {
+        canvas.classList.add('chart-updating');
+        setTimeout(() => canvas.classList.remove('chart-updating'), 500);
+      }
+    });
+  }
+  
+  // Rush Hour Chart aktualisieren wenn geöffnet
+  const rushHourDropdown = document.getElementById('rushHourDropdown');
+  if (rushHourDropdown && rushHourDropdown.classList.contains('show')) {
+    buildRushHourChart();
+  }
+}
+
+function updateRushHourChart(data) {
+  if (!window._rushHourChart) return;
+  
+  const labels = data.hourlyData.map((_, i) => 
+    i.toString().padStart(2,'0') + ':00'
+  );
+  
+  const topValues = data.topHours.map(h => data.hourlyData[h.hour]);
+  const bgColors = data.hourlyData.map(v => 
+    topValues.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)'
+  );
+  
+  window._rushHourChart.data.labels = labels;
+  window._rushHourChart.data.datasets[0].data = data.hourlyData;
+  window._rushHourChart.data.datasets[0].backgroundColor = bgColors;
+  window._rushHourChart.update('active');
+  
+  // Animiere Chart Update
+  const canvas = document.getElementById('rushHourDropdownChart');
+  if (canvas) {
+    canvas.classList.add('chart-updating');
+    setTimeout(() => canvas.classList.remove('chart-updating'), 500);
+  }
+  
+  if (data.currentHourRevenue > 0) {
+    console.log(`💰 Aktuelle Stunde: ${data.currentHourRevenue.toFixed(2)}$`);
+  }
+}
+
+function handleLoyaltyUpdate(data) {
+  updateLoyaltyPointsListLive(data);
+  
+  if (data.action === 'add' && data.customer && data.customer.pointsChange > 0) {
+    showLoyaltyPointsAnimation(data.customer);
+    
+    if (data.levelUp || isLevelUp(data.customer)) {
+      showLevelUpCelebration(data.customer);
+    }
+  }
+}
+
+function updateLoyaltyPointsListLive(data) {
+  const listEl = document.getElementById("punkteListe");
+  if (!listEl) return;
+  
+  const customers = data.allCustomers || [];
+  
+  if (customers.length === 0) {
+    listEl.innerHTML = "Noch keine Punkte vergeben.";
+    return;
+  }
+  
+  const sortedCustomers = [...customers].sort((a, b) => b.points - a.points);
+  
+  const stats = data.statistics || {
+    totalCustomers: customers.length,
+    totalPointsGiven: customers.reduce((sum, c) => sum + c.points, 0),
+    averagePoints: customers.reduce((sum, c) => sum + c.points, 0) / customers.length
+  };
+  
+  listEl.innerHTML = `
+    <div class="loyalty-statistics mb-4 p-3 bg-black/5 dark:bg-white/10 rounded-lg">
+      <div class="grid grid-cols-3 gap-2 text-sm">
+        <div>
+          <div class="opacity-70">Kunden</div>
+          <div class="font-bold text-lg">${stats.totalCustomers}</div>
+        </div>
+        <div>
+          <div class="opacity-70">Ø Punkte</div>
+          <div class="font-bold text-lg">${stats.averagePoints.toFixed(1)}</div>
+        </div>
+        <div>
+          <div class="opacity-70">Gesamt</div>
+          <div class="font-bold text-lg">${stats.totalPointsGiven}</div>
+        </div>
+      </div>
+    </div>
+    
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-black/10 dark:border-white/10">
+          <th class="py-2 font-semibold">Kunde</th>
+          <th class="py-2 font-semibold">Punkte</th>
+          <th class="py-2 font-semibold">Level</th>
+          <th class="py-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sortedCustomers.map((customer, index) => {
+          const level = calculateLevelForPoints(customer.points);
+          return `
+            <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 
+                       dark:hover:bg-white/10 transition fade-in ${index < 3 ? 'top-customer' : ''}"
+                data-customer="${customer.name}"
+                style="animation-delay: ${index * 0.05}s">
+              <td class="py-2 font-medium">
+                ${index < 3 ? `<span class="rank-badge ${index === 0 ? 'rank-top' : ''}">${index + 1}</span>` : ''}
+                ${customer.name}
+              </td>
+              <td class="py-2">
+                <span class="points-badge ${getLevelClass(level)}">
+                  ${customer.points} <span class="opacity-70">Pkt</span>
+                </span>
+              </td>
+              <td class="py-2">
+                <span class="level-badge ${getLevelClass(level)}">
+                  ${getLevelIcon(level)} ${level}
+                </span>
+              </td>
+              <td class="py-2 text-right">
+                <button onclick="removePunkte('${customer.name}')" 
+                        class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
+                  Löschen
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  previousCustomers = sortedCustomers.map(c => ({ name: c.name, points: c.points }));
+}
+
+function isLevelUp(customer) {
+  if (!customer.pointsChange) return false;
+  
+  const previousPoints = customer.points - customer.pointsChange;
+  const previousLevel = calculateLevelForPoints(previousPoints);
+  const currentLevel = customer.level || calculateLevelForPoints(customer.points);
+  
+  return previousLevel !== currentLevel;
+}
+
+// === INITIALISIERUNG ===
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Initializing Application...');
+  
+  initDarkToggle();
+  populateThemeSelect();
+  loadTheme();
+  loadPreise();
+
+  initializeCalculatorStates();
+  const savedTab = localStorage.getItem('activeTab');
+  if (savedTab) activeTab = parseInt(savedTab);
+  const initialBtn = document.querySelector(`.tab-button[data-tab="${activeTab}"]`) || document.querySelector('.tab-button[data-tab="1"]');
+  if (initialBtn) {
+    initialBtn.classList.add('active');
+    updateSliderPosition(initialBtn);
+  }
+  loadCalculatorStateForTab();
+
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
+  });
+  
+  renderPunkteListe();
+  
+  // Socket.IO Live Updates starten
+  liveUpdates.connect();
+  
+  // Cleanup beim Verlassen
+  window.addEventListener('beforeunload', () => {
+    liveUpdates.disconnect();
+  });
+  
+  console.log('✅ Application initialized');
+});
+
+window.addEventListener('resize', () => {
+  const btn = document.querySelector(`.tab-button[data-tab="${activeTab}"]`);
+  if (btn) updateSliderPosition(btn);
+});
+
+// Globale Funktionen verfügbar machen
+window.toggleDropdown = toggleDropdown;
+window.changeQuantity = changeQuantity;
+window.copyText = copyText;
+window.copyPriceText = copyPriceText;
+window.resetRechner = resetRechner;
+window.undoLast = undoLast;
+window.applyLutaloRabatt = applyLutaloRabatt;
+window.berechne = berechne;
+window.openStats = openStats;
+window.closeStats = closeStats;
+window.resetStats = resetStats;
+window.closeChangelog = closeChangelog;
+window.closeWelcome = closeWelcome;
+window.toggleRushHourDropdown = toggleRushHourDropdown;
+window.toggleTopProductsDropdown = toggleTopProductsDropdown;
+window.resetProductStats = resetProductStats;
+
 </script>
 
 </body>

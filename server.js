@@ -104,12 +104,17 @@ app.post('/api/sales/entry', (req,res) => {
 
   persist();
 
+  // ===  LIVE UPDATES BROADCASTS ===
   io.emit('sales:update', DATA.sales);
   io.emit('products:update', DATA.products);
 
   // Sende Rush Hour Update
   const rushHourData = calculateRushHourData();
   io.emit('rush-hour:update', rushHourData);
+  
+  // Sende Top Products Update
+  const topProducts = calculateTopProducts('all');
+  io.emit('top-products:update', topProducts);
 
   res.json({
     ok:true,
@@ -220,28 +225,64 @@ app.get('/api/top-products', (req, res) => {
   res.json(data);
 });
 
-// ---------- STATS LÖSCHEN ----------
+// ---------- STATS LÖSCHEN - ERWEITERT ----------
 app.delete('/api/stats', (req, res) => {
   const { scope } = req.body || {};
   
   let deletedCount = 0;
+  let affectedSales = false;
+  let affectedProducts = false;
   
   switch(scope) {
     case 'all':
       deletedCount = Object.keys(DATA.sales).length + Object.keys(DATA.products).length;
+      affectedSales = Object.keys(DATA.sales).length > 0;
+      affectedProducts = Object.keys(DATA.products).length > 0;
       DATA.sales = {};
       DATA.products = {};
       break;
+      
+    case 'products':
+      deletedCount = Object.keys(DATA.products).length;
+      affectedProducts = true;
+      DATA.products = {};
+      break;
+      
     case 'today':
       const today = getTodayKey();
       if (DATA.sales[today]) {
         deletedCount = DATA.sales[today].entries.length;
+        affectedSales = true;
         delete DATA.sales[today];
       }
       break;
+      
     case 'week':
+      const now = new Date();
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const key = getDateKey(date);
+        if (DATA.sales[key]) {
+          deletedCount += DATA.sales[key].entries.length;
+          delete DATA.sales[key];
+          affectedSales = true;
+        }
+      }
+      break;
+      
     case 'month':
-      // Implementierung für week/month
+      const nowMonth = new Date();
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(nowMonth);
+        date.setDate(date.getDate() - i);
+        const key = getDateKey(date);
+        if (DATA.sales[key]) {
+          deletedCount += DATA.sales[key].entries.length;
+          delete DATA.sales[key];
+          affectedSales = true;
+        }
+      }
       break;
   }
   
@@ -255,11 +296,31 @@ app.delete('/api/stats', (req, res) => {
     success: true
   };
   
+  // === LIVE UPDATES BROADCASTS ===
   io.emit('stats:deleted', statsDeleted);
-  io.emit('sales:update', DATA.sales);
-  io.emit('products:update', DATA.products);
   
-  res.json({ success: true, deletedCount });
+  if (affectedSales) {
+    io.emit('sales:update', DATA.sales);
+    
+    // Aktualisiere auch Rush Hour nach Sales-Löschung
+    const rushHourData = calculateRushHourData();
+    io.emit('rush-hour:update', rushHourData);
+  }
+  
+  if (affectedProducts) {
+    io.emit('products:update', DATA.products);
+    
+    // Aktualisiere Top Products
+    const topProducts = calculateTopProducts('all');
+    io.emit('top-products:update', topProducts);
+  }
+  
+  res.json({ 
+    success: true, 
+    deletedCount,
+    affectedSales,
+    affectedProducts
+  });
 });
 
 // ============================================
