@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title id="htmlTitle">Play UP</title>
+<script src="https://cdn.tailwindcss.com">
+
+function getRushHourData() {
+  const sales = loadSales();
+  const hourlyTotals = Array(24).fill(0);
+  Object.values(sales).forEach(day => {
+    day.entries.forEach(entry => {
+      if (entry.ts) {
+        const hour = new Date(entry.ts).getHours();
+        hourlyTotals[hour] += entry.betrag;
+      }
+    });
+  });
+  return hourlyTotals;
+}
+
+function buildRushHourChart() {
+  const ctx = document.getElementById('rushHourDropdownChart');
+  if (!ctx) return;
+  const data = getRushHourData();
+  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
+  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
+  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  if (window._rushHourChart) {
+    window._rushHourChart.data.labels = labels;
+    window._rushHourChart.data.datasets[0].data = data;
+    window._rushHourChart.update();
+  } else {
+    window._rushHourChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz pro Stunde ($)',
+          data: data,
+          backgroundColor: bgColors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+}
+
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
+}
+
+
+function closeWelcome() {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.opacity = '1';
+    modal.style.transition = 'opacity 0.5s ease';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+  }
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+
+function getRushHourData() {
+  const sales = loadSales();
+  const hourlyTotals = Array(24).fill(0);
+  Object.values(sales).forEach(day => {
+    day.entries.forEach(entry => {
+      if (entry.ts) {
+        const hour = new Date(entry.ts).getHours();
+        hourlyTotals[hour] += entry.betrag;
+      }
+    });
+  });
+  return hourlyTotals;
+}
+
+function buildRushHourChart() {
+  const ctx = document.getElementById('rushHourDropdownChart');
+  if (!ctx) return;
+  const data = getRushHourData();
+  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
+  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
+  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  if (window._rushHourChart) {
+    window._rushHourChart.data.labels = labels;
+    window._rushHourChart.data.datasets[0].data = data;
+    window._rushHourChart.update();
+  } else {
+    window._rushHourChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz pro Stunde ($)',
+          data: data,
+          backgroundColor: bgColors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+}
+
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
+}
+
+
+function closeWelcome() {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.opacity = '1';
+    modal.style.transition = 'opacity 0.5s ease';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+  }
+});
+
+</script>
+<script>
+    tailwind.config = { darkMode: 'class' };
+  
+
+function getRushHourData() {
+  const sales = loadSales();
+  const hourlyTotals = Array(24).fill(0);
+  Object.values(sales).forEach(day => {
+    day.entries.forEach(entry => {
+      if (entry.ts) {
+        const hour = new Date(entry.ts).getHours();
+        hourlyTotals[hour] += entry.betrag;
+      }
+    });
+  });
+  return hourlyTotals;
+}
+
+function buildRushHourChart() {
+  const ctx = document.getElementById('rushHourDropdownChart');
+  if (!ctx) return;
+  const data = getRushHourData();
+  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
+  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
+  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  if (window._rushHourChart) {
+    window._rushHourChart.data.labels = labels;
+    window._rushHourChart.data.datasets[0].data = data;
+    window._rushHourChart.update();
+  } else {
+    window._rushHourChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz pro Stunde ($)',
+          data: data,
+          backgroundColor: bgColors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+}
+
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
+}
+
+
+function closeWelcome() {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.opacity = '1';
+    modal.style.transition = 'opacity 0.5s ease';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+  }
+});
+
+</script>
+<style>
+    :root {
+      --accent: #4B0082;
+      --bg-light: radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed;
+      --bg-dark: radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed;
+      --hairline: rgba(0,0,0,.08);
+      --hairline-dark: rgba(255,255,255,.12);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      margin: 0;
+      color: #1d1d1f;
+      background: var(--bg-light);
+    }
+    body.dark {
+      color: #f5f5f7;
+      background: var(--bg-dark);
+    }
+
+    .hairline { border: 1px solid var(--hairline); }
+    body.dark .hairline { border-color: var(--hairline-dark); }
+
+    .surface {
+      background: rgba(255,255,255,.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    body.dark .surface {
+      background: rgba(20,20,22,.7);
+      border-color: rgba(255,255,255,.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .tabs-container {
+      position: relative;
+      display: flex;
+      gap: .25rem;
+      align-items: center;
+      padding: .25rem;
+      border-radius: 9999px;
+      border: 1px solid var(--hairline);
+      background: rgba(0,0,0,.04);
+    }
+    body.dark .tabs-container {
+      background: rgba(255,255,255,.06);
+      border-color: var(--hairline-dark);
+    }
+    .tab-button {
+      position: relative;
+      z-index: 10;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      padding: .375rem .875rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: .9rem;
+      color: inherit;
+      transition: color .2s ease;
+    }
+    .tab-button.active { color: #000; }
+    body.dark .tab-button.active { color: #111; }
+    .tab-button:hover { color: var(--accent); }
+
+    .tabs-slider {
+      position: absolute;
+      top: 4px;
+      height: calc(100% - 8px);
+      width: var(--tab-width, 0px);
+      left: var(--tab-left, 0px);
+      border-radius: 9999px;
+      background: var(--accent);
+      transition: left .25s ease, width .25s ease, background-color .25s ease;
+      z-index: 5;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      border-radius: 9999px;
+      overflow: hidden;
+      background: rgba(0,0,0,.06);
+      min-width: 140px;
+      justify-content: center;
+    }
+    body.dark .quantity-control { background: rgba(255,255,255,.08); }
+    .quantity-control button {
+      border: 0;
+      background: transparent;
+      padding: .35rem .6rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      color: inherit;
+    }
+    .quantity-control button:hover { background: rgba(0,0,0,.06); }
+    body.dark .quantity-control button:hover { background: rgba(255,255,255,.12); }
+    .quantity-control input {
+      width: 3rem;
+      text-align: center;
+      border: 0;
+      background: transparent;
+      padding: .35rem .25rem;
+      color: inherit;
+      outline: none;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: .5rem;
+      z-index: 50;
+    }
+    .dropdown-content.show {
+      display: block;
+    }
+
+
+    #headerImage {
+      opacity:0;
+      transform:scale(.9) translateY(6px);
+      transition: all .5s ease;
+    }
+    #headerImage.loaded {
+      opacity:1;
+      transform:scale(1) translateY(0);
+    }
+
+
+    #receiptPopup {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      background: white;
+      color: black;
+      font-family: monospace;
+      font-size: .8rem;
+      line-height:1.2;
+      border: 1px solid #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      border-radius: .5rem;
+      padding: 1rem;
+      min-width: 200px;
+      max-width: 240px;
+      max-height: 0;
+      overflow: hidden;
+      z-index:1500;
+      display:none;
+    }
+    body.dark #receiptPopup {
+      background: #1e1e1e;
+      color: #fff;
+      border-color:#fff;
+    }
+    #receiptPopup.showing {
+      animation: roll 0.4s ease forwards;
+      display:block;
+    }
+    @keyframes roll {
+      from { max-height: 0; }
+      to   { max-height: 300px; }
+    }
+
+    /* Version badge bottom-right */
+    #versionBadge {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 1200;
+      background: rgba(0,0,0,.7);
+      color:#fff;
+      font-size:.7rem;
+      line-height:1.2;
+      padding:.5rem .75rem;
+      border-radius:.75rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.5);
+      cursor:pointer;
+    }
+    body.dark #versionBadge {
+      background: rgba(255,255,255,.15);
+      color:#fff;
+    }
+
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+    }
+    .modal-card {
+      background: rgba(255,255,255,.95);
+      color:#1d1d1f;
+      border-radius:1rem;
+      padding:1.5rem;
+      width:min(620px,92vw);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      border:1px solid rgba(0,0,0,.06);
+      position:relative;
+    }
+    body.dark .modal-card {
+      background: rgba(28,28,30,.95);
+      color:#f5f5f7;
+      border-color:rgba(255,255,255,.12);
+    }
+
+    .scroll-area {
+      max-height:200px;
+      overflow:auto;
+      font-size:.8rem;
+      line-height:1.3;
+      white-space:pre-wrap;
+    }
+
+    .hidden { display:none; }
+
+
+    
+.theme-select {
+  appearance: none;
+  background: rgba(0,0,0,.06);
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .4rem .75rem;
+  line-height:1;
+  color: #000;
+}
+body.dark .theme-select {
+  background: #2a2a2a;
+  border-color: rgba(255,255,255,.2);
+  color: #fff;
+}
+.theme-select option {
+  background: #fff;
+  color: #000;
+}
+body.dark .theme-select option {
+  background: #1e1e1e;
+  color: #f5f5f5;
+}
+
+  
+#statsModal .modal-card {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+
+/* === Animations für Header === */
+#headerImage {
+  opacity: 0;
+  transform: scale(1.4) translateY(-40px);
+  animation: zoomInElastic 2s ease-out forwards;
+}
+
+@keyframes zoomInElastic {
+  0% {
+    opacity: 0;
+    transform: scale(1.4) translateY(-40px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+#calculatorTitle {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* === Button-Klick Animation === */
+.quantity-control button {
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.quantity-control button:active {
+  transform: scale(0.85);
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Allgemeiner Hover-Effekt */
+.quantity-control button:hover {
+  transform: scale(1.1);
+}
+
+/* Kleine Pop-Animation beim Wertwechsel */
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.quantity-control input.updated {
+  animation: pulse 0.25s ease;
+}
+
+
+/* === Microanimation: Button Shake === */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(2deg); }
+  75% { transform: rotate(-2deg); }
+}
+
+button:active {
+  animation: wiggle 0.25s ease;
+}
+
+/* === Sanftes Scrollen === */
+html {
+  scroll-behavior: smooth;
+}
+
+</style>
+</head>
+<body class="min-h-full dark:bg-black dark:text-gray-100">
+<div id="receiptPopup"></div>
+<div class="modal-backdrop" id="welcomeModal" style="display:flex;">
+<div class="modal-card text-center">
+<h2 class="text-2xl font-bold mb-3 text-[color:var(--accent)]">👋 Willkommen bei Play UP!</h2>
+<p class="text-sm mb-4 opacity-80">Check immer mal wieder den Changelog! Einfach unten Rechts den Button Klicken. Meist kommen direkt nützliche und Interessante Sachen! Viel Spaß beim Verkauf! Lutalo#1</p>
+<button class="bg-[color:var(--accent)] text-white px-4 py-2 rounded-full font-semibold" onclick="closeWelcome()">Los geht’s 🚀</button>
+</div>
+</div>
+<div id="versionBadge">
+<div>v1.5.0</div>
+<div>Stand: 28.10.2025 🔔</div>
+</div>
+<div class="modal-backdrop" id="statsModal">
+<div class="modal-card">
+<button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeStats()">X</button>
+<h3 class="text-xl font-bold mb-4 flex items-center gap-2">📈 Umsatzverlauf</h3>
+<canvas class="w-full h-40 mb-4" id="statsChart"></canvas>
+<h3 class="text-lg font-bold mb-2 flex items-center gap-2">🏷️ Umsatz pro Produkt</h3>
+<canvas class="w-full h-40 mb-4" id="productStatsChart"></canvas>
+<button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg text-sm mb-4" onclick="resetProductStats()">🔁 Produktstatistik löschen</button>
+<div class="relative mb-4">
+<button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleTopProductsDropdown()">
+          🏆 Top Produkte <span>▾</span>
+</button>
+<div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="topProductsDropdown">
+<div id="topProductsList">Noch keine Verkäufe.</div>
+</div>
+</div>
+<div class="scroll-area hairline rounded-md p-2 bg-black/5 dark:bg-white/10 mb-4 text-sm" id="statsList"></div>
+<div class="relative mb-4">
+<button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleRushHourDropdown()">
+    🚦 Rush-Hour Analyse <span>▾</span>
+</button>
+<div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="rushHourDropdown">
+<canvas class="w-full h-32" id="rushHourDropdownChart"></canvas>
+</div>
+</div>
+<button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm" onclick="resetStats()">Verlauf löschen</button>
+</div>
+</div>
+<!-- Changelog Modal -->
+<div class="modal-backdrop" id="changelogModal">
+<div class="modal-card">
+<button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeChangelog()">X</button>
+<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.5.0 </h3>
+<ul class="text-sm space-y-2 leading-5">
+<br/>
+<br/>
+<br/>
+<h3>📝 Changelog</h3>
+<ul>
+<li>📍 NEUER CHANGELOG VOM 28.10.25 📍</li>
+<li>🎨White/Darkmode Toggel Funktioniert</li>
+<li>🎨Neue Animationen</li>
+<li>📊 Rush Hour Analyse im Umsatzverlauf</li>
+<li>🖥️ UI Fix</li>
+<br/>
+<br/>
+<br/>
+<li>📍 NEUER CHANGELOG VOM 27.10.25 📍</li>
+<li>📦 Kategorien getrennt: "STICKER" und "FIGUREN" statt "STICKER &amp; FIGUREN"</li>
+<li>🧾 Beide Kategorien werden separat gerendert und in die Berechnung übernommen</li>
+<li>📊 Statistik &amp; Auswertung gefixt.</li>
+<br/>
+<br/>
+<br/>
+<br/>
+<li>📍 LETZTER CHANGELOG VOM 26.10.25 WAR: 📍</li>
+<li>🎨 Themes &amp; Design (Abänderungen im Farbcode, Darkmode-Verhalten bei Themewechsel verbessert)</li>
+<li>📊 Statistik &amp; Auswertung ( Umsatz je Produkt, Top Produkte)</li>
+<li>💾 Datenstruktur &amp; Code (Code Verkleinert und effizienter gemacht.)</li>
+<li>🖼️ UI / UX (Modalfenster und Dropdowns neu gestylt)</li>
+<br/>
+<br/>
+<br/>
+<br/>
+<li>📍 LETZTER CHANGELOG VOM 26.10.25 WAR: 📍</li>
+<li>↩️ Revoke holt den letzten Zustand zurück</li>
+<li>💸 „Lutalo Rabatt“ setzt den Preis auf 1 $</li>
+<li>🧾 Kassenbon-Animation unten rechts</li>
+<li>🧾 Seitenanzahl hinzugefügt um mehrere Kunden gleichzeitig bedienen zu können</li>
+<li>📈 Umsatzverlauf (täglich gruppiert) inkl. Chart, mit korrektem Betrag – Erstellt erst den Umsatz wenn man die Rechnung kopiert hat!</li>
+<li>🎨 Theme-Auswahl</li>
+<li>🌗 Themes passen sich an Light/Dark an</li>
+<li>🧩 Dieses Changelog-Badge</li>
+</ul>
+</ul>
+<div class="text-[10px] text-right mt-4 opacity-60 select-none">28.10.25 1.5.0</div>
+</div>
+</div>
+<div class="px-4 sm:px-6 lg:px-8 py-6">
+<div class="surface w-full max-w-6xl mx-auto p-6 sm:p-8 relative" id="mainSurface" style="opacity:1;">
+<div class="absolute top-4 right-4 flex flex-col items-end gap-2 text-sm z-10">
+<div class="flex items-center gap-2 text-xs">
+<label class="text-[10px] font-semibold opacity-70">Theme:</label>
+<select class="theme-select" id="themeSelect"></select>
+</div>
+
+<div class="flex items-center gap-2 text-sm">
+<span aria-hidden="">🌞</span>
+<label class="relative inline-flex items-center cursor-pointer select-none dark-toggle">
+<input class="sr-only peer" id="themeToggle" type="checkbox"/>
+<div class="w-12 h-6 rounded-full hairline bg-black/10 dark:bg-white/20 transition relative">
+<span class="absolute top-[3px] left-[3px] h-5 w-5 rounded-full bg-white dark:bg-zinc-200 shadow transition-transform duration-300 ease-in-out peer-checked:translate-x-6"></span>
+</div>
+</label>
+<span aria-hidden="">🌙</span>
+<button class="px-3 py-1.5 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold text-xs whitespace-nowrap flex items-center gap-1" onclick="openStats()">
+    📈 Umsatzverlauf
+  </button>
+</div>
+<style>
+/* Fallback CSS, falls Tailwind peer-check nicht greift */
+.dark-toggle input:checked + div span {
+  transform: translateX(1.5rem);
+  transition: transform 0.3s ease-in-out;
+}
+</style>
+
+</div>
+<div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-6">
+<div class="flex-1 min-w-0 flex justify-start relative">
+<button class="px-4 py-2 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold flex items-center gap-2" onclick="toggleDropdown()">
+            Unternehmen <span aria-hidden="">▾</span>
+</button>
+<div class="dropdown-content surface p-4 w-80" id="unternehmenDropdown">
+<h5 class="font-bold mb-2">Unternehmen</h5>
+<div class="grid grid-cols-2 gap-2 text-sm">
+<div class="rounded-xl hairline p-2">
+<label class="inline-flex items-center gap-2">
+<input checked="" class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value=""/>
+<span class="font-semibold">Kein Unternehmen</span>
+</label>
+</div>
+<div class="rounded-xl hairline p-2">
+<h6 class="font-medium text-xs mb-1 opacity-70">10/10</h6>
+<label class="inline-flex items-center gap-2">
+<input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Tuner"/>
+<span>Tuner</span>
+</label>
+</div>
+<div class="rounded-xl hairline p-2">
+<h6 class="font-medium text-xs mb-1 opacity-70">50/50</h6>
+<div class="flex flex-col gap-1">
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Golf Club"/><span>Golf Club</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Casino"/><span>Casino</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SD"/><span>SD</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SSMC"/><span>SSMC</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="LSMD"/><span>LSMD</span></label>
+</div>
+</div>
+<div class="rounded-xl hairline p-2">
+<h6 class="font-medium text-xs mb-1 opacity-70">25/25</h6>
+<div class="flex flex-col gap-1">
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="DDJ"/><span>DDJ</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Army"/><span>Army</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Ranger"/><span>Ranger</span></label>
+<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Alcatraz"/><span>Alcatraz</span></label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center flex-1 text-center">
+<img alt="Logo" class="rounded-2xl hairline shadow-sm mb-2 h-[150px] w-[150px] object-cover" id="headerImage" src="https://s14.gifyu.com/images/bwJQn.png"/>
+<h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-[color:var(--accent)] whitespace-nowrap" id="calculatorTitle">Play UP</h2>
+<div class="mt-3">
+<h4 class="text-sm font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Bestellseiten</h4>
+<div class="tabs-container mt-2 inline-flex" id="tabsContainer">
+<div class="tabs-slider" id="tabsSlider"></div>
+<button class="tab-button" data-tab="1">1</button>
+<button class="tab-button" data-tab="2">2</button>
+<button class="tab-button" data-tab="3">3</button>
+<button class="tab-button" data-tab="4">4</button>
+<button class="tab-button" data-tab="5">5</button>
+</div>
+</div>
+</div>
+<div class="flex-1 min-w-0"></div>
+</div>
+<div id="calculatorContent">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6" id="categoriesGrid"></div>
+<div class="hairline rounded-2xl p-4 sm:p-5 bg-black/[.03] dark:bg-white/[.06] mb-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="font-semibold text-base flex items-center gap-2">
+<span class="opacity-70">Grund:</span>
+<span class="text-sm font-normal opacity-90" id="grund">Noch nichts berechnet</span>
+</div>
+<button class="text-[color:var(--accent)] text-xl" onclick="copyText('grund')" title="Kopieren">📄</button>
+</div>
+<hr class="border-t hairline border-0"/>
+<div class="flex items-center justify-between">
+<div class="font-semibold text-base flex items-center gap-2">
+<span class="opacity-70">Preis:</span>
+<span class="text-lg font-bold text-[color:var(--accent)]" id="preis">0$</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-[color:var(--accent)] text-xl" onclick="copyPriceText()" title="Kopieren">📄</button>
+<button class="px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold whitespace-nowrap" onclick="applyLutaloRabatt()">Lutalo Rabatt ❤️</button>
+</div>
+</div>
+</div>
+<div class="text-sm text-green-600 dark:text-green-400 text-center hidden mt-4" id="kopiertHinweis">Kopiert ✅</div>
+<div class="mt-6 grid grid-cols-1 sm:grid-cols-3 items-center gap-3 sm:gap-6">
+<div></div>
+<div class="flex items-center justify-center gap-3">
+<label class="text-sm font-semibold opacity-80 whitespace-nowrap">Personen:</label>
+<div class="quantity-control">
+<button aria-label="Weniger" onclick="changeQuantity('personCountInput', -1)">−</button>
+<input id="personCountInput" min="0" oninput="berechne()" type="number" value="0"/>
+<button aria-label="Mehr" onclick="changeQuantity('personCountInput', 1)">+</button>
+</div>
+</div>
+<div class="justify-self-center sm:justify-self-end flex items-center gap-2">
+<button class="px-5 py-2.5 rounded-full font-semibold bg-red-600 text-white hover:bg-red-700 shadow-sm" onclick="resetRechner()">
+              Reset 🗑️
+            </button>
+<button class="px-5 py-2.5 rounded-full font-semibold bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 shadow-sm" onclick="undoLast()">
+              Revoke ↩️
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+   
+    const PASSWORD = "fickdeinemutterwenndudenkstdukannsthierpwauslesen";
+    const STORAGE_KEY = "lutalo.config";
+    const SALES_KEY   = "lutalo.sales";
+    const THEME_KEY   = "lutalo.theme";
+    const DARKMODE_KEY = "darkmode";
+    const DEFAULT_IMAGE_URL = "https://s12.gifyu.com/images/b3dSM.png";
+    const itemsPerPerson = 5;
+    const numTabs = 5;
+
+    let activeTab = 1;
+    let calculatorStates = {};
+    let undoStack = [];
+
+  
+    const THEMES = {
+      "PlayUp Farben": {
+        accent: "#4B0082",
+        light: "radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed"
+      },
+      "Retro": {
+        accent: "#d97706",
+        light: "radial-gradient(1000px 500px at 10% -10%, #fff7e6, #fef3c7) fixed",
+        dark:  "radial-gradient(1000px 500px at 10% -10%, #4a3412, #1f1303) fixed"
+      },
+      "Nein": {
+        accent: "#dc2626",
+        light: "radial-gradient(1200px 600px at 10% -10%, #ffffff, #ffe4e6) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #200, #000) fixed"
+      },
+      "Alt": {
+        accent: "#065f46",
+        light: "radial-gradient(1200px 600px at 10% -10%, #f0fdf4, #ecfdf5) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #052e16, #000) fixed"
+      },
+      "Widwos 7": {
+        accent: "#2563eb",
+        light: "linear-gradient(#cfe8ff,#ffffff) fixed",
+        dark:  "linear-gradient(#0a1a3a,#000000) fixed"
+      },
+      "Widwos 11": {
+        accent: "#0ea5e9",
+        light: "radial-gradient(circle at 20% 20%, #e0f7ff 0%, #ffffff 60%) fixed",
+        dark:  "radial-gradient(circle at 20% 20%, #0a2530 0%, #000 60%) fixed"
+      },
+      "Lutalo Purple": {
+        accent: "#8b5cf6",
+        light: "radial-gradient(1200px 600px at 10% -10%, #f4f0ff, #fff) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #1a102a, #000) fixed"
+      },
+      "Ocean Blue": {
+        accent: "#14b8a6",
+        light: "radial-gradient(1200px 600px at 10% -10%, #ecfeff, #f0fdfa) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #002b2b, #000) fixed"
+      },
+      "Cyber Dark": {
+        accent: "#00ff80",
+        light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a, #000) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #000, #000) fixed"
+      },
+      "Clean White": {
+        accent: "#000000",
+        light: "linear-gradient(#ffffff,#ffffff) fixed",
+        dark:  "linear-gradient(#000000,#000000) fixed"
+      },
+      "Arcade": {
+        accent: "#a3e635",
+        light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a 0%, #000 60%) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #000000 0%, #000000 60%) fixed"
+      },
+      "Terminal Green": {
+        accent: "#39ff14",
+        light: "radial-gradient(1200px 600px at 10% -10%, #000000, #001100) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #000000, #000000) fixed"
+      },
+      "Candy Pop": {
+        accent: "#ff4da6",
+        light: "radial-gradient(circle at 20% 20%, #fff0fa 0%, #fff 60%) fixed",
+        dark:  "radial-gradient(circle at 20% 20%, #2a001a 0%, #000 60%) fixed"
+      },
+      "Sunset": {
+        accent: "#fb923c",
+        light: "radial-gradient(circle at 20% 20%, #fff1e6 0%, #ffe4e6 60%) fixed",
+        dark:  "radial-gradient(circle at 20% 20%, #2b0a00 0%, #000 60%) fixed"
+      },
+      "Vaporwave": {
+        accent: "#ff00ff",
+        light: "radial-gradient(circle at 20% 20%, #ffe6ff 0%, #e0f7ff 60%) fixed",
+        dark:  "radial-gradient(circle at 20% 20%, #1a002b 0%, #00001a 60%) fixed"
+      },
+      "Fresh Mint": {
+        accent: "#00d897",
+        light: "radial-gradient(1200px 600px at 10% -10%, #f0fff4, #ecfff8) fixed",
+        dark:  "radial-gradient(1200px 600px at 10% -10%, #001a12, #000) fixed"
+      }
+    };
+
+    function populateThemeSelect() {
+      const sel = document.getElementById("themeSelect");
+      sel.innerHTML = "";
+      Object.keys(THEMES).forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener("change", () => {
+        applyTheme(sel.value);
+        saveTheme(sel.value);
+      });
+    }
+
+    function applyTheme(themeName) {
+      const theme = THEMES[themeName] || THEMES["PlayUp Farben"];
+   
+      document.documentElement.style.setProperty("--accent", theme.accent);
+
+   
+      const isDark = document.body.classList.contains("dark");
+      if (isDark) {
+        document.documentElement.style.setProperty("--bg-dark", theme.dark);
+        document.documentElement.style.setProperty("--bg-light", theme.light);
+      } else {
+        document.documentElement.style.setProperty("--bg-light", theme.light);
+        document.documentElement.style.setProperty("--bg-dark", theme.dark);
+      }
+
+   
+      document.querySelectorAll('#preis, #calculatorTitle, .text-[color\\:var\\(--accent\\)]').forEach(el => {
+        el.style.color = theme.accent;
+      });
+
+   
+    }
+
+    function saveTheme(name) {
+      localStorage.setItem(THEME_KEY, name);
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY) || "PlayUp Farben";
+      const sel = document.getElementById("themeSelect");
+      if (sel) sel.value = saved;
+      applyTheme(saved);
+    }
+
+   
+    const companyLimits = {
+      "Golf Club": { maxFood: 50, maxDrink: 50 },
+      "Casino": { maxFood: 50, maxDrink: 50 },
+      "SD": { maxFood: 50, maxDrink: 50 },
+      "Army": { maxFood: 25, maxDrink: 25 },
+      "Ranger": { maxFood: 25, maxDrink: 25 },
+      "Tuner": { maxFood: 10, maxDrink: 10 },
+      "SSMC": { maxFood: 50, maxDrink: 50 },
+      "LSMD": { maxFood: 50, maxDrink: 50 },
+      "Alcatraz": { maxFood: 25, maxDrink: 25 },
+      "DDJ": { maxFood: 25, maxDrink: 25 }
+    };
+
+
+    const defaultPreise = {
+      popup: { name: 'Pop UP', price: 300, category: 'ESSEN', id: 'popup' },
+      burnup: { name: 'Burn UP', price: 300, category: 'ESSEN', id: 'burnup' },
+      jellyup: { name: 'Jelly UP', price: 200, category: 'ESSEN', id: 'jellyup'},
+      gumup: { name: 'Gum UP', price: 200, category: 'ESSEN', id: 'gumup' },
+
+      boostup: { name: 'Boost UP', price: 200, category: 'TRINKEN', id: 'boostup' },
+      powerup: { name: 'Power UP', price: 200, category: 'TRINKEN', id: 'powerup' },
+      spritzup: { name: 'Spritz UP', price: 175, category: 'TRINKEN', id: 'spritzup' },
+
+      gutschein3: { name: 'Standard Figur', price: 150000, category: 'FIGUREN', id: 'gutschein3' },
+      gutschein5: { name: 'Couple Figuren', price: 200000, category: 'FIGUREN', id: 'gutschein5' },
+      gutschein6: { name: 'Figuren Accessoires', price: 30000, category: 'FIGUREN', id: 'gutschein6' },
+      gutschein7: { name: 'Figuren Glow', price: 20000, category: 'FIGUREN', id: 'gutschein7' },
+      gutschein8: { name: 'Figuren Seltenheit', price: 20000, category: 'FIGUREN', id: 'gutschein8' },
+
+      coins: { name: 'Play UP Coin', price: 200, category: 'COINS', id: 'coins' },
+      coins1: { name: '100x Play UP Coin', price: 18000, category: 'COINS', id: 'coins1' },
+
+
+      gutschein1: { name: '1 Sticker', price: 5000, category: 'STICKER', id: 'gutschein1' },
+      gutschein2: { name: '5 Sticker', price: 23000, category: 'STICKER', id: 'gutschein2' },
+    
+
+
+    };
+
+    
+    let currentPreise = {};
+    let categories = ['ESSEN', 'TRINKEN', 'COINS', 'STICKER', 'FIGUREN'];   // 'ALKOHOL' 'SONSTIGES'
+    let foodCategories = ['ESSEN'];
+    let drinkCategories = ['TRINKEN', 'ALKOHOL'];
+    let rauchwarenCategories = ['COINS'];
+    let miscellaneousCategories = ['STICKER', 'FIGUREN'];
+    let customTitle = 'Play UP Kassenblatt';
+    let customImage = DEFAULT_IMAGE_URL;
+
+
+    function todayKey() {
+      const t = new Date();
+      const d = String(t.getDate()).padStart(2,'0');
+      const m = String(t.getMonth()+1).padStart(2,'0');
+      const y = t.getFullYear();
+      return `${y}-${m}-${d}`;
+    }
+    function todayPretty() {
+      const t = new Date();
+      const d = String(t.getDate()).padStart(2,'0');
+      const m = String(t.getMonth()+1).padStart(2,'0');
+      return `${d}.${m}.`;
+    }
+
+    function initDarkToggle() {
+      const toggle = document.getElementById('themeToggle');
+      const saved = localStorage.getItem(DARKMODE_KEY);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const startDark = saved ? (saved === 'dark') : prefersDark;
+      document.documentElement.classList.toggle('dark', startDark);
+      document.body.classList.toggle('dark', startDark);
+      toggle.checked = startDark;
+
+      toggle.addEventListener('change', () => {
+        const nowDark = document.documentElement.classList.toggle('dark');
+        document.body.classList.toggle('dark', nowDark);
+        localStorage.setItem(DARKMODE_KEY, nowDark ? 'dark' : 'light');
+
+        const currentTheme = document.getElementById("themeSelect").value || "PlayUp Farben";
+        applyTheme(currentTheme);
+      });
+    }
+
+    
+    function applyConfig(data) {
+      currentPreise = data.items || { ...defaultPreise };
+      categories = data.categories || ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER']; //'ALKOHOL' 'SONSTIGES'
+      foodCategories = data.foodCategories || ['ESSEN'];
+      drinkCategories = data.drinkCategories || ['TRINKEN', 'ALKOHOL'];
+      rauchwarenCategories = data.rauchwarenCategories || ['COINS'];
+      miscellaneousCategories = data.miscellaneousCategories || ['STICKER', 'FIGUREN'];
+      customTitle = data.title || 'Play UP Kassenblatt';
+      customImage = data.image || DEFAULT_IMAGE_URL;
+    }
+
+    function getConfig() {
+      return {
+        items: currentPreise,
+        categories,
+        foodCategories,
+        drinkCategories,
+        rauchwarenCategories,
+        miscellaneousCategories,
+        title: customTitle,
+        image: customImage
+      };
+    }
+
+    function loadPreise() {
+      applyConfig({
+        items: { ...defaultPreise },
+        categories: ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'], //'ALKOHOL', 'SONSTIGES'
+        foodCategories: ['ESSEN'],
+        drinkCategories: ['TRINKEN', 'ALKOHOL'],
+        rauchwarenCategories: ['COINS'],
+        miscellaneousCategories: ['STICKER', 'FIGUREN'],
+        title: customTitle,
+        image: DEFAULT_IMAGE_URL
+      });
+      renderCalculatorInputs();
+      updateHeaderDisplay();
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          applyConfig(data);
+          renderCalculatorInputs();
+          updateHeaderDisplay();
+        }
+      } catch(e){ console.error(e); }
+    }
+
+    function savePreise() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getConfig()));
+    }
+
+    function updateHeaderDisplay() {
+      document.getElementById('htmlTitle').innerText = customTitle;
+      document.getElementById('calculatorTitle').innerText = customTitle;
+      document.getElementById('headerImage').src = customImage;
+      requestAnimationFrame(()=>{
+        document.getElementById('headerImage').classList.add('loaded');
+      });
+    }
+
+    
+    function renderCalculatorInputs() {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
+      categories.forEach(category => {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <h3 class="text-base font-bold mb-3 text-center tracking-wide">${category.toUpperCase()}</h3>
+          <div class="space-y-3"></div>
+        `;
+        grid.appendChild(wrap);
+        const listEl = wrap.querySelector('.space-y-3');
+        const items = Object.values(currentPreise).filter(i => i.category === category);
+        items.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-4';
+          row.innerHTML = `
+            <div class="min-w-0">
+              <label for="${item.id}" class="font-medium">${item.name}</label>
+              <div class="text-xs opacity-70">${item.price}$</div>
+            </div>
+            <div class="quantity-control">
+              <button onclick="changeQuantity('${item.id}', -1)">−</button>
+              <input id="${item.id}" type="number" min="0" value="0" oninput="berechne()" />
+              <button onclick="changeQuantity('${item.id}', 1)">+</button>
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+      });
+    }
+
+    function changeQuantity(id, delta) {
+  const input = document.getElementById(id);
+  if (!input) return;
+  let v = parseInt(input.value) || 0;
+  v += delta;
+  if (v < 0) v = 0;
+  input.value = v;
+  berechne();
+
+
+  input.classList.remove('updated');
+  void input.offsetWidth; 
+  input.classList.add('updated');
+}
+
+  
+    function initializeCalculatorStates() {
+      for (let i=1;i<=numTabs;i++) {
+        calculatorStates[i] = {
+          inputs:{},
+          grund:'Noch nichts berechnet',
+          preis:'0$',
+          personCount:'0'
+        };
+      }
+      const saved = localStorage.getItem('calculatorStates');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        for (const t in parsed) {
+          if (calculatorStates[t]) calculatorStates[t] = parsed[t];
+        }
+      }
+    }
+
+    function captureCurrentState() {
+      const inputs = {};
+      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => {
+        inputs[i.id] = i.value;
+      });
+      return {
+        activeTab,
+        inputs,
+        grund: document.getElementById('grund').innerText,
+        preis: document.getElementById('preis').innerText,
+        personCount: document.getElementById('personCountInput').value
+      };
+    }
+
+    function pushUndoSnapshot() {
+      undoStack.push(captureCurrentState());
+      if (undoStack.length > 20) undoStack.shift();
+    }
+
+    function restoreStateSnapshot(snap) {
+      activeTab = snap.activeTab || activeTab;
+      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
+      for (const id in snap.inputs) {
+        const el = document.getElementById(id);
+        if (el) el.value = snap.inputs[id];
+      }
+      document.getElementById('grund').innerText = snap.grund;
+      document.getElementById('preis').innerText = snap.preis;
+      document.getElementById('personCountInput').value = snap.personCount;
+    }
+
+    function undoLast() {
+      if (!undoStack.length) return;
+      const snap = undoStack.pop();
+      restoreStateSnapshot(snap);
+      saveCalculatorState();
+      updateUIFromState();
+    }
+
+    function saveCalculatorState() {
+      const s = { inputs:{} };
+      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => {
+        s.inputs[i.id] = i.value;
+      });
+      s.grund = document.getElementById('grund').innerText;
+      s.preis = document.getElementById('preis').innerText;
+      s.personCount = document.getElementById('personCountInput').value;
+      calculatorStates[activeTab] = s;
+      localStorage.setItem('calculatorStates', JSON.stringify(calculatorStates));
+    }
+
+    function loadCalculatorStateForTab() {
+      const s = calculatorStates[activeTab];
+      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
+      if (s) {
+        for (const id in s.inputs) {
+          const el = document.getElementById(id);
+          if (el) el.value = s.inputs[id];
+        }
+        document.getElementById('grund').innerText = s.grund;
+        document.getElementById('preis').innerText = s.preis;
+        document.getElementById('personCountInput').value = s.personCount || 0;
+      } else {
+        document.getElementById('grund').innerText = 'Noch nichts berechnet';
+        document.getElementById('preis').innerText = '0$';
+        document.getElementById('personCountInput').value = 0;
+      }
+    }
+
+    function updateSliderPosition(tabButton) {
+      const slider = document.getElementById('tabsSlider');
+      const container = document.getElementById('tabsContainer');
+      const b = tabButton.getBoundingClientRect();
+      const c = container.getBoundingClientRect();
+      slider.style.setProperty('--tab-left', `${b.left - c.left}px`);
+      slider.style.setProperty('--tab-width', `${b.width}px`);
+    }
+
+    function switchTab(tabNumber) {
+      if (tabNumber === activeTab) return;
+      saveCalculatorState();
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      const newBtn = document.querySelector(`.tab-button[data-tab=\"${tabNumber}\"]`);
+      if (newBtn) {
+        newBtn.classList.add('active');
+        updateSliderPosition(newBtn);
+      }
+      activeTab = tabNumber;
+      loadCalculatorStateForTab();
+      berechne();
+      localStorage.setItem('activeTab', tabNumber);
+    }
+
+    function updateUIFromState() {
+      loadCalculatorStateForTab();
+    }
+
+  
+    function loadSales() {
+      try {
+        const raw = localStorage.getItem(SALES_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch(e){}
+      return {};
+    }
+
+    function saveSales(obj) {
+      localStorage.setItem(SALES_KEY, JSON.stringify(obj));
+    }
+
+ 
+    function recordSale(grund, betrag) {
+      const key = todayKey();
+      const sales = loadSales();
+      if (!sales[key]) {
+        sales[key] = { total: 0, entries: [] };
+      }
+      sales[key].total += betrag;
+      sales[key].entries.push({ grund, betrag, ts: Date.now() });
+      saveSales(sales);
+    }
+
+    function listSalesForUI() {
+      const sales = loadSales();
+      const rows = [];
+      Object.keys(sales).sort().forEach(dayKey => {
+        rows.push(`📅 ${dayKey} — Total: ${sales[dayKey].total}$`);
+        sales[dayKey].entries.forEach(e => {
+          rows.push(` • ${e.betrag}$ | ${e.grund}`);
+        });
+      });
+      return rows;
+    }
+
+    function buildStatsChart() {
+      const ctx = document.getElementById('statsChart');
+      if (!ctx) return;
+      const sales = loadSales();
+      const labels = [];
+      const data = [];
+
+      Object.keys(sales).sort().forEach(dayKey => {
+        labels.push(dayKey);
+        data.push(sales[dayKey].total);
+      });
+
+      if (window._statsChart) {
+        window._statsChart.data.labels = labels;
+        window._statsChart.data.datasets[0].data = data;
+        window._statsChart.update();
+      } else {
+        window._statsChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Umsatz pro Tag ($)',
+              data: data
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#999' } } },
+            scales: {
+              x: { ticks: { color: '#999' } },
+              y: { beginAtZero: true, ticks: { color: '#999' } }
+            }
+          }
+        });
+      }
+
+      document.getElementById('statsList').innerText = listSalesForUI().join('\n');
+      const topProducts = getTopProducts();
+      document.getElementById('statsList').innerText += "\n\n🏆 Top 3 Produkte:\n" + topProducts;
+
+    }
+
+    
+
+function getTopProducts() {
+  const sales = loadSales();
+  const productCounts = {};
+
+  Object.values(sales).forEach(day => {
+    day.entries.forEach(entry => {
+      const match = entry.grund.match(/(\d+)x ([^+|]+)/g);
+      if (match) {
+        match.forEach(item => {
+          const parts = item.match(/(\d+)x (.+)/);
+          if (!parts) return;
+          const qty = parseInt(parts[1]);
+          const name = parts[2].trim();
+          productCounts[name] = (productCounts[name] || 0) + qty;
+        });
+      }
+    });
+  });
+
+  const sorted = Object.entries(productCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  if (sorted.length === 0) return "Keine Verkäufe bisher.";
+
+  return sorted.map(([name, count]) => `${name} (${count}x)`).join("<br>");
+}
+
+function toggleTopProductsDropdown() {
+  const dropdown = document.getElementById('topProductsDropdown');
+  dropdown.classList.toggle('show');
+}
+
+function updateTopProductsDropdown() {
+  const listEl = document.getElementById('topProductsList');
+  if (!listEl) return;
+  const topProducts = getTopProducts();
+  listEl.innerHTML = topProducts;
+}
+
+function loadProductStats() {
+  try {
+    const raw = localStorage.getItem('lutalo.productStats');
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return {};
+}
+
+function saveProductStats(stats) {
+  localStorage.setItem('lutalo.productStats', JSON.stringify(stats));
+}
+
+function recordProductSale(grund, betrag) {
+  const stats = loadProductStats();
+  const match = grund.match(/(\d+)x ([^+|]+)/g);
+  if (match) {
+    match.forEach(item => {
+      const parts = item.match(/(\d+)x (.+)/);
+      if (!parts) return;
+      const qty = parseInt(parts[1]);
+      const name = parts[2].trim();
+      const found = Object.values(currentPreise).find(i => i.name === name);
+      const pricePerItem = found ? found.price : 0;
+      const amount = qty * pricePerItem;
+      stats[name] = (stats[name] || 0) + amount;
+    });
+  }
+  saveProductStats(stats);
+}
+
+function buildProductStatsChart() {
+  const ctx = document.getElementById('productStatsChart');
+  if (!ctx) return;
+  const stats = loadProductStats();
+  const labels = Object.keys(stats);
+  const data = Object.values(stats);
+
+  if (window._productStatsChart) {
+    window._productStatsChart.data.labels = labels;
+    window._productStatsChart.data.datasets[0].data = data;
+    window._productStatsChart.update();
+  } else {
+    window._productStatsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz pro Produkt ($)',
+          data: data
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#999' } } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+}
+
+function resetProductStats() {
+  if (!confirm('Produktstatistik wirklich löschen?')) return;
+  localStorage.removeItem('lutalo.productStats');
+  buildProductStatsChart();
+}
+
+function openStats() {
+  document.getElementById('statsModal').style.display = 'flex';
+  buildStatsChart();
+  buildProductStatsChart();
+  updateTopProductsDropdown();
+}
+function closeStats() {
+  document.getElementById('statsModal').style.display = 'none';
+}
+function resetStats() {
+  if (!confirm('Verlauf wirklich löschen?')) return;
+  localStorage.removeItem(SALES_KEY);
+  buildStatsChart();
+  buildProductStatsChart();
+  updateTopProductsDropdown();
+}
+
+function showReceipt(grund, betrag, rabatt=false) {
+  const receipt = document.getElementById('receiptPopup');
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+
+  receipt.innerHTML = `
+    <div class="font-bold text-center mb-2">${customTitle}</div>
+    <div>${todayPretty()} ${hh}:${mm}</div>
+    <div class="mt-2 break-words">${grund}</div>
+    <div class="mt-2 font-bold text-right">${betrag}$</div>
+    ${rabatt ? '<div class="text-purple-600 font-bold text-right">Lutalo Rabatt ✔</div>' : ''}
+  `;
+
+  receipt.classList.add('showing');
+
+  setTimeout(()=>{
+    receipt.classList.remove('showing');
+    receipt.style.display = 'none';
+  },3000);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showCopied());
+  } else {
+    const t = document.createElement('textarea');
+    t.value = text;
+    t.style.position='fixed';
+    t.style.left='-9999px';
+    document.body.appendChild(t);
+    t.select();
+    try { document.execCommand('copy'); showCopied(); } catch(e) {}
+    document.body.removeChild(t);
+  }
+}
+function showCopied(){
+  const h = document.getElementById('kopiertHinweis');
+  h.classList.remove('hidden');
+  setTimeout(()=>h.classList.add('hidden'),2000);
+}
+function copyText(id){ 
+  copyToClipboard(document.getElementById(id).innerText);
+  if (id === 'grund') {
+    const grund = document.getElementById('grund').innerText;
+    const preisText = document.getElementById('preis').innerText;
+    const preisNum = parseInt(preisText.replace('$','')) || 0;
+    if (preisNum > 0) {
+      recordSale(grund, preisNum);
+      recordProductSale(grund, preisNum);
+      showReceipt(grund, preisNum);
+      buildStatsChart();
+      buildProductStatsChart();
+      updateTopProductsDropdown();
+    }
+  }
+}
+function copyPriceText(){ 
+  copyToClipboard(document.getElementById('preis').innerText.replace('$',''));
+  const grund = document.getElementById('grund').innerText;
+  const preisNum = parseInt(document.getElementById('preis').innerText.replace('$','')) || 0;
+  if (preisNum > 0) {
+    recordSale(grund, preisNum);
+    recordProductSale(grund, preisNum);
+    showReceipt(grund, preisNum);
+    buildStatsChart();
+    buildProductStatsChart();
+    updateTopProductsDropdown();
+  }
+}
+
+function resetRechner() {
+  pushUndoSnapshot();
+  document.getElementById('personCountInput').value = 0;
+  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(inp => inp.value = 0);
+  document.getElementById('grund').innerText = 'Noch nichts berechnet';
+  document.getElementById('preis').innerText = '0$';
+  saveCalculatorState();
+}
+
+function applyLutaloRabatt() {
+  pushUndoSnapshot();
+  const grundEl = document.getElementById('grund');
+  const preisEl = document.getElementById('preis');
+
+  const altGrund = grundEl.innerText;
+  const rabattGrund = altGrund.includes('[Lutalo Rabatt]') ? altGrund : altGrund + ' | [Lutalo Rabatt]';
+  grundEl.innerText = rabattGrund;
+  preisEl.innerText = '1$';
+
+  saveCalculatorState();
+
+  preisEl.style.color = '#8b5cf6';
+  setTimeout(()=>{ preisEl.style.color = ''; },600);
+}
+
+function berechne() {
+  pushUndoSnapshot();
+
+  let summe = 0, foodCount = 0, drinkCount = 0, rauchwarenCount = 0;
+  const orderedItems = [], miscItems = [];
+
+  const companyInput = document.querySelector('input[name="company"]:checked');
+  const selectedCompany = companyInput ? companyInput.value : "";
+  const isCompanyOrder = selectedCompany !== "";
+  const companyLimit = companyLimits[selectedCompany];
+
+  const manualPersonCount = parseInt(document.getElementById('personCountInput').value) || 0;
+
+  for (const key in currentPreise) {
+    const el = document.getElementById(key);
+    if (!el) continue;
+    const anzahl = parseInt(el.value) || 0;
+    if (!anzahl) continue;
+
+    summe += anzahl * currentPreise[key].price;
+    const cat = currentPreise[key].category;
+    const line = `${anzahl}x ${currentPreise[key].name}`;
+
+    if (foodCategories.includes(cat)) { foodCount += anzahl; orderedItems.push(line); }
+    else if (drinkCategories.includes(cat)) { drinkCount += anzahl; orderedItems.push(line); }
+    else if (rauchwarenCategories.includes(cat)) { rauchwarenCount += anzahl; orderedItems.push(line); }
+    else if (miscellaneousCategories.includes(cat)) { miscItems.push(line); }
+  }
+
+  document.getElementById('preis').innerText = `${summe}$`;
+
+  let grund = '';
+  const totalItems = foodCount + drinkCount + rauchwarenCount + miscItems.length;
+  const dateString = todayPretty();
+
+  if (totalItems > 0 || manualPersonCount > 0) {
+    const overText = [];
+    if (isCompanyOrder && companyLimit) {
+      if (foodCount > companyLimit.maxFood)  overText.push(`Essen überschreitet Limit (${foodCount}/${companyLimit.maxFood})!`);
+      if (drinkCount > companyLimit.maxDrink) overText.push(`Trinken überschreitet Limit (${drinkCount}/${companyLimit.maxDrink})!`);
+    }
+
+    const parts = [`PlayUP | ${dateString}`];
+    if (isCompanyOrder) {
+      parts.push(`Kantine ${selectedCompany}`);
+    } else if (manualPersonCount > 0) {
+      parts.push(`${manualPersonCount}P`);
+    } else {
+      const pc = Math.max(foodCount, drinkCount) > 0 ? Math.ceil(Math.max(foodCount, drinkCount) / itemsPerPerson) : 0;
+      if (pc > 0) parts.push(`${pc}P`);
+    }
+
+    const allItems = [...orderedItems, ...miscItems];
+    if (allItems.length > 0) parts.push(allItems.join(' + '));
+
+    const cats = [];
+    if (foodCount > 0) cats.push('Essen');
+    if (drinkCount > 0) cats.push('Trinken');
+    if (rauchwarenCount > 0) cats.push('Coins');
+    if (cats.length > 0) parts.push(cats.join(' & '));
+
+    if (overText.length > 0) {
+      parts.push(`⚠️${overText.join(' ')}`);
+    }
+
+    grund = parts.join(' | ');
+  } else {
+    grund = 'Noch nichts berechnet';
+  }
+
+  document.getElementById('grund').innerText = grund;
+  saveCalculatorState();
+
+  const preisText = document.getElementById('preis').innerText;
+  const preisNum = parseInt(preisText.replace('$','')) || 0;
+}
+
+function toggleDropdown() {
+  document.getElementById('unternehmenDropdown').classList.toggle('show');
+}
+
+document.getElementById('versionBadge').addEventListener('click', ()=>{
+  document.getElementById('changelogModal').style.display = 'flex';
+});
+function closeChangelog(){
+  document.getElementById('changelogModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initDarkToggle();
+  populateThemeSelect();
+  loadTheme();
+  loadPreise();
+
+  initializeCalculatorStates();
+  const savedTab = localStorage.getItem('activeTab');
+  if (savedTab) activeTab = parseInt(savedTab);
+  const initialBtn = document.querySelector(`.tab-button[data-tab="${'${'}activeTab${'}'}"]`) || document.querySelector('.tab-button[data-tab="1"]');
+  if (initialBtn) {
+    initialBtn.classList.add('active');
+    updateSliderPosition(initialBtn);
+  }
+  loadCalculatorStateForTab();
+
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
+  });
+});
+
+window.addEventListener('resize', () => {
+  const btn = document.querySelector(`.tab-button[data-tab="${'${'}activeTab${'}'}"]`);
+  if (btn) updateSliderPosition(btn);
+});
+
+window.toggleDropdown = toggleDropdown;
+window.changeQuantity = changeQuantity;
+window.copyText = copyText;
+window.copyPriceText = copyPriceText;
+window.resetRechner = resetRechner;
+window.undoLast = undoLast;
+window.applyLutaloRabatt = applyLutaloRabatt;
+window.berechne = berechne;
+window.openStats = openStats;
+window.closeStats = closeStats;
+window.resetStats = resetStats;
+window.closeChangelog = closeChangelog;
+  
+
+function getRushHourData() {
+  const sales = loadSales();
+  const hourlyTotals = Array(24).fill(0);
+  Object.values(sales).forEach(day => {
+    day.entries.forEach(entry => {
+      if (entry.ts) {
+        const hour = new Date(entry.ts).getHours();
+        hourlyTotals[hour] += entry.betrag;
+      }
+    });
+  });
+  return hourlyTotals;
+}
+
+function buildRushHourChart() {
+  const ctx = document.getElementById('rushHourDropdownChart');
+  if (!ctx) return;
+  const data = getRushHourData();
+  const labels = data.map((_, i) => i.toString().padStart(2,'0') + ':00');
+  const top3 = [...data].sort((a,b)=>b-a).slice(0,3);
+  const bgColors = data.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
+  if (window._rushHourChart) {
+    window._rushHourChart.data.labels = labels;
+    window._rushHourChart.data.datasets[0].data = data;
+    window._rushHourChart.update();
+  } else {
+    window._rushHourChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz pro Stunde ($)',
+          data: data,
+          backgroundColor: bgColors
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+}
+
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
+}
+
+
+function closeWelcome() {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.opacity = '1';
+    modal.style.transition = 'opacity 0.5s ease';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+  }
+});
+
+</script>
+
+<!-- 🧩 Treuepunkte System -->
+<div class="surface w-full max-w-3xl mx-auto p-6 mt-10 shadow-md border border-black/10 dark:border-white/10 rounded-2xl">
+  <h3 class="text-2xl font-extrabold text-[color:var(--accent)] mb-4 flex items-center gap-2">🎁 Treuepunkte System</h3>
+
+  <div class="flex flex-col sm:flex-row gap-3 mb-6">
+    <input id="punkteName" type="text" placeholder="Kundenname" class="flex-1 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
+    <input id="punkteAnzahl" type="number" placeholder="Punkte" class="w-32 p-3 rounded-full hairline bg-black/5 dark:bg-white/10 focus:ring-2 focus:ring-[color:var(--accent)] outline-none transition"/>
+    <button onclick="addPunkte()" class="bg-[color:var(--accent)] hover:opacity-90 text-white font-semibold px-6 py-3 rounded-full shadow transition">Hinzufügen</button>
+  </div>
+
+  <div id="punkteListe" class="bg-black/5 dark:bg-white/10 rounded-2xl p-4 text-sm shadow-inner border border-black/10 dark:border-white/10">
+    Noch keine Punkte vergeben.
+  </div>
+</div>
+
+<script>
+const PUNKTE_KEY = "treuepunkte";
+
+function loadPunkte() {
+  try {
+    const raw = localStorage.getItem(PUNKTE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e){ return {}; }
+}
+
+function savePunkte(data) {
+  localStorage.setItem(PUNKTE_KEY, JSON.stringify(data));
+}
+
+function addPunkte() {
+  const nameEl = document.getElementById("punkteName");
+  const punkteEl = document.getElementById("punkteAnzahl");
+  const name = nameEl.value.trim();
+  const punkte = parseInt(punkteEl.value);
+
+  if (!name || isNaN(punkte)) {
+    alert("Bitte Namen und Punktezahl eingeben!");
+    return;
+  }
+
+  const daten = loadPunkte();
+  daten[name] = (daten[name] || 0) + punkte;
+  savePunkte(daten);
+  renderPunkteListe();
+
+  nameEl.value = "";
+  punkteEl.value = "";
+}
+
+function renderPunkteListe() {
+  const daten = loadPunkte();
+  const listEl = document.getElementById("punkteListe");
+
+  if (Object.keys(daten).length === 0) {
+    listEl.innerHTML = "Noch keine Punkte vergeben.";
+    return;
+  }
+
+  listEl.innerHTML = `
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-black/10 dark:border-white/10">
+          <th class="py-2 font-semibold">Kunde</th>
+          <th class="py-2 font-semibold">Punkte</th>
+          <th class="py-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${Object.entries(daten).map(([n,p])=>`
+          <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition">
+            <td class="py-2 font-medium">${n}</td>
+            <td class="py-2 font-semibold text-[color:var(--accent)]">${p}</td>
+            <td class="py-2 text-right">
+              <button onclick="removePunkte('${n}')" class="text-xs text-red-500 hover:text-red-700 font-semibold">Löschen</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function removePunkte(name) {
+  const daten = loadPunkte();
+  delete daten[name];
+  savePunkte(daten);
+  renderPunkteListe();
+}
+
+document.addEventListener("DOMContentLoaded", renderPunkteListe);
+</script>
+
+
+<!-- BEGIN: Loyalty Panel (global lifetime sync) -->
+<section id="loyaltySection" class="mt-8 p-4 bg-gray-900/70 border border-gray-700 rounded-xl text-white max-w-xl mx-auto">
+  <h2 class="text-lg font-bold mb-3 flex items-center gap-2">
+    <span class="inline-block rounded bg-yellow-500/20 text-yellow-400 text-xs font-semibold px-2 py-1 border border-yellow-400/40">Treuepunkte</span>
+    <span>Lifetime Übersicht</span>
+  </h2>
+
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3 mb-4">
+    <div class="flex-1">
+      <label class="block text-xs text-gray-400 mb-1">Name</label>
+      <input id="loyaltyName" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="z. B. Kevin" />
+    </div>
+
+    <div class="w-24">
+      <label class="block text-xs text-gray-400 mb-1">Punkte +</label>
+      <input id="loyaltyPoints" type="number" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="1" />
+    </div>
+
+    <button
+      class="bg-yellow-500 hover:bg-yellow-400 text-black font-semibold text-sm rounded px-3 py-2 border border-yellow-300 shadow"
+      onclick="(function(){ const n=document.getElementById('loyaltyName').value.trim(); const p=parseInt(document.getElementById('loyaltyPoints').value||'0',10)||0; if(n&&p){ addLoyaltyPoints(n,p); document.getElementById('loyaltyPoints').value=''; } })();">
+      Hinzufügen
+    </button>
+  </div>
+
+  <div class="text-xs text-gray-400 mb-2 flex justify-between">
+    <span>Alle Kunden (global)</span>
+    <span>Click zum Löschen</span>
+  </div>
+
+  <div id="loyaltyTable" class="divide-y divide-gray-700 text-sm rounded bg-gray-800/50 border border-gray-700"></div>
+</section>
+<!-- END: Loyalty Panel (global lifetime sync) -->
+
+<!-- BEGIN: Render-sync client script v4 -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function(){
+  // connect socket.io (Render safe)
+  const socket = io(window.location.origin, {
+    transports: ["websocket", "polling"]
+  });
+
+  async function fetchJSON(path){
+    try {
+      const r = await fetch(path);
+      if (!r.ok) throw new Error(r.statusText);
+      return await r.json();
+    } catch(e){
+      console.warn("fetch error", path, e);
+      return null;
+    }
+  }
+
+  // ---------------------------
+  // GLOBAL STATE
+  // ---------------------------
+  const state = {
+    sales: {},        // { "YYYY-MM-DD": { total, entries:[{grund,betrag,ts}] } }
+    products: {},     // { "Pommes": {qty:10, revenue:50} }
+    config: {},       // Preise etc
+    loyalty: {}       // { "Name": Punkte }
+  };
+  window.__SERVER_STATE = state;
+
+  // ---------------------------
+  // UI APPLY HELPERS
+  // ---------------------------
+  function safe(fn){
+    try { fn(); } catch(e){ console.warn(e); }
+  }
+
+  function applyAllToUI(){
+    // Preise / Einstellungen
+    safe(()=> {
+      if (typeof applyConfig === 'function') applyConfig(state.config);
+      if (typeof renderCalculatorInputs === 'function') renderCalculatorInputs();
+    });
+    safe(()=> {
+      if (typeof updateHeaderDisplay === 'function') updateHeaderDisplay();
+      if (typeof savePreise === 'function') savePreise();
+    });
+
+    // Umsatz & Produkt-Stats
+    safe(()=> {
+      // dein Chart-Code liest loadSales() -> wir haben loadSales() unten überschrieben
+      if (typeof buildStatsChart === 'function') buildStatsChart();
+      if (typeof buildProductStatsChart === 'function') buildProductStatsChart();
+      if (typeof updateTopProductsDropdown === 'function') updateTopProductsDropdown();
+      if (typeof updateDailySalesDisplay === 'function') updateDailySalesDisplay();
+      if (typeof updateTotalTodayDisplay === 'function') updateTotalTodayDisplay();
+      if (typeof renderProductStatsTable === 'function') renderProductStatsTable();
+    });
+
+    // Treuepunkte
+    safe(()=> {
+      if (typeof renderLoyaltyTable === 'function') renderLoyaltyTable();
+    });
+  }
+
+  // ---------------------------
+  // INITIAL SYNC
+  // ---------------------------
+  async function initialSync(){
+    const [cfg, sales, products, loyalty] = await Promise.all([
+      fetchJSON('/api/config'),
+      fetchJSON('/api/sales'),
+      fetchJSON('/api/products'),
+      fetchJSON('/api/loyalty')
+    ]);
+
+    if (cfg) state.config = cfg;
+    if (sales) state.sales = sales;
+    if (products) state.products = products;
+    if (loyalty) state.loyalty = loyalty;
+
+    applyAllToUI();
+  }
+
+  // ---------------------------
+  // SOCKET EVENTS
+  // ---------------------------
+  socket.on('config:update', (cfg) => {
+    state.config = cfg || {};
+    applyAllToUI();
+    console.log("[sync] config");
+  });
+
+  socket.on('sales:update', (sales) => {
+    state.sales = sales || {};
+    applyAllToUI();
+    console.log("[sync] sales");
+  });
+
+  socket.on('products:update', (products) => {
+    state.products = products || {};
+    applyAllToUI();
+    console.log("[sync] products");
+  });
+
+  socket.on('loyalty:update', (loyalty) => {
+    state.loyalty = loyalty || {};
+    applyAllToUI();
+    console.log("[sync] loyalty");
+  });
+
+  // ---------------------------
+  // SALES OVERRIDES
+  // ---------------------------
+  // loadSales() -> rest vom Code holt sich Sales so
+  window.loadSales = function(){
+    return state.sales || {};
+  };
+
+  // komplette Struktur hochladen (admin use)
+  window.saveSales = function(obj){
+    fetch('/api/sales', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(obj)
+    }).catch(e=>console.warn(e));
+  };
+
+  // recordSale(grund,betrag) Hook
+  const originalRecordSale = window.recordSale;
+  window.recordSale = function(grund, betrag){
+    fetch('/api/sales/entry', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({grund: grund, betrag: betrag, ts: Date.now()})
+    }).catch(e=>console.warn(e));
+
+    // alter Flow bleibt (Bon drucken usw.)
+    if (typeof originalRecordSale === 'function'){
+      try { originalRecordSale(grund, betrag); } catch(e){}
+    }
+  };
+
+  // helper: heutiger Umsatz für UI
+  window.getTodaysSalesTotal = function(){
+    const todayKey = new Date().toISOString().slice(0,10);
+    const today = state.sales[todayKey];
+    return today ? today.total : 0;
+  };
+
+  // ---------------------------
+  // PRODUCTS / PRODUCT STATS
+  // ---------------------------
+  // Zugriff für Tabellen und Charts
+  window.loadProductStats = function(){
+    return state.products || {};
+  };
+
+  // optional: Tabelle rendern, falls du im UI irgendwo eine Produktliste hast
+  window.renderProductStatsTable = function(){
+    const box = document.getElementById('productStatsTable');
+    if (!box) return;
+    box.innerHTML = '';
+    const entries = Object.entries(state.products)
+      .sort((a,b)=> (b[1].qty||0) - (a[1].qty||0)); // sort by meistverkauft
+
+    entries.forEach(([prod, data])=>{
+      const row = document.createElement('div');
+      row.className = 'flex justify-between text-sm py-1 border-b border-gray-700';
+      row.innerHTML = `
+        <span class="text-white">${prod}</span>
+        <span class="text-gray-300">${data.qty || 0}x • ${Number(data.revenue||0).toFixed(2)}€</span>
+      `;
+      box.appendChild(row);
+    });
+  };
+
+  // ---------------------------
+  // CONFIG SAVE
+  // ---------------------------
+  window.saveConfigToServer = async function(cfg){
+    await fetch('/api/config', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(cfg)
+    }).catch(e=>console.warn(e));
+  };
+
+  // ---------------------------
+  // LOYALTY / TREUEPUNKTE
+  // ---------------------------
+  window.renderLoyaltyTable = function(){
+    const container = document.getElementById('loyaltyTable');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const entries = Object.entries(state.loyalty)
+      .sort((a,b)=>b[1]-a[1]);
+
+    if (!entries.length){
+      const empty = document.createElement('div');
+      empty.className = "px-3 py-2 text-gray-400 text-sm";
+      empty.textContent = "Noch keine Punkte vergeben.";
+      container.appendChild(empty);
+      return;
+    }
+
+    entries.forEach(([name, points])=>{
+      const row = document.createElement('button');
+      row.className = 'w-full flex justify-between items-center text-left px-3 py-2 hover:bg-gray-700/60';
+      row.setAttribute('onclick', `deleteLoyaltyEntry(${JSON.stringify(name)})`);
+      row.innerHTML = `
+        <span class="font-medium text-white">${name}</span>
+        <span class="text-yellow-400 font-semibold">${points} Punkte</span>
+      `;
+      container.appendChild(row);
+    });
+  };
+
+  window.addLoyaltyPoints = async function(name, points){
+    if (!name) return;
+    await fetch('/api/loyalty', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name:name, points:points })
+    }).catch(e=>console.warn(e));
+  };
+
+  window.deleteLoyaltyEntry = async function(name){
+    await fetch('/api/loyalty', {
+      method:'DELETE',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name:name })
+    }).catch(e=>console.warn(e));
+  };
+
+  async function refreshLoyaltyFromServer(){
+    const loyalty = await fetchJSON('/api/loyalty');
+    if (loyalty){
+      state.loyalty = loyalty;
+      applyAllToUI();
+    }
+  }
+
+  // ---------------------------
+  // ACTIVE TAB
+  // ---------------------------
+  // nicht syncen, nichts verändern
+
+  // ---------------------------
+  // PERIODIC RESYNC FALLBACK
+  // ---------------------------
+  setInterval(async ()=>{
+    const [newsales, newproducts, newloyalty] = await Promise.all([
+      fetchJSON('/api/sales'),
+      fetchJSON('/api/products'),
+      fetchJSON('/api/loyalty')
+    ]);
+
+    if (newsales)   state.sales   = newsales;
+    if (newproducts)state.products= newproducts;
+    if (newloyalty) state.loyalty = newloyalty;
+
+    applyAllToUI();
+  },15000);
+
+  // start
+  initialSync();
+})();
+</script>
+<!-- END: Render-sync client script v4 -->
+</body>
+</html>
