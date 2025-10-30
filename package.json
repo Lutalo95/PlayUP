@@ -1,6 +1,7 @@
 {
   "name": "playup-render",
-  "version": "1.7.0",
+  "version": "1.7.1",
+  "description": "Play UP Kassenblatt mit Live-Updates und korrigierter Produktstatistik",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

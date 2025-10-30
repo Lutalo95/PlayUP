@@ -19,8 +19,8 @@ let DATA = { sales: {}, config: {}, loyalty: {}, products: {} };
 
 /*
 DATA.products = {
-  "Pommes": { qty: 12, revenue: 48.00 },
-  "Cola 0.5L": { qty: 7, revenue: 17.50 }
+  "Pop UP": { qty: 12, revenue: 48.00 },
+  "Boost UP": { qty: 7, revenue: 1400.00 }
 }
 */
 
@@ -66,7 +66,7 @@ DATA.sales = {
   "2025-10-29": {
     total: 123.45,
     entries: [
-      { grund:"Pommes", betrag:4, ts: 1730200000000 },
+      { grund:"PlayUP | 30.10. | 2x Pop UP + 1x Burn UP | Essen", betrag:900, ts: 1730200000000 },
       ...
     ]
   }
@@ -93,13 +93,25 @@ app.post('/api/sales/entry', (req,res) => {
   DATA.sales[key].total += amount;
   DATA.sales[key].entries.push({ grund, betrag: amount, ts: ts || Date.now() });
 
-  // update product stats based on grund
-  if (grund){
-    if (!DATA.products[grund]) {
-      DATA.products[grund] = { qty: 0, revenue: 0 };
-    }
-    DATA.products[grund].qty += 1;
-    DATA.products[grund].revenue += amount;
+  // ===== KORREKTUR: Extrahiere einzelne Produkte aus dem Grund =====
+  if (grund) {
+    const products = parseProductsFromGrund(grund);
+    
+    products.forEach(product => {
+      const productName = product.name;
+      const quantity = product.qty;
+      
+      // Berechne den Preis basierend auf dem Gesamtbetrag und der Anzahl der Produkte
+      // (Vereinfachte Annahme: Betrag wird gleichmäßig auf alle Produkte verteilt)
+      const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
+      const revenueForProduct = totalQty > 0 ? (amount * quantity / totalQty) : amount;
+      
+      if (!DATA.products[productName]) {
+        DATA.products[productName] = { qty: 0, revenue: 0 };
+      }
+      DATA.products[productName].qty += quantity;
+      DATA.products[productName].revenue += revenueForProduct;
+    });
   }
 
   persist();
@@ -327,6 +339,41 @@ app.delete('/api/stats', (req, res) => {
 // HELPER FUNCTIONS
 // ============================================
 
+function parseProductsFromGrund(grund) {
+  /*
+    Parst Produkte aus einem Grund wie:
+    "PlayUP | 30.10. | 2x Pop UP + 1x Burn UP + 3x Boost UP | Essen & Trinken"
+    
+    Returns: [
+      { name: 'Pop UP', qty: 2 },
+      { name: 'Burn UP', qty: 1 },
+      { name: 'Boost UP', qty: 3 }
+    ]
+  */
+  const products = [];
+  
+  // Regex um "Nx Produktname" zu finden
+  // Suche nach Mustern wie "2x Pop UP" oder "1x Burn UP"
+  const regex = /(\d+)x\s*([^+|]+?)(?=\s*(?:\+|$|\|))/g;
+  let match;
+  
+  while ((match = regex.exec(grund)) !== null) {
+    const qty = parseInt(match[1]);
+    const name = match[2].trim();
+    
+    // Filtere nur echte Produktnamen (keine Kategorien, Datums oder Personen-Angaben)
+    // Ignoriere Einträge die nur aus Zahlen bestehen oder Datum-Format haben
+    if (name && 
+        !name.match(/^\d{1,2}\.\d{1,2}\.?$/) &&  // Ignoriere Datumsformate wie "30.10."
+        !name.match(/^\d+P$/) &&                  // Ignoriere Personen-Angaben wie "2P"
+        name.length > 1) {                         // Name muss mindestens 2 Zeichen haben
+      products.push({ name, qty });
+    }
+  }
+  
+  return products;
+}
+
 function calculateLevelForPoints(points) {
   if (points >= 200) return 'Platinum';
   if (points >= 150) return 'Gold';
@@ -430,18 +477,25 @@ function calculateTopProducts(period) {
       });
   }
   
+  // Extrahiere Produkte aus allen Sales Einträgen
   const productStats = {};
   sales.forEach(entry => {
     if (entry.grund) {
-      if (!productStats[entry.grund]) {
-        productStats[entry.grund] = {
-          name: entry.grund,
-          quantity: 0,
-          revenue: 0
-        };
-      }
-      productStats[entry.grund].quantity += 1;
-      productStats[entry.grund].revenue += entry.betrag || 0;
+      const products = parseProductsFromGrund(entry.grund);
+      products.forEach(product => {
+        if (!productStats[product.name]) {
+          productStats[product.name] = {
+            name: product.name,
+            quantity: 0,
+            revenue: 0
+          };
+        }
+        productStats[product.name].quantity += product.qty;
+        // Vereinfachte Revenue-Berechnung
+        const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
+        const revenueForProduct = totalQty > 0 ? (entry.betrag * product.qty / totalQty) : 0;
+        productStats[product.name].revenue += revenueForProduct;
+      });
     }
   });
   
