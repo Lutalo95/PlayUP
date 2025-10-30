@@ -713,7 +713,7 @@ body.dark .connection-status {
 </div>
 </div>
 <div id="versionBadge">
-<div>v1.6.0</div>
+<div>v1.7.0</div>
 <div>Stand: 29.10.2025 🔔</div>
 </div>
 <div class="modal-backdrop" id="statsModal">
@@ -748,34 +748,30 @@ body.dark .connection-status {
 <div class="modal-backdrop" id="changelogModal">
 <div class="modal-card">
 <button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeChangelog()">X</button>
-<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.6.0 </h3>
+<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.7.0 </h3>
 <ul class="text-sm space-y-2 leading-5">
 <br/>
 <h3>📝 Changelog</h3>
 <ul>
 <li>📍 NEUER CHANGELOG VOM 29.10.25 📍</li>
+<li>💾 PERSISTENTE DATENSPEICHERUNG!</li>
+<li>🔄 Verkäufe werden in data.json gespeichert</li>
+<li>📊 Produktstatistiken bleiben nach Reload erhalten</li>
+<li>🔴 Automatisches Laden vom Server beim Start</li>
+<li>✅ Offline-Fallback mit localStorage</li>
+<li>🚀 Daten überleben Server-Neustarts!</li>
+<br/>
+<br/>
+<li>📍 LETZTER CHANGELOG VOM 29.10.25 WAR: 📍</li>
 <li>🔴 LIVE-UPDATES für Umsatzverlauf aktiviert</li>
 <li>🔴 LIVE-UPDATES für Produktstatistik aktiviert</li>
 <li>🔴 LIVE-UPDATES für Löschfunktionen aktiviert</li>
 <li>📊 Echtzeit-Synchronisation aller Clients</li>
 <li>✨ Animierte Chart-Updates bei neuen Verkäufen</li>
 <li>🎨 Verbesserte Visualisierung bei Datenänderungen</li>
-<br/>
-<br/>
-<li>📍 LETZTER CHANGELOG VOM 28.10.25 WAR: 📍</li>
-<li>🎨White/Darkmode Toggel Funktioniert</li>
-<li>🎨Neue Animationen</li>
-<li>📊 Rush Hour Analyse im Umsatzverlauf</li>
-<li>🖥️ UI Fix</li>
-<br/>
-<br/>
-<li>📍 LETZTER CHANGELOG VOM 27.10.25 WAR: 📍</li>
-<li>📦 Kategorien getrennt: "STICKER" und "FIGUREN"</li>
-<li>🧾 Separate Rendering und Berechnung</li>
-<li>📊 Statistik & Auswertung gefixt</li>
 </ul>
 </ul>
-<div class="text-[10px] text-right mt-4 opacity-60 select-none">29.10.25 1.6.0</div>
+<div class="text-[10px] text-right mt-4 opacity-60 select-none">29.10.25 1.7.0</div>
 </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-8 py-6">
@@ -1667,33 +1663,90 @@ function showCopied(){
   h.classList.remove('hidden');
   setTimeout(()=>h.classList.add('hidden'),2000);
 }
-function copyText(id){ 
+async function copyText(id){ 
   copyToClipboard(document.getElementById(id).innerText);
   if (id === 'grund') {
     const grund = document.getElementById('grund').innerText;
     const preisText = document.getElementById('preis').innerText;
     const preisNum = parseInt(preisText.replace('$','')) || 0;
     if (preisNum > 0) {
+      // API Call zum Backend für persistente Speicherung
+      try {
+        const response = await fetch('/api/sales/entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            grund: grund, 
+            betrag: preisNum,
+            ts: Date.now()
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          // Lokale Daten als Backup aktualisieren
+          recordSale(grund, preisNum);
+          recordProductSale(grund, preisNum);
+          showReceipt(grund, preisNum);
+          
+          showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
+        } else {
+          throw new Error('API call failed');
+        }
+      } catch (error) {
+        console.error('Error saving sale:', error);
+        // Fallback auf lokale Speicherung
+        recordSale(grund, preisNum);
+        recordProductSale(grund, preisNum);
+        showReceipt(grund, preisNum);
+        buildStatsChart();
+        buildProductStatsChart();
+        updateTopProductsDropdown();
+        showNotification(`Verkauf gespeichert (Offline) 💰`, 'warning');
+      }
+    }
+  }
+}
+
+async function copyPriceText(){ 
+  copyToClipboard(document.getElementById('preis').innerText.replace('$',''));
+  const grund = document.getElementById('grund').innerText;
+  const preisNum = parseInt(document.getElementById('preis').innerText.replace('$','')) || 0;
+  if (preisNum > 0) {
+    // API Call zum Backend für persistente Speicherung
+    try {
+      const response = await fetch('/api/sales/entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          grund: grund, 
+          betrag: preisNum,
+          ts: Date.now()
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Lokale Daten als Backup aktualisieren
+        recordSale(grund, preisNum);
+        recordProductSale(grund, preisNum);
+        showReceipt(grund, preisNum);
+        
+        showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
+      } else {
+        throw new Error('API call failed');
+      }
+    } catch (error) {
+      console.error('Error saving sale:', error);
+      // Fallback auf lokale Speicherung
       recordSale(grund, preisNum);
       recordProductSale(grund, preisNum);
       showReceipt(grund, preisNum);
       buildStatsChart();
       buildProductStatsChart();
       updateTopProductsDropdown();
+      showNotification(`Verkauf gespeichert (Offline) 💰`, 'warning');
     }
-  }
-}
-function copyPriceText(){ 
-  copyToClipboard(document.getElementById('preis').innerText.replace('$',''));
-  const grund = document.getElementById('grund').innerText;
-  const preisNum = parseInt(document.getElementById('preis').innerText.replace('$','')) || 0;
-  if (preisNum > 0) {
-    recordSale(grund, preisNum);
-    recordProductSale(grund, preisNum);
-    showReceipt(grund, preisNum);
-    buildStatsChart();
-    buildProductStatsChart();
-    updateTopProductsDropdown();
   }
 }
 
@@ -2266,6 +2319,9 @@ class LiveUpdatesManager {
       this.reconnectAttempts = 0;
       this.updateConnectionStatus('connected');
       showNotification('Live-Updates aktiviert! 🎉', 'success', { duration: 2000 });
+      
+      // NEU: Lade initiale Daten vom Server
+      this.loadInitialData();
     });
     
     this.socket.on('disconnect', (reason) => {
@@ -2331,6 +2387,48 @@ class LiveUpdatesManager {
     this.socket.on('config:update', (data) => {
       console.log('[Socket] config:update', data);
     });
+  }
+  
+  // NEU: Lade initiale Daten vom Server
+  async loadInitialData() {
+    try {
+      // Sales laden
+      const salesResponse = await fetch('/api/sales');
+      if (salesResponse.ok) {
+        const salesData = await salesResponse.json();
+        saveSales(salesData);
+        console.log('✅ Sales loaded from server:', Object.keys(salesData).length, 'days');
+      }
+      
+      // Products laden
+      const productsResponse = await fetch('/api/products');
+      if (productsResponse.ok) {
+        const productsData = await productsResponse.json();
+        
+        // Konvertiere zu produktStats Format
+        const stats = {};
+        for (const [name, data] of Object.entries(productsData)) {
+          if (data.revenue) {
+            stats[name] = data.revenue;
+          }
+        }
+        saveProductStats(stats);
+        console.log('✅ Products loaded from server:', Object.keys(productsData).length, 'products');
+      }
+      
+      // Loyalty laden
+      const loyaltyResponse = await fetch('/api/loyalty');
+      if (loyaltyResponse.ok) {
+        const loyaltyData = await loyaltyResponse.json();
+        savePunkte(loyaltyData);
+        renderPunkteListe();
+        console.log('✅ Loyalty loaded from server:', Object.keys(loyaltyData).length, 'customers');
+      }
+      
+    } catch (error) {
+      console.error('Error loading initial data:', error);
+      console.log('⚠️ Using local data as fallback');
+    }
   }
   
   disconnect() {
