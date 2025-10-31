@@ -10,37 +10,82 @@ const { Server } = require('socket.io');
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET","POST","DELETE"]
+    methods: ["GET","POST","DELETE","PUT"]
   }
 });
 
 const DATA_FILE = path.join(__dirname, 'data.json');
-let DATA = { sales: {}, config: {}, loyalty: {}, products: {} };
+let DATA = { 
+  sales: {}, 
+  config: {}, 
+  loyalty: {}, 
+  products: {},
+  calculatorStates: {},
+  settings: {
+    theme: 'PlayUp Farben',
+    darkMode: false,
+    welcomeShown: false,
+    activeTab: 1
+  }
+};
 
 /*
-DATA.products = {
-  "Pop UP": { qty: 12, revenue: 48.00 },
-  "Boost UP": { qty: 7, revenue: 1400.00 }
+VOLLSTÄNDIG PERSISTENTE DATENSTRUKTUR:
+{
+  sales: { 
+    "2025-10-30": { 
+      total: 123.45,
+      entries: [{ grund:"...", betrag:50, ts: 1730200000000 }]
+    }
+  },
+  products: { 
+    "Pop UP": { qty: 12, revenue: 600.00 }
+  },
+  loyalty: { 
+    "Kunde A": 120 
+  },
+  calculatorStates: { 
+    "1": { inputs: {popup:2, burnup:1}, grund: "...", preis: "900$", personCount: "2" },
+    "2": { ... },
+    "3-5": { ... }
+  },
+  settings: {
+    theme: "PlayUp Farben",
+    darkMode: false,
+    welcomeShown: true,
+    activeTab: 1
+  }
 }
 */
 
+// Lade Daten beim Start
 try {
   if (fs.existsSync(DATA_FILE)) {
-    DATA = JSON.parse(fs.readFileSync(DATA_FILE));
-    if (!DATA.sales) DATA.sales = {};
-    if (!DATA.config) DATA.config = {};
-    if (!DATA.loyalty) DATA.loyalty = {};
-    if (!DATA.products) DATA.products = {};
+    const loaded = JSON.parse(fs.readFileSync(DATA_FILE));
+    DATA = {
+      sales: loaded.sales || {},
+      config: loaded.config || {},
+      loyalty: loaded.loyalty || {},
+      products: loaded.products || {},
+      calculatorStates: loaded.calculatorStates || {},
+      settings: loaded.settings || DATA.settings
+    };
+    console.log('✅ Daten geladen:', {
+      sales: Object.keys(DATA.sales).length + ' Tage',
+      products: Object.keys(DATA.products).length + ' Produkte',
+      loyalty: Object.keys(DATA.loyalty).length + ' Kunden',
+      calculatorStates: Object.keys(DATA.calculatorStates).length + ' Tabs'
+    });
   }
 } catch(e){
-  console.error('load data', e);
+  console.error('❌ Fehler beim Laden der Daten:', e);
 }
 
 function persist() {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(DATA, null, 2));
   } catch(e){
-    console.error(e);
+    console.error('❌ Fehler beim Speichern:', e);
   }
 }
 
@@ -48,7 +93,49 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ---------- CONFIG ----------
+// ============================================
+// SETTINGS / EINSTELLUNGEN (NEU)
+// ============================================
+
+app.get('/api/settings', (req, res) => {
+  res.json(DATA.settings);
+});
+
+app.post('/api/settings', (req, res) => {
+  DATA.settings = { ...DATA.settings, ...req.body };
+  persist();
+  io.emit('settings:update', DATA.settings);
+  res.json({ ok: true, settings: DATA.settings });
+});
+
+// ============================================
+// CALCULATOR STATES (NEU)
+// ============================================
+
+app.get('/api/calculator-states', (req, res) => {
+  res.json(DATA.calculatorStates);
+});
+
+app.post('/api/calculator-states', (req, res) => {
+  const { tab, state } = req.body;
+  if (!tab) return res.status(400).json({ error: 'Tab required' });
+  
+  DATA.calculatorStates[tab] = state;
+  persist();
+  
+  io.emit('calculator:update', { tab, state });
+  res.json({ ok: true, calculatorStates: DATA.calculatorStates });
+});
+
+app.get('/api/calculator-states/:tab', (req, res) => {
+  const tab = req.params.tab;
+  res.json(DATA.calculatorStates[tab] || null);
+});
+
+// ============================================
+// CONFIG
+// ============================================
+
 app.get('/api/config', (req,res) => {
   res.json(DATA.config || {});
 });
@@ -60,18 +147,10 @@ app.post('/api/config', (req,res) => {
   res.json({ok:true});
 });
 
-// ---------- SALES / Umsatz pro Tag ----------
-/*
-DATA.sales = {
-  "2025-10-29": {
-    total: 123.45,
-    entries: [
-      { grund:"PlayUP | 30.10. | 2x Pop UP + 1x Burn UP | Essen", betrag:900, ts: 1730200000000 },
-      ...
-    ]
-  }
-}
-*/
+// ============================================
+// SALES / UMSATZ
+// ============================================
+
 app.get('/api/sales', (req,res) => {
   res.json(DATA.sales || {});
 });
@@ -93,16 +172,13 @@ app.post('/api/sales/entry', (req,res) => {
   DATA.sales[key].total += amount;
   DATA.sales[key].entries.push({ grund, betrag: amount, ts: ts || Date.now() });
 
-  // ===== KORREKTUR: Extrahiere einzelne Produkte aus dem Grund =====
+  // Extrahiere einzelne Produkte
   if (grund) {
     const products = parseProductsFromGrund(grund);
     
     products.forEach(product => {
       const productName = product.name;
       const quantity = product.qty;
-      
-      // Berechne den Preis basierend auf dem Gesamtbetrag und der Anzahl der Produkte
-      // (Vereinfachte Annahme: Betrag wird gleichmäßig auf alle Produkte verteilt)
       const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
       const revenueForProduct = totalQty > 0 ? (amount * quantity / totalQty) : amount;
       
@@ -116,17 +192,10 @@ app.post('/api/sales/entry', (req,res) => {
 
   persist();
 
-  // ===  LIVE UPDATES BROADCASTS ===
   io.emit('sales:update', DATA.sales);
   io.emit('products:update', DATA.products);
-
-  // Sende Rush Hour Update
-  const rushHourData = calculateRushHourData();
-  io.emit('rush-hour:update', rushHourData);
-  
-  // Sende Top Products Update
-  const topProducts = calculateTopProducts('all');
-  io.emit('top-products:update', topProducts);
+  io.emit('rush-hour:update', calculateRushHourData());
+  io.emit('top-products:update', calculateTopProducts('all'));
 
   res.json({
     ok:true,
@@ -136,18 +205,48 @@ app.post('/api/sales/entry', (req,res) => {
   });
 });
 
-// ---------- PRODUCTS / Umsatz pro Produkt ----------
+// ============================================
+// ERWEITERTE STATISTIKEN (NEU)
+// ============================================
+
+app.get('/api/statistics/overview', (req, res) => {
+  const { period, startDate, endDate } = req.query;
+  
+  /*
+    period: 'all' | 'daily' | 'weekly' | 'monthly'
+    startDate: '2025-10-01' (optional)
+    endDate: '2025-10-31' (optional)
+  */
+  
+  const stats = calculateStatistics(period, startDate, endDate);
+  res.json(stats);
+});
+
+app.get('/api/statistics/products', (req, res) => {
+  const { period, startDate, endDate } = req.query;
+  const stats = calculateProductStatistics(period, startDate, endDate);
+  res.json(stats);
+});
+
+app.get('/api/statistics/timeline', (req, res) => {
+  const { groupBy, startDate, endDate } = req.query;
+  // groupBy: 'day' | 'week' | 'month'
+  const timeline = calculateTimeline(groupBy || 'day', startDate, endDate);
+  res.json(timeline);
+});
+
+// ============================================
+// PRODUCTS
+// ============================================
+
 app.get('/api/products', (req,res) => {
   res.json(DATA.products || {});
 });
 
-// ---------- LOYALTY / Treuepunkte Lifetime ----------
-/*
-DATA.loyalty = {
-  "Kunde A": 12,
-  "Kunde B": 5
-}
-*/
+// ============================================
+// LOYALTY / TREUEPUNKTE
+// ============================================
+
 app.get('/api/loyalty', (req,res) => {
   res.json(DATA.loyalty || {});
 });
@@ -164,11 +263,9 @@ app.post('/api/loyalty', (req,res) => {
 
   persist();
 
-  // Berechne Level für Broadcasting
   const oldLevel = calculateLevelForPoints(oldPoints);
   const newLevel = calculateLevelForPoints(newPoints);
 
-  // Erstelle vollständige Update-Daten
   const loyaltyUpdate = {
     type: 'loyalty_points_update',
     timestamp: new Date().toISOString(),
@@ -203,7 +300,6 @@ app.delete('/api/loyalty', (req,res) => {
 
   persist();
 
-  // Erstelle Update-Daten für Löschung
   const loyaltyUpdate = {
     type: 'loyalty_points_update',
     timestamp: new Date().toISOString(),
@@ -224,20 +320,29 @@ app.delete('/api/loyalty', (req,res) => {
   res.json({ok:true, loyalty:DATA.loyalty});
 });
 
-// ---------- RUSH HOUR ANALYSE ----------
+// ============================================
+// RUSH HOUR ANALYSE
+// ============================================
+
 app.get('/api/rush-hour', (req, res) => {
   const data = calculateRushHourData();
   res.json(data);
 });
 
-// ---------- TOP PRODUKTE ----------
+// ============================================
+// TOP PRODUKTE
+// ============================================
+
 app.get('/api/top-products', (req, res) => {
-  const period = req.query.period || 'all'; // today, week, month, all
+  const period = req.query.period || 'all';
   const data = calculateTopProducts(period);
   res.json(data);
 });
 
-// ---------- STATS LÖSCHEN - ERWEITERT ----------
+// ============================================
+// STATS LÖSCHEN
+// ============================================
+
 app.delete('/api/stats', (req, res) => {
   const { scope } = req.body || {};
   
@@ -308,23 +413,16 @@ app.delete('/api/stats', (req, res) => {
     success: true
   };
   
-  // === LIVE UPDATES BROADCASTS ===
   io.emit('stats:deleted', statsDeleted);
   
   if (affectedSales) {
     io.emit('sales:update', DATA.sales);
-    
-    // Aktualisiere auch Rush Hour nach Sales-Löschung
-    const rushHourData = calculateRushHourData();
-    io.emit('rush-hour:update', rushHourData);
+    io.emit('rush-hour:update', calculateRushHourData());
   }
   
   if (affectedProducts) {
     io.emit('products:update', DATA.products);
-    
-    // Aktualisiere Top Products
-    const topProducts = calculateTopProducts('all');
-    io.emit('top-products:update', topProducts);
+    io.emit('top-products:update', calculateTopProducts('all'));
   }
   
   res.json({ 
@@ -340,20 +438,7 @@ app.delete('/api/stats', (req, res) => {
 // ============================================
 
 function parseProductsFromGrund(grund) {
-  /*
-    Parst Produkte aus einem Grund wie:
-    "PlayUP | 30.10. | 2x Pop UP + 1x Burn UP + 3x Boost UP | Essen & Trinken"
-    
-    Returns: [
-      { name: 'Pop UP', qty: 2 },
-      { name: 'Burn UP', qty: 1 },
-      { name: 'Boost UP', qty: 3 }
-    ]
-  */
   const products = [];
-  
-  // Regex um "Nx Produktname" zu finden
-  // Suche nach Mustern wie "2x Pop UP" oder "1x Burn UP"
   const regex = /(\d+)x\s*([^+|]+?)(?=\s*(?:\+|$|\|))/g;
   let match;
   
@@ -361,17 +446,230 @@ function parseProductsFromGrund(grund) {
     const qty = parseInt(match[1]);
     const name = match[2].trim();
     
-    // Filtere nur echte Produktnamen (keine Kategorien, Datums oder Personen-Angaben)
-    // Ignoriere Einträge die nur aus Zahlen bestehen oder Datum-Format haben
     if (name && 
-        !name.match(/^\d{1,2}\.\d{1,2}\.?$/) &&  // Ignoriere Datumsformate wie "30.10."
-        !name.match(/^\d+P$/) &&                  // Ignoriere Personen-Angaben wie "2P"
-        name.length > 1) {                         // Name muss mindestens 2 Zeichen haben
+        !name.match(/^\d{1,2}\.\d{1,2}\.?$/) &&
+        !name.match(/^\d+P$/) &&
+        name.length > 1) {
       products.push({ name, qty });
     }
   }
   
   return products;
+}
+
+function filterSalesByDateRange(startDate, endDate) {
+  const filtered = {};
+  const start = startDate ? new Date(startDate) : new Date('2000-01-01');
+  const end = endDate ? new Date(endDate) : new Date();
+  
+  Object.keys(DATA.sales).forEach(dateKey => {
+    const date = new Date(dateKey);
+    if (date >= start && date <= end) {
+      filtered[dateKey] = DATA.sales[dateKey];
+    }
+  });
+  
+  return filtered;
+}
+
+function calculateStatistics(period, startDate, endDate) {
+  const salesData = filterSalesByDateRange(startDate, endDate);
+  const dates = Object.keys(salesData).sort();
+  
+  if (dates.length === 0) {
+    return {
+      totalRevenue: 0,
+      totalTransactions: 0,
+      averageTransaction: 0,
+      totalDays: 0,
+      averagePerDay: 0,
+      firstSale: null,
+      lastSale: null,
+      bestDay: null,
+      worstDay: null
+    };
+  }
+  
+  let totalRevenue = 0;
+  let totalTransactions = 0;
+  let bestDay = { date: null, revenue: 0 };
+  let worstDay = { date: null, revenue: Infinity };
+  
+  dates.forEach(date => {
+    const dayData = salesData[date];
+    totalRevenue += dayData.total;
+    totalTransactions += dayData.entries.length;
+    
+    if (dayData.total > bestDay.revenue) {
+      bestDay = { date, revenue: dayData.total };
+    }
+    if (dayData.total < worstDay.revenue) {
+      worstDay = { date, revenue: dayData.total };
+    }
+  });
+  
+  const averageTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+  const averagePerDay = dates.length > 0 ? totalRevenue / dates.length : 0;
+  
+  return {
+    type: 'statistics_overview',
+    timestamp: new Date().toISOString(),
+    period: period || 'custom',
+    dateRange: {
+      start: dates[0],
+      end: dates[dates.length - 1]
+    },
+    totalRevenue: Math.round(totalRevenue * 100) / 100,
+    totalTransactions,
+    averageTransaction: Math.round(averageTransaction * 100) / 100,
+    totalDays: dates.length,
+    averagePerDay: Math.round(averagePerDay * 100) / 100,
+    firstSale: dates[0],
+    lastSale: dates[dates.length - 1],
+    bestDay: bestDay.date ? bestDay : null,
+    worstDay: worstDay.date !== null && worstDay.revenue !== Infinity ? worstDay : null
+  };
+}
+
+function calculateProductStatistics(period, startDate, endDate) {
+  const salesData = filterSalesByDateRange(startDate, endDate);
+  const productStats = {};
+  
+  Object.values(salesData).forEach(day => {
+    if (day.entries) {
+      day.entries.forEach(entry => {
+        if (entry.grund) {
+          const products = parseProductsFromGrund(entry.grund);
+          products.forEach(product => {
+            if (!productStats[product.name]) {
+              productStats[product.name] = {
+                name: product.name,
+                quantity: 0,
+                revenue: 0,
+                transactions: 0
+              };
+            }
+            productStats[product.name].quantity += product.qty;
+            productStats[product.name].transactions += 1;
+            
+            const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
+            const revenueForProduct = totalQty > 0 ? (entry.betrag * product.qty / totalQty) : 0;
+            productStats[product.name].revenue += revenueForProduct;
+          });
+        }
+      });
+    }
+  });
+  
+  const totalRevenue = Object.values(productStats).reduce((sum, p) => sum + p.revenue, 0);
+  
+  const sorted = Object.values(productStats)
+    .map(p => ({
+      ...p,
+      revenue: Math.round(p.revenue * 100) / 100,
+      percentage: totalRevenue > 0 ? Math.round((p.revenue / totalRevenue * 100) * 10) / 10 : 0,
+      avgPrice: p.quantity > 0 ? Math.round((p.revenue / p.quantity) * 100) / 100 : 0
+    }))
+    .sort((a, b) => b.revenue - a.revenue);
+  
+  return {
+    type: 'product_statistics',
+    timestamp: new Date().toISOString(),
+    period: period || 'custom',
+    totalProducts: sorted.length,
+    totalRevenue: Math.round(totalRevenue * 100) / 100,
+    products: sorted
+  };
+}
+
+function calculateTimeline(groupBy, startDate, endDate) {
+  const salesData = filterSalesByDateRange(startDate, endDate);
+  const dates = Object.keys(salesData).sort();
+  
+  if (dates.length === 0) {
+    return {
+      type: 'timeline',
+      groupBy,
+      data: []
+    };
+  }
+  
+  let grouped = {};
+  
+  if (groupBy === 'day') {
+    // Täglich: Daten wie sie sind
+    dates.forEach(date => {
+      grouped[date] = {
+        period: date,
+        revenue: salesData[date].total,
+        transactions: salesData[date].entries.length
+      };
+    });
+  } else if (groupBy === 'week') {
+    // Wöchentlich: Gruppiere nach Wochen
+    dates.forEach(dateKey => {
+      const date = new Date(dateKey);
+      const weekStart = getWeekStart(date);
+      const weekKey = getDateKey(weekStart);
+      
+      if (!grouped[weekKey]) {
+        grouped[weekKey] = {
+          period: `KW ${getWeekNumber(weekStart)} ${weekStart.getFullYear()}`,
+          revenue: 0,
+          transactions: 0
+        };
+      }
+      grouped[weekKey].revenue += salesData[dateKey].total;
+      grouped[weekKey].transactions += salesData[dateKey].entries.length;
+    });
+  } else if (groupBy === 'month') {
+    // Monatlich: Gruppiere nach Monaten
+    dates.forEach(dateKey => {
+      const date = new Date(dateKey);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = {
+          period: monthKey,
+          revenue: 0,
+          transactions: 0
+        };
+      }
+      grouped[monthKey].revenue += salesData[dateKey].total;
+      grouped[monthKey].transactions += salesData[dateKey].entries.length;
+    });
+  }
+  
+  const timeline = Object.keys(grouped).sort().map(key => ({
+    ...grouped[key],
+    revenue: Math.round(grouped[key].revenue * 100) / 100
+  }));
+  
+  return {
+    type: 'timeline',
+    timestamp: new Date().toISOString(),
+    groupBy,
+    dateRange: {
+      start: dates[0],
+      end: dates[dates.length - 1]
+    },
+    data: timeline
+  };
+}
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Montag als Wochenstart
+  return new Date(d.setDate(diff));
+}
+
+function getWeekNumber(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
 function calculateLevelForPoints(points) {
@@ -448,7 +746,6 @@ function calculateTopProducts(period) {
       }
       break;
     case 'week':
-      // Letzte 7 Tage
       for (let i = 0; i < 7; i++) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -459,7 +756,6 @@ function calculateTopProducts(period) {
       }
       break;
     case 'month':
-      // Letzter Monat
       for (let i = 0; i < 30; i++) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -477,7 +773,6 @@ function calculateTopProducts(period) {
       });
   }
   
-  // Extrahiere Produkte aus allen Sales Einträgen
   const productStats = {};
   sales.forEach(entry => {
     if (entry.grund) {
@@ -491,7 +786,6 @@ function calculateTopProducts(period) {
           };
         }
         productStats[product.name].quantity += product.qty;
-        // Vereinfachte Revenue-Berechnung
         const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
         const revenueForProduct = totalQty > 0 ? (entry.betrag * product.qty / totalQty) : 0;
         productStats[product.name].revenue += revenueForProduct;
@@ -505,7 +799,7 @@ function calculateTopProducts(period) {
     .map(p => ({
       ...p,
       percentage: totalRevenue > 0 ? (p.revenue / totalRevenue * 100).toFixed(1) : 0,
-      trend: 'stable' // TODO: Implement trend calculation
+      trend: 'stable'
     }))
     .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 10);
@@ -534,14 +828,16 @@ function getDateKey(date) {
 // ============================================
 
 io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
+  console.log('🔌 Socket connected:', socket.id);
   
   // Sende initiale Daten
   socket.emit('config:update', DATA.config || {});
   socket.emit('sales:update', DATA.sales || {});
   socket.emit('products:update', DATA.products || {});
+  socket.emit('settings:update', DATA.settings || {});
+  socket.emit('calculator:init', DATA.calculatorStates || {});
   
-  // Sende Loyalty-Daten im erweiterten Format
+  // Loyalty-Daten
   const loyaltyUpdate = {
     type: 'loyalty_points_update',
     timestamp: new Date().toISOString(),
@@ -555,23 +851,30 @@ io.on('connection', (socket) => {
   };
   socket.emit('loyalty:update', loyaltyUpdate);
   
-  // Sende Rush Hour Daten
-  const rushHourData = calculateRushHourData();
-  socket.emit('rush-hour:update', rushHourData);
-  
-  // Sende Top Products
-  const topProducts = calculateTopProducts('all');
-  socket.emit('top-products:update', topProducts);
+  // Rush Hour & Top Products
+  socket.emit('rush-hour:update', calculateRushHourData());
+  socket.emit('top-products:update', calculateTopProducts('all'));
   
   socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
+    console.log('❌ Socket disconnected:', socket.id);
   });
 });
 
-// fallback => SPA
+// Fallback für SPA
 app.get('*', (req,res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, ()=> console.log('Server listening on', PORT));
+server.listen(PORT, ()=> {
+  console.log(`
+  ╔═══════════════════════════════════════════╗
+  ║   🎮 Play UP Server v1.8.0               ║
+  ║   🚀 Running on http://localhost:${PORT}   ║
+  ║                                           ║
+  ║   ✅ Vollständige Persistenz aktiv       ║
+  ║   📊 Erweiterte Statistiken verfügbar    ║
+  ║   🔴 Live-Updates aktiviert              ║
+  ╚═══════════════════════════════════════════╝
+  `);
+});
