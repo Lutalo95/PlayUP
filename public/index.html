@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html class="h-full" lang="de">
 <head>
 <meta charset="utf-8"/>
@@ -8,243 +7,240 @@
 
 <!-- Socket.IO Client für Live Updates -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     tailwind.config = { darkMode: 'class' };
-  </script>
+</script>
 <style>
-    :root {
-      --accent: #4B0082;
-      --bg-light: radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed;
-      --bg-dark: radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed;
-      --hairline: rgba(0,0,0,.08);
-      --hairline-dark: rgba(255,255,255,.12);
-    }
+:root {
+  --accent: #4B0082;
+  --bg-light: radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed;
+  --bg-dark: radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed;
+  --hairline: rgba(0,0,0,.08);
+  --hairline-dark: rgba(255,255,255,.12);
+}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-      margin: 0;
-      color: #1d1d1f;
-      background: var(--bg-light);
-    }
-    body.dark {
-      color: #f5f5f7;
-      background: var(--bg-dark);
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  margin: 0;
+  color: #1d1d1f;
+  background: var(--bg-light);
+}
+body.dark {
+  color: #f5f5f7;
+  background: var(--bg-dark);
+}
 
-    .hairline { border: 1px solid var(--hairline); }
-    body.dark .hairline { border-color: var(--hairline-dark); }
+.hairline { border: 1px solid var(--hairline); }
+body.dark .hairline { border-color: var(--hairline-dark); }
 
-    .surface {
-      background: rgba(255,255,255,.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.06);
-      border-radius: 1.25rem;
-      border: 1px solid rgba(0,0,0,.06);
-    }
-    body.dark .surface {
-      background: rgba(20,20,22,.7);
-      border-color: rgba(255,255,255,.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,.4);
-    }
+.surface {
+  background: rgba(255,255,255,.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(0,0,0,.06);
+}
+body.dark .surface {
+  background: rgba(20,20,22,.7);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
 
-    input[type="number"] { -moz-appearance: textfield; }
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-    .tabs-container {
-      position: relative;
-      display: flex;
-      gap: .25rem;
-      align-items: center;
-      padding: .25rem;
-      border-radius: 9999px;
-      border: 1px solid var(--hairline);
-      background: rgba(0,0,0,.04);
-    }
-    body.dark .tabs-container {
-      background: rgba(255,255,255,.06);
-      border-color: var(--hairline-dark);
-    }
-    .tab-button {
-      position: relative;
-      z-index: 10;
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-      padding: .375rem .875rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      font-size: .9rem;
-      color: inherit;
-      transition: color .2s ease;
-    }
-    .tab-button.active { color: #000; }
-    body.dark .tab-button.active { color: #111; }
-    .tab-button:hover { color: var(--accent); }
+.tabs-container {
+  position: relative;
+  display: flex;
+  gap: .25rem;
+  align-items: center;
+  padding: .25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  background: rgba(0,0,0,.04);
+}
+body.dark .tabs-container {
+  background: rgba(255,255,255,.06);
+  border-color: var(--hairline-dark);
+}
+.tab-button {
+  position: relative;
+  z-index: 10;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: .375rem .875rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: .9rem;
+  color: inherit;
+  transition: color .2s ease;
+}
+.tab-button.active { color: #000; }
+body.dark .tab-button.active { color: #111; }
+.tab-button:hover { color: var(--accent); }
 
-    .tabs-slider {
-      position: absolute;
-      top: 4px;
-      height: calc(100% - 8px);
-      width: var(--tab-width, 0px);
-      left: var(--tab-left, 0px);
-      border-radius: 9999px;
-      background: var(--accent);
-      transition: left .25s ease, width .25s ease, background-color .25s ease;
-      z-index: 5;
-    }
+.tabs-slider {
+  position: absolute;
+  top: 4px;
+  height: calc(100% - 8px);
+  width: var(--tab-width, 0px);
+  left: var(--tab-left, 0px);
+  border-radius: 9999px;
+  background: var(--accent);
+  transition: left .25s ease, width .25s ease, background-color .25s ease;
+  z-index: 5;
+}
 
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      border-radius: 9999px;
-      overflow: hidden;
-      background: rgba(0,0,0,.06);
-      min-width: 140px;
-      justify-content: center;
-    }
-    body.dark .quantity-control { background: rgba(255,255,255,.08); }
-    .quantity-control button {
-      border: 0;
-      background: transparent;
-      padding: .35rem .6rem;
-      font-size: 1.1rem;
-      line-height: 1;
-      cursor: pointer;
-      color: inherit;
-    }
-    .quantity-control button:hover { background: rgba(0,0,0,.06); }
-    body.dark .quantity-control button:hover { background: rgba(255,255,255,.12); }
-    .quantity-control input {
-      width: 3rem;
-      text-align: center;
-      border: 0;
-      background: transparent;
-      padding: .35rem .25rem;
-      color: inherit;
-      outline: none;
-    }
+.quantity-control {
+  display: flex;
+  align-items: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(0,0,0,.06);
+  min-width: 140px;
+  justify-content: center;
+}
+body.dark .quantity-control { background: rgba(255,255,255,.08); }
+.quantity-control button {
+  border: 0;
+  background: transparent;
+  padding: .35rem .6rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+.quantity-control button:hover { background: rgba(0,0,0,.06); }
+body.dark .quantity-control button:hover { background: rgba(255,255,255,.12); }
+.quantity-control input {
+  width: 3rem;
+  text-align: center;
+  border: 0;
+  background: transparent;
+  padding: .35rem .25rem;
+  color: inherit;
+  outline: none;
+}
 
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: .5rem;
-      z-index: 50;
-    }
-    .dropdown-content.show {
-      display: block;
-    }
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: .5rem;
+  z-index: 50;
+}
+.dropdown-content.show {
+  display: block;
+}
 
+#headerImage {
+  opacity:0;
+  transform:scale(.9) translateY(6px);
+  transition: all .5s ease;
+}
+#headerImage.loaded {
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
 
-    #headerImage {
-      opacity:0;
-      transform:scale(.9) translateY(6px);
-      transition: all .5s ease;
-    }
-    #headerImage.loaded {
-      opacity:1;
-      transform:scale(1) translateY(0);
-    }
+#receiptPopup {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  background: white;
+  color: black;
+  font-family: monospace;
+  font-size: .8rem;
+  line-height:1.2;
+  border: 1px solid #000;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  border-radius: .5rem;
+  padding: 1rem;
+  min-width: 200px;
+  max-width: 240px;
+  max-height: 0;
+  overflow: hidden;
+  z-index:1500;
+  display:none;
+}
+body.dark #receiptPopup {
+  background: #1e1e1e;
+  color: #fff;
+  border-color:#fff;
+}
+#receiptPopup.showing {
+  animation: roll 0.4s ease forwards;
+  display:block;
+}
+@keyframes roll {
+  from { max-height: 0; }
+  to   { max-height: 300px; }
+}
 
+#versionBadge {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1200;
+  background: rgba(0,0,0,.7);
+  color:#fff;
+  font-size:.7rem;
+  line-height:1.2;
+  padding:.5rem .75rem;
+  border-radius:.75rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  cursor:pointer;
+}
+body.dark #versionBadge {
+  background: rgba(255,255,255,.15);
+  color:#fff;
+}
 
-    #receiptPopup {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
-      background: white;
-      color: black;
-      font-family: monospace;
-      font-size: .8rem;
-      line-height:1.2;
-      border: 1px solid #000;
-      box-shadow: 0 10px 30px rgba(0,0,0,.4);
-      border-radius: .5rem;
-      padding: 1rem;
-      min-width: 200px;
-      max-width: 240px;
-      max-height: 0;
-      overflow: hidden;
-      z-index:1500;
-      display:none;
-    }
-    body.dark #receiptPopup {
-      background: #1e1e1e;
-      color: #fff;
-      border-color:#fff;
-    }
-    #receiptPopup.showing {
-      animation: roll 0.4s ease forwards;
-      display:block;
-    }
-    @keyframes roll {
-      from { max-height: 0; }
-      to   { max-height: 300px; }
-    }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+  overflow-y: auto;
+}
+.modal-card {
+  background: rgba(255,255,255,.95);
+  color:#1d1d1f;
+  border-radius:1rem;
+  padding:1.5rem;
+  width:min(920px,92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  border:1px solid rgba(0,0,0,.06);
+  position:relative;
+  margin: 2rem auto;
+}
+body.dark .modal-card {
+  background: rgba(28,28,30,.95);
+  color:#f5f5f7;
+  border-color:rgba(255,255,255,.12);
+}
 
-    /* Version badge bottom-right */
-    #versionBadge {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
-      z-index: 1200;
-      background: rgba(0,0,0,.7);
-      color:#fff;
-      font-size:.7rem;
-      line-height:1.2;
-      padding:.5rem .75rem;
-      border-radius:.75rem;
-      box-shadow:0 10px 30px rgba(0,0,0,.5);
-      cursor:pointer;
-    }
-    body.dark #versionBadge {
-      background: rgba(255,255,255,.15);
-      color:#fff;
-    }
+.scroll-area {
+  max-height:200px;
+  overflow:auto;
+  font-size:.8rem;
+  line-height:1.3;
+  white-space:pre-wrap;
+}
 
+.hidden { display:none; }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.5);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:2000;
-    }
-    .modal-card {
-      background: rgba(255,255,255,.95);
-      color:#1d1d1f;
-      border-radius:1rem;
-      padding:1.5rem;
-      width:min(620px,92vw);
-      box-shadow:0 20px 60px rgba(0,0,0,.25);
-      border:1px solid rgba(0,0,0,.06);
-      position:relative;
-    }
-    body.dark .modal-card {
-      background: rgba(28,28,30,.95);
-      color:#f5f5f7;
-      border-color:rgba(255,255,255,.12);
-    }
-
-    .scroll-area {
-      max-height:200px;
-      overflow:auto;
-      font-size:.8rem;
-      line-height:1.3;
-      white-space:pre-wrap;
-    }
-
-    .hidden { display:none; }
-
-
-    
 .theme-select {
   appearance: none;
   background: rgba(0,0,0,.06);
@@ -270,14 +266,12 @@ body.dark .theme-select option {
   color: #f5f5f5;
 }
 
-  
 #statsModal .modal-card {
   max-height: 90vh;
   overflow-y: auto;
 }
 
-
-/* === Animations für Header === */
+/* Animations */
 #headerImage {
   opacity: 0;
   transform: scale(1.4) translateY(-40px);
@@ -311,8 +305,6 @@ body.dark .theme-select option {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-
-/* === Button-Klick Animation === */
 .quantity-control button {
   transition: transform 0.1s ease, background-color 0.2s ease;
 }
@@ -323,12 +315,10 @@ body.dark .theme-select option {
   color: white;
 }
 
-/* Allgemeiner Hover-Effekt */
 .quantity-control button:hover {
   transform: scale(1.1);
 }
 
-/* Kleine Pop-Animation beim Wertwechsel */
 @keyframes pulse {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.15); }
@@ -339,8 +329,6 @@ body.dark .theme-select option {
   animation: pulse 0.25s ease;
 }
 
-
-/* === Microanimation: Button Shake === */
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(2deg); }
@@ -351,7 +339,6 @@ button:active {
   animation: wiggle 0.25s ease;
 }
 
-/* === Sanftes Scrollen === */
 html {
   scroll-behavior: smooth;
 }
@@ -401,7 +388,6 @@ html {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Utility Classes */
 .fade-in { animation: fadeIn 0.3s ease-out forwards; }
 .flash-highlight { animation: flashHighlight 2s ease-out; }
 .pulse-animation { animation: pulse 1s ease-in-out 3; }
@@ -469,7 +455,7 @@ body.dark .notification-toast {
   font-size: 0.85em;
   font-weight: 600;
   display: inline-block;
-  white-space: nowrap;
+  whitespace: nowrap;
 }
 
 .points-badge {
@@ -682,6 +668,58 @@ body.dark .connection-status {
   animation: fadeOut 0.5s ease-out forwards;
 }
 
+/* Filter Buttons */
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--hairline);
+  background: rgba(0,0,0,.03);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.filter-btn:hover:not(.active) {
+  background: rgba(0,0,0,.08);
+}
+
+body.dark .filter-btn {
+  background: rgba(255,255,255,.05);
+  border-color: var(--hairline-dark);
+}
+
+body.dark .filter-btn:hover:not(.active) {
+  background: rgba(255,255,255,.1);
+}
+
+/* Date Input */
+.date-input {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--hairline);
+  background: rgba(0,0,0,.03);
+  font-size: 0.85rem;
+  color: inherit;
+  outline: none;
+}
+
+body.dark .date-input {
+  background: rgba(255,255,255,.05);
+  border-color: var(--hairline-dark);
+}
+
+.date-input:focus {
+  border-color: var(--accent);
+  background: rgba(75, 0, 130, 0.05);
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .notification-toast {
@@ -699,218 +737,302 @@ body.dark .connection-status {
     margin: 20px;
     padding: 30px 20px;
   }
+  
+  .modal-card {
+    width: 95vw;
+    padding: 1rem;
+  }
 }
 
 </style>
 </head>
 <body class="min-h-full dark:bg-black dark:text-gray-100">
 <div id="receiptPopup"></div>
-<div class="modal-backdrop" id="welcomeModal" style="display:flex;">
+
+<!-- Welcome Modal -->
+<div class="modal-backdrop" id="welcomeModal" style="display:none;">
 <div class="modal-card text-center">
 <h2 class="text-2xl font-bold mb-3 text-[color:var(--accent)]">👋 Willkommen bei Play UP!</h2>
-<p class="text-sm mb-4 opacity-80">Check immer mal wieder den Changelog! Einfach unten Rechts den Button Klicken. Meist kommen direkt nützliche und Interessante Sachen! Viel Spaß beim Verkauf! Lutalo#1</p>
+<p class="text-sm mb-4 opacity-80">v1.8.0 - Jetzt mit vollständiger Persistenz und erweiterten Statistiken! Alle Daten bleiben dauerhaft gespeichert. Viel Spaß! Lutalo#1</p>
 <button class="bg-[color:var(--accent)] text-white px-4 py-2 rounded-full font-semibold" onclick="closeWelcome()">Los geht's 🚀</button>
 </div>
 </div>
+
+<!-- Version Badge -->
 <div id="versionBadge">
-<div>v1.7.0</div>
-<div>Stand: 29.10.2025 🔔</div>
+<div>v1.8.0</div>
+<div>Stand: 31.10.2025 🔥</div>
 </div>
+
+<!-- Stats Modal - ERWEITERT -->
 <div class="modal-backdrop" id="statsModal">
 <div class="modal-card">
 <button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeStats()">X</button>
-<h3 class="text-xl font-bold mb-4 flex items-center gap-2">📈 Umsatzverlauf</h3>
-<canvas class="w-full h-40 mb-4" id="statsChart"></canvas>
-<h3 class="text-lg font-bold mb-2 flex items-center gap-2">🏷️ Umsatz pro Produkt</h3>
-<canvas class="w-full h-40 mb-4" id="productStatsChart"></canvas>
-<button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg text-sm mb-4" onclick="resetProductStats()">🔁 Produktstatistik löschen</button>
-<div class="relative mb-4">
-<button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleTopProductsDropdown()">
-          🏆 Top Produkte <span>▾</span>
-</button>
-<div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="topProductsDropdown">
-<div id="topProductsList">Noch keine Verkäufe.</div>
+
+<h3 class="text-2xl font-bold mb-4 flex items-center gap-2">📊 Erweiterte Statistiken</h3>
+
+<!-- Filter Section -->
+<div class="mb-6 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+  <h4 class="font-bold mb-3 text-sm uppercase tracking-wide opacity-70">Zeitraum-Filter</h4>
+  
+  <div class="flex flex-wrap gap-2 mb-4">
+    <button class="filter-btn active" data-period="all" onclick="setStatsPeriod('all')">📅 Gesamt</button>
+    <button class="filter-btn" data-period="today" onclick="setStatsPeriod('today')">🌅 Heute</button>
+    <button class="filter-btn" data-period="weekly" onclick="setStatsPeriod('weekly')">📊 Wöchentlich</button>
+    <button class="filter-btn" data-period="monthly" onclick="setStatsPeriod('monthly')">📈 Monatlich</button>
+    <button class="filter-btn" data-period="custom" onclick="setStatsPeriod('custom')">⚙️ Benutzerdefiniert</button>
+  </div>
+  
+  <div id="customDateRange" class="hidden flex flex-wrap gap-3 items-center">
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-semibold opacity-70">Von:</label>
+      <input type="date" id="statsStartDate" class="date-input" />
+    </div>
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-semibold opacity-70">Bis:</label>
+      <input type="date" id="statsEndDate" class="date-input" />
+    </div>
+    <button class="bg-[color:var(--accent)] text-white px-4 py-2 rounded-lg text-sm font-semibold" onclick="applyCustomDateRange()">Anwenden</button>
+  </div>
+  
+  <div class="flex flex-wrap gap-2 mt-4">
+    <span class="text-xs opacity-60">Gruppierung:</span>
+    <button class="filter-btn" data-group="day" onclick="setStatsGrouping('day')">📅 Tag</button>
+    <button class="filter-btn active" data-group="week" onclick="setStatsGrouping('week')">📊 Woche</button>
+    <button class="filter-btn" data-group="month" onclick="setStatsGrouping('month')">📈 Monat</button>
+  </div>
 </div>
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <div class="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20">
+    <div class="text-xs opacity-70 mb-1">Gesamtumsatz</div>
+    <div class="text-2xl font-bold" id="statsTotal Revenue">0$</div>
+  </div>
+  <div class="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20">
+    <div class="text-xs opacity-70 mb-1">Transaktionen</div>
+    <div class="text-2xl font-bold" id="statsTotalTransactions">0</div>
+  </div>
+  <div class="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20">
+    <div class="text-xs opacity-70 mb-1">Ø pro Tag</div>
+    <div class="text-2xl font-bold" id="statsAvgPerDay">0$</div>
+  </div>
+  <div class="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/20">
+    <div class="text-xs opacity-70 mb-1">Tage aktiv</div>
+    <div class="text-2xl font-bold" id="statsTotalDays">0</div>
+  </div>
 </div>
-<div class="scroll-area hairline rounded-md p-2 bg-black/5 dark:bg-white/10 mb-4 text-sm" id="statsList"></div>
-<div class="relative mb-4">
-<button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleRushHourDropdown()">
+
+<!-- Timeline Chart -->
+<h4 class="font-bold mb-3 flex items-center gap-2">📈 Umsatzverlauf</h4>
+<canvas class="w-full h-64 mb-6" id="timelineChart"></canvas>
+
+<!-- Product Stats -->
+<h4 class="font-bold mb-3 flex items-center gap-2">🏷️ Produkt-Statistiken</h4>
+<canvas class="w-full h-48 mb-4" id="productStatsChart"></canvas>
+
+<!-- Action Buttons -->
+<div class="flex flex-wrap gap-2 mt-4">
+  <button class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg text-sm" onclick="resetProductStats()">🔁 Produktstatistik löschen</button>
+  <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm" onclick="resetStats()">🗑️ Verlauf löschen</button>
+</div>
+
+<!-- Top Products Dropdown -->
+<div class="relative mt-4">
+  <button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleTopProductsDropdown()">
+    🏆 Top Produkte <span>▾</span>
+  </button>
+  <div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="topProductsDropdown">
+    <div id="topProductsList">Noch keine Verkäufe.</div>
+  </div>
+</div>
+
+<!-- Rush Hour Analysis Dropdown -->
+<div class="relative mt-4">
+  <button class="w-full bg-[color:var(--accent)] text-white font-semibold py-2 px-4 rounded-lg text-sm flex justify-between items-center" onclick="toggleRushHourDropdown()">
     🚦 Rush-Hour Analyse <span>▾</span>
-</button>
-<div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="rushHourDropdown">
-<canvas class="w-full h-32" id="rushHourDropdownChart"></canvas>
+  </button>
+  <div class="dropdown-content surface p-3 w-full mt-2 text-sm" id="rushHourDropdown">
+    <canvas class="w-full h-32" id="rushHourDropdownChart"></canvas>
+  </div>
+</div>
+
+<!-- Stats List -->
+<div class="scroll-area hairline rounded-md p-2 bg-black/5 dark:bg-white/10 mt-4 text-sm" id="statsList"></div>
 </div>
 </div>
-<button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm" onclick="resetStats()">Verlauf löschen</button>
-</div>
-</div>
+
 <!-- Changelog Modal -->
 <div class="modal-backdrop" id="changelogModal">
 <div class="modal-card">
 <button class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/10 text-xs dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20" onclick="closeChangelog()">X</button>
-<h3 class="text-xl font-bold mb-2">Lutalo machts möglich! 1.7.0 </h3>
+<h3 class="text-xl font-bold mb-2">🔥 Changelog v1.8.0</h3>
 <ul class="text-sm space-y-2 leading-5">
 <br/>
-<h3>📝 Changelog</h3>
+<h3>🎉 MEGA UPDATE vom 31.10.25:</h3>
 <ul>
-<li>📍 NEUER CHANGELOG VOM 29.10.25 📍</li>
-<li>💾 PERSISTENTE DATENSPEICHERUNG!</li>
-<li>🔄 Verkäufe werden in data.json gespeichert</li>
-<li>📊 Produktstatistiken bleiben nach Reload erhalten</li>
-<li>🔴 Automatisches Laden vom Server beim Start</li>
-<li>✅ Offline-Fallback mit localStorage</li>
-<li>🚀 Daten überleben Server-Neustarts!</li>
-<br/>
+<li>✅ VOLLSTÄNDIGE PERSISTENZ!</li>
+<li>💾 Alle Calculator States bleiben gespeichert</li>
+<li>🎨 Theme & Dark Mode werden gespeichert</li>
+<li>📊 Erweiterte Statistiken mit Filtern</li>
+<li>📅 Zeitraum-Filter (Gesamt/Täglich/Wöchentlich/Monatlich)</li>
+<li>🔍 Benutzerdefinierte Datum-Auswahl</li>
+<li>📈 Timeline-Ansicht mit Gruppierung</li>
+<li>🚀 Automatisches Speichern aller Daten</li>
+<li>🔴 Keine automatischen Resets mehr!</li>
+<li>⚡ Schnellere Performance</li>
 <br/>
 <li>📍 LETZTER CHANGELOG VOM 29.10.25 WAR: 📍</li>
-<li>🔴 LIVE-UPDATES für Umsatzverlauf aktiviert</li>
-<li>🔴 LIVE-UPDATES für Produktstatistik aktiviert</li>
-<li>🔴 LIVE-UPDATES für Löschfunktionen aktiviert</li>
-<li>📊 Echtzeit-Synchronisation aller Clients</li>
-<li>✨ Animierte Chart-Updates bei neuen Verkäufen</li>
-<li>🎨 Verbesserte Visualisierung bei Datenänderungen</li>
+<li>🔴 LIVE-UPDATES aktiviert</li>
+<li>💾 Persistente Datenspeicherung in data.json</li>
+<li>📊 Produktstatistiken korrigiert</li>
 </ul>
 </ul>
-<div class="text-[10px] text-right mt-4 opacity-60 select-none">29.10.25 1.7.0</div>
+<div class="text-[10px] text-right mt-4 opacity-60 select-none">31.10.25 v1.8.0</div>
 </div>
 </div>
+
+<!-- Main Content -->
 <div class="px-4 sm:px-6 lg:px-8 py-6">
 <div class="surface w-full max-w-6xl mx-auto p-6 sm:p-8 relative" id="mainSurface" style="opacity:1;">
+
+<!-- Header -->
 <div class="absolute top-4 right-4 flex flex-col items-end gap-2 text-sm z-10">
-<div class="flex items-center gap-2 text-xs">
-<label class="text-[10px] font-semibold opacity-70">Theme:</label>
-<select class="theme-select" id="themeSelect"></select>
+  <div class="flex items-center gap-2 text-xs">
+    <label class="text-[10px] font-semibold opacity-70">Theme:</label>
+    <select class="theme-select" id="themeSelect"></select>
+  </div>
+
+  <div class="flex items-center gap-2 text-sm">
+    <span aria-hidden="">🌞</span>
+    <label class="relative inline-flex items-center cursor-pointer select-none dark-toggle">
+      <input class="sr-only peer" id="themeToggle" type="checkbox"/>
+      <div class="w-12 h-6 rounded-full hairline bg-black/10 dark:bg-white/20 transition relative">
+        <span class="absolute top-[3px] left-[3px] h-5 w-5 rounded-full bg-white dark:bg-zinc-200 shadow transition-transform duration-300 ease-in-out peer-checked:translate-x-6"></span>
+      </div>
+    </label>
+    <span aria-hidden="">🌙</span>
+    <button class="px-3 py-1.5 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold text-xs whitespace-nowrap flex items-center gap-1" onclick="openStats()">
+      📈 Statistiken
+    </button>
+  </div>
 </div>
 
-<div class="flex items-center gap-2 text-sm">
-<span aria-hidden="">🌞</span>
-<label class="relative inline-flex items-center cursor-pointer select-none dark-toggle">
-<input class="sr-only peer" id="themeToggle" type="checkbox"/>
-<div class="w-12 h-6 rounded-full hairline bg-black/10 dark:bg-white/20 transition relative">
-<span class="absolute top-[3px] left-[3px] h-5 w-5 rounded-full bg-white dark:bg-zinc-200 shadow transition-transform duration-300 ease-in-out peer-checked:translate-x-6"></span>
-</div>
-</label>
-<span aria-hidden="">🌙</span>
-<button class="px-3 py-1.5 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold text-xs whitespace-nowrap flex items-center gap-1" onclick="openStats()">
-    📈 Umsatzverlauf
-  </button>
-</div>
-<style>
-/* Fallback CSS, falls Tailwind peer-check nicht greift */
-.dark-toggle input:checked + div span {
-  transform: translateX(1.5rem);
-  transition: transform 0.3s ease-in-out;
-}
-</style>
-
-</div>
 <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-6">
-<div class="flex-1 min-w-0 flex justify-start relative">
-<button class="px-4 py-2 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold flex items-center gap-2" onclick="toggleDropdown()">
-            Unternehmen <span aria-hidden="">▾</span>
-</button>
-<div class="dropdown-content surface p-4 w-80" id="unternehmenDropdown">
-<h5 class="font-bold mb-2">Unternehmen</h5>
-<div class="grid grid-cols-2 gap-2 text-sm">
-<div class="rounded-xl hairline p-2">
-<label class="inline-flex items-center gap-2">
-<input checked="" class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value=""/>
-<span class="font-semibold">Kein Unternehmen</span>
-</label>
+  <div class="flex-1 min-w-0 flex justify-start relative">
+    <button class="px-4 py-2 rounded-full hairline bg-black/5 dark:bg-white/10 font-semibold flex items-center gap-2" onclick="toggleDropdown()">
+      Unternehmen <span aria-hidden="">▾</span>
+    </button>
+    <div class="dropdown-content surface p-4 w-80" id="unternehmenDropdown">
+      <h5 class="font-bold mb-2">Unternehmen</h5>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <div class="rounded-xl hairline p-2">
+          <label class="inline-flex items-center gap-2">
+            <input checked="" class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value=""/>
+            <span class="font-semibold">Kein Unternehmen</span>
+          </label>
+        </div>
+        <div class="rounded-xl hairline p-2">
+          <h6 class="font-medium text-xs mb-1 opacity-70">10/10</h6>
+          <label class="inline-flex items-center gap-2">
+            <input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Tuner"/>
+            <span>Tuner</span>
+          </label>
+        </div>
+        <div class="rounded-xl hairline p-2">
+          <h6 class="font-medium text-xs mb-1 opacity-70">50/50</h6>
+          <div class="flex flex-col gap-1">
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Golf Club"/><span>Golf Club</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Casino"/><span>Casino</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SD"/><span>SD</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SSMC"/><span>SSMC</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="LSMD"/><span>LSMD</span></label>
+          </div>
+        </div>
+        <div class="rounded-xl hairline p-2">
+          <h6 class="font-medium text-xs mb-1 opacity-70">25/25</h6>
+          <div class="flex flex-col gap-1">
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="DDJ"/><span>DDJ</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Army"/><span>Army</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Ranger"/><span>Ranger</span></label>
+            <label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Alcatraz"/><span>Alcatraz</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-center justify-center flex-1 text-center">
+    <img alt="Logo" class="rounded-2xl hairline shadow-sm mb-2 h-[150px] w-[150px] object-cover" id="headerImage" src="https://s14.gifyu.com/images/bwJQn.png"/>
+    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-[color:var(--accent)] whitespace-nowrap" id="calculatorTitle">Play UP</h2>
+    <div class="mt-3">
+      <h4 class="text-sm font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Bestellseiten</h4>
+      <div class="tabs-container mt-2 inline-flex" id="tabsContainer">
+        <div class="tabs-slider" id="tabsSlider"></div>
+        <button class="tab-button" data-tab="1">1</button>
+        <button class="tab-button" data-tab="2">2</button>
+        <button class="tab-button" data-tab="3">3</button>
+        <button class="tab-button" data-tab="4">4</button>
+        <button class="tab-button" data-tab="5">5</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 min-w-0"></div>
 </div>
-<div class="rounded-xl hairline p-2">
-<h6 class="font-medium text-xs mb-1 opacity-70">10/10</h6>
-<label class="inline-flex items-center gap-2">
-<input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Tuner"/>
-<span>Tuner</span>
-</label>
-</div>
-<div class="rounded-xl hairline p-2">
-<h6 class="font-medium text-xs mb-1 opacity-70">50/50</h6>
-<div class="flex flex-col gap-1">
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Golf Club"/><span>Golf Club</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Casino"/><span>Casino</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SD"/><span>SD</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="SSMC"/><span>SSMC</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="LSMD"/><span>LSMD</span></label>
-</div>
-</div>
-<div class="rounded-xl hairline p-2">
-<h6 class="font-medium text-xs mb-1 opacity-70">25/25</h6>
-<div class="flex flex-col gap-1">
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="DDJ"/><span>DDJ</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Army"/><span>Army</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Ranger"/><span>Ranger</span></label>
-<label class="inline-flex items-center gap-2"><input class="accent-[color:var(--accent)]" name="company" onchange="berechne()" type="radio" value="Alcatraz"/><span>Alcatraz</span></label>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="flex flex-col items-center justify-center flex-1 text-center">
-<img alt="Logo" class="rounded-2xl hairline shadow-sm mb-2 h-[150px] w-[150px] object-cover" id="headerImage" src="https://s14.gifyu.com/images/bwJQn.png"/>
-<h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-[color:var(--accent)] whitespace-nowrap" id="calculatorTitle">Play UP</h2>
-<div class="mt-3">
-<h4 class="text-sm font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Bestellseiten</h4>
-<div class="tabs-container mt-2 inline-flex" id="tabsContainer">
-<div class="tabs-slider" id="tabsSlider"></div>
-<button class="tab-button" data-tab="1">1</button>
-<button class="tab-button" data-tab="2">2</button>
-<button class="tab-button" data-tab="3">3</button>
-<button class="tab-button" data-tab="4">4</button>
-<button class="tab-button" data-tab="5">5</button>
-</div>
-</div>
-</div>
-<div class="flex-1 min-w-0"></div>
-</div>
+
+<!-- Calculator Content -->
 <div id="calculatorContent">
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6" id="categoriesGrid"></div>
-<div class="hairline rounded-2xl p-4 sm:p-5 bg-black/[.03] dark:bg-white/[.06] mb-4 space-y-3">
-<div class="flex items-center justify-between">
-<div class="font-semibold text-base flex items-center gap-2">
-<span class="opacity-70">Grund:</span>
-<span class="text-sm font-normal opacity-90" id="grund">Noch nichts berechnet</span>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-6" id="categoriesGrid"></div>
+  
+  <div class="hairline rounded-2xl p-4 sm:p-5 bg-black/[.03] dark:bg-white/[.06] mb-4 space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="font-semibold text-base flex items-center gap-2">
+        <span class="opacity-70">Grund:</span>
+        <span class="text-sm font-normal opacity-90" id="grund">Noch nichts berechnet</span>
+      </div>
+      <button class="text-[color:var(--accent)] text-xl" onclick="copyText('grund')" title="Kopieren">📄</button>
+    </div>
+    <hr class="border-t hairline border-0"/>
+    <div class="flex items-center justify-between">
+      <div class="font-semibold text-base flex items-center gap-2">
+        <span class="opacity-70">Preis:</span>
+        <span class="text-lg font-bold text-[color:var(--accent)]" id="preis">0$</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="text-[color:var(--accent)] text-xl" onclick="copyPriceText()" title="Kopieren">📄</button>
+        <button class="px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold whitespace-nowrap" onclick="applyLutaloRabatt()">Lutalo Rabatt ❤️</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="text-sm text-green-600 dark:text-green-400 text-center hidden mt-4" id="kopiertHinweis">Kopiert ✅</div>
+  
+  <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 items-center gap-3 sm:gap-6">
+    <div></div>
+    <div class="flex items-center justify-center gap-3">
+      <label class="text-sm font-semibold opacity-80 whitespace-nowrap">Personen:</label>
+      <div class="quantity-control">
+        <button aria-label="Weniger" onclick="changeQuantity('personCountInput', -1)">−</button>
+        <input id="personCountInput" min="0" oninput="berechne()" type="number" value="0"/>
+        <button aria-label="Mehr" onclick="changeQuantity('personCountInput', 1)">+</button>
+      </div>
+    </div>
+    <div class="justify-self-center sm:justify-self-end flex items-center gap-2">
+      <button class="px-5 py-2.5 rounded-full font-semibold bg-red-600 text-white hover:bg-red-700 shadow-sm" onclick="resetRechner()">
+        Reset 🗑️
+      </button>
+      <button class="px-5 py-2.5 rounded-full font-semibold bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 shadow-sm" onclick="undoLast()">
+        Revoke ↩️
+      </button>
+    </div>
+  </div>
 </div>
-<button class="text-[color:var(--accent)] text-xl" onclick="copyText('grund')" title="Kopieren">📄</button>
-</div>
-<hr class="border-t hairline border-0"/>
-<div class="flex items-center justify-between">
-<div class="font-semibold text-base flex items-center gap-2">
-<span class="opacity-70">Preis:</span>
-<span class="text-lg font-bold text-[color:var(--accent)]" id="preis">0$</span>
-</div>
-<div class="flex items-center gap-2">
-<button class="text-[color:var(--accent)] text-xl" onclick="copyPriceText()" title="Kopieren">📄</button>
-<button class="px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold whitespace-nowrap" onclick="applyLutaloRabatt()">Lutalo Rabatt ❤️</button>
-</div>
-</div>
-</div>
-<div class="text-sm text-green-600 dark:text-green-400 text-center hidden mt-4" id="kopiertHinweis">Kopiert ✅</div>
-<div class="mt-6 grid grid-cols-1 sm:grid-cols-3 items-center gap-3 sm:gap-6">
-<div></div>
-<div class="flex items-center justify-center gap-3">
-<label class="text-sm font-semibold opacity-80 whitespace-nowrap">Personen:</label>
-<div class="quantity-control">
-<button aria-label="Weniger" onclick="changeQuantity('personCountInput', -1)">−</button>
-<input id="personCountInput" min="0" oninput="berechne()" type="number" value="0"/>
-<button aria-label="Mehr" onclick="changeQuantity('personCountInput', 1)">+</button>
-</div>
-</div>
-<div class="justify-self-center sm:justify-self-end flex items-center gap-2">
-<button class="px-5 py-2.5 rounded-full font-semibold bg-red-600 text-white hover:bg-red-700 shadow-sm" onclick="resetRechner()">
-              Reset 🗑️
-            </button>
-<button class="px-5 py-2.5 rounded-full font-semibold bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 shadow-sm" onclick="undoLast()">
-              Revoke ↩️
-            </button>
-</div>
-</div>
-</div>
+
 </div>
 </div>
 
-<!-- 🧩 Treuepunkte System -->
+<!-- Treuepunkte System -->
 <div class="surface w-full max-w-3xl mx-auto p-6 mt-10 shadow-md border border-black/10 dark:border-white/10 rounded-2xl">
   <h3 class="text-2xl font-extrabold text-[color:var(--accent)] mb-4 flex items-center gap-2">🎁 Treuepunkte System</h3>
 
@@ -926,625 +1048,532 @@ body.dark .connection-status {
 </div>
 
 <script>
-   
-    const PASSWORD = "fickdeinemutterwenndudenkstdukannsthierpwauslesen";
-    const STORAGE_KEY = "lutalo.config";
-    const SALES_KEY   = "lutalo.sales";
-    const THEME_KEY   = "lutalo.theme";
-    const DARKMODE_KEY = "darkmode";
-    const DEFAULT_IMAGE_URL = "https://s12.gifyu.com/images/b3dSM.png";
-    const PUNKTE_KEY = "treuepunkte";
-    const itemsPerPerson = 5;
-    const numTabs = 5;
+// ============================================
+// CONSTANTS & GLOBALS
+// ============================================
 
-    let activeTab = 1;
-    let calculatorStates = {};
-    let undoStack = [];
+const PASSWORD = "fickdeinemutterwenndudenkstdukannsthierpwauslesen";
+const DEFAULT_IMAGE_URL = "https://s12.gifyu.com/images/b3dSM.png";
+const PUNKTE_KEY = "treuepunkte";
+const itemsPerPerson = 5;
+const numTabs = 5;
 
-  
-    const THEMES = {
-      "PlayUp Farben": {
-        accent: "#4B0082",
-        light: "radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed"
-      },
-      "Retro": {
-        accent: "#d97706",
-        light: "radial-gradient(1000px 500px at 10% -10%, #fff7e6, #fef3c7) fixed",
-        dark:  "radial-gradient(1000px 500px at 10% -10%, #4a3412, #1f1303) fixed"
-      },
-      "Nein": {
-        accent: "#dc2626",
-        light: "radial-gradient(1200px 600px at 10% -10%, #ffffff, #ffe4e6) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #200, #000) fixed"
-      },
-      "Alt": {
-        accent: "#065f46",
-        light: "radial-gradient(1200px 600px at 10% -10%, #f0fdf4, #ecfdf5) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #052e16, #000) fixed"
-      },
-      "Widwos 7": {
-        accent: "#2563eb",
-        light: "linear-gradient(#cfe8ff,#ffffff) fixed",
-        dark:  "linear-gradient(#0a1a3a,#000000) fixed"
-      },
-      "Widwos 11": {
-        accent: "#0ea5e9",
-        light: "radial-gradient(circle at 20% 20%, #e0f7ff 0%, #ffffff 60%) fixed",
-        dark:  "radial-gradient(circle at 20% 20%, #0a2530 0%, #000 60%) fixed"
-      },
-      "Lutalo Purple": {
-        accent: "#8b5cf6",
-        light: "radial-gradient(1200px 600px at 10% -10%, #f4f0ff, #fff) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #1a102a, #000) fixed"
-      },
-      "Ocean Blue": {
-        accent: "#14b8a6",
-        light: "radial-gradient(1200px 600px at 10% -10%, #ecfeff, #f0fdfa) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #002b2b, #000) fixed"
-      },
-      "Cyber Dark": {
-        accent: "#00ff80",
-        light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a, #000) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #000, #000) fixed"
-      },
-      "Clean White": {
-        accent: "#000000",
-        light: "linear-gradient(#ffffff,#ffffff) fixed",
-        dark:  "linear-gradient(#000000,#000000) fixed"
-      },
-      "Arcade": {
-        accent: "#a3e635",
-        light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a 0%, #000 60%) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #000000 0%, #000000 60%) fixed"
-      },
-      "Terminal Green": {
-        accent: "#39ff14",
-        light: "radial-gradient(1200px 600px at 10% -10%, #000000, #001100) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #000000, #000000) fixed"
-      },
-      "Candy Pop": {
-        accent: "#ff4da6",
-        light: "radial-gradient(circle at 20% 20%, #fff0fa 0%, #fff 60%) fixed",
-        dark:  "radial-gradient(circle at 20% 20%, #2a001a 0%, #000 60%) fixed"
-      },
-      "Sunset": {
-        accent: "#fb923c",
-        light: "radial-gradient(circle at 20% 20%, #fff1e6 0%, #ffe4e6 60%) fixed",
-        dark:  "radial-gradient(circle at 20% 20%, #2b0a00 0%, #000 60%) fixed"
-      },
-      "Vaporwave": {
-        accent: "#ff00ff",
-        light: "radial-gradient(circle at 20% 20%, #ffe6ff 0%, #e0f7ff 60%) fixed",
-        dark:  "radial-gradient(circle at 20% 20%, #1a002b 0%, #00001a 60%) fixed"
-      },
-      "Fresh Mint": {
-        accent: "#00d897",
-        light: "radial-gradient(1200px 600px at 10% -10%, #f0fff4, #ecfff8) fixed",
-        dark:  "radial-gradient(1200px 600px at 10% -10%, #001a12, #000) fixed"
+let activeTab = 1;
+let calculatorStates = {};
+let undoStack = [];
+let currentStatsPeriod = 'all';
+let currentStatsGrouping = 'week';
+let customStartDate = null;
+let customEndDate = null;
+
+// Company Limits
+const companyLimits = {
+  "Golf Club": { maxFood: 50, maxDrink: 50 },
+  "Casino": { maxFood: 50, maxDrink: 50 },
+  "SD": { maxFood: 50, maxDrink: 50 },
+  "Army": { maxFood: 25, maxDrink: 25 },
+  "Ranger": { maxFood: 25, maxDrink: 25 },
+  "Tuner": { maxFood: 10, maxDrink: 10 },
+  "SSMC": { maxFood: 50, maxDrink: 50 },
+  "LSMD": { maxFood: 50, maxDrink: 50 },
+  "Alcatraz": { maxFood: 25, maxDrink: 25 },
+  "DDJ": { maxFood: 25, maxDrink: 25 }
+};
+
+// Default Prices
+const defaultPreise = {
+  popup: { name: 'Pop UP', price: 300, category: 'ESSEN', id: 'popup' },
+  burnup: { name: 'Burn UP', price: 300, category: 'ESSEN', id: 'burnup' },
+  jellyup: { name: 'Jelly UP', price: 200, category: 'ESSEN', id: 'jellyup'},
+  gumup: { name: 'Gum UP', price: 200, category: 'ESSEN', id: 'gumup' },
+  boostup: { name: 'Boost UP', price: 200, category: 'TRINKEN', id: 'boostup' },
+  powerup: { name: 'Power UP', price: 200, category: 'TRINKEN', id: 'powerup' },
+  spritzup: { name: 'Spritz UP', price: 175, category: 'TRINKEN', id: 'spritzup' },
+  gutschein3: { name: 'Standard Figur', price: 150000, category: 'FIGUREN', id: 'gutschein3' },
+  gutschein5: { name: 'Couple Figuren', price: 200000, category: 'FIGUREN', id: 'gutschein5' },
+  gutschein6: { name: 'Figuren Accessoires', price: 30000, category: 'FIGUREN', id: 'gutschein6' },
+  gutschein7: { name: 'Figuren Glow', price: 20000, category: 'FIGUREN', id: 'gutschein7' },
+  gutschein8: { name: 'Figuren Seltenheit', price: 20000, category: 'FIGUREN', id: 'gutschein8' },
+  coins: { name: 'Play UP Coin', price: 200, category: 'COINS', id: 'coins' },
+  coins1: { name: '100x Play UP Coin', price: 18000, category: 'COINS', id: 'coins1' },
+  gutschein1: { name: '1 Sticker', price: 5000, category: 'STICKER', id: 'gutschein1' },
+  gutschein2: { name: '5 Sticker', price: 23000, category: 'STICKER', id: 'gutschein2' },
+};
+
+let currentPreise = {};
+let categories = ['ESSEN', 'TRINKEN', 'COINS', 'STICKER', 'FIGUREN'];
+let foodCategories = ['ESSEN'];
+let drinkCategories = ['TRINKEN', 'ALKOHOL'];
+let rauchwarenCategories = ['COINS'];
+let miscellaneousCategories = ['STICKER', 'FIGUREN'];
+let customTitle = 'Play UP Kassenblatt';
+let customImage = DEFAULT_IMAGE_URL;
+let previousCustomers = [];
+
+// Themes
+const THEMES = {
+  "PlayUp Farben": {
+    accent: "#4B0082",
+    light: "radial-gradient(1200px 600px at 10% -10%, #f5f5f7, #fff) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #111113, #000) fixed"
+  },
+  "Retro": {
+    accent: "#d97706",
+    light: "radial-gradient(1000px 500px at 10% -10%, #fff7e6, #fef3c7) fixed",
+    dark:  "radial-gradient(1000px 500px at 10% -10%, #4a3412, #1f1303) fixed"
+  },
+  "Nein": {
+    accent: "#dc2626",
+    light: "radial-gradient(1200px 600px at 10% -10%, #ffffff, #ffe4e6) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #200, #000) fixed"
+  },
+  "Alt": {
+    accent: "#065f46",
+    light: "radial-gradient(1200px 600px at 10% -10%, #f0fdf4, #ecfdf5) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #052e16, #000) fixed"
+  },
+  "Widwos 7": {
+    accent: "#2563eb",
+    light: "linear-gradient(#cfe8ff,#ffffff) fixed",
+    dark:  "linear-gradient(#0a1a3a,#000000) fixed"
+  },
+  "Widwos 11": {
+    accent: "#0ea5e9",
+    light: "radial-gradient(circle at 20% 20%, #e0f7ff 0%, #ffffff 60%) fixed",
+    dark:  "radial-gradient(circle at 20% 20%, #0a2530 0%, #000 60%) fixed"
+  },
+  "Lutalo Purple": {
+    accent: "#8b5cf6",
+    light: "radial-gradient(1200px 600px at 10% -10%, #f4f0ff, #fff) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #1a102a, #000) fixed"
+  },
+  "Ocean Blue": {
+    accent: "#14b8a6",
+    light: "radial-gradient(1200px 600px at 10% -10%, #ecfeff, #f0fdfa) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #002b2b, #000) fixed"
+  },
+  "Cyber Dark": {
+    accent: "#00ff80",
+    light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a, #000) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #000, #000) fixed"
+  },
+  "Clean White": {
+    accent: "#000000",
+    light: "linear-gradient(#ffffff,#ffffff) fixed",
+    dark:  "linear-gradient(#000000,#000000) fixed"
+  },
+  "Arcade": {
+    accent: "#a3e635",
+    light: "radial-gradient(1200px 600px at 10% -10%, #1a1a1a 0%, #000 60%) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #000000 0%, #000000 60%) fixed"
+  },
+  "Terminal Green": {
+    accent: "#39ff14",
+    light: "radial-gradient(1200px 600px at 10% -10%, #000000, #001100) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #000000, #000000) fixed"
+  },
+  "Candy Pop": {
+    accent: "#ff4da6",
+    light: "radial-gradient(circle at 20% 20%, #fff0fa 0%, #fff 60%) fixed",
+    dark:  "radial-gradient(circle at 20% 20%, #2a001a 0%, #000 60%) fixed"
+  },
+  "Sunset": {
+    accent: "#fb923c",
+    light: "radial-gradient(circle at 20% 20%, #fff1e6 0%, #ffe4e6 60%) fixed",
+    dark:  "radial-gradient(circle at 20% 20%, #2b0a00 0%, #000 60%) fixed"
+  },
+  "Vaporwave": {
+    accent: "#ff00ff",
+    light: "radial-gradient(circle at 20% 20%, #ffe6ff 0%, #e0f7ff 60%) fixed",
+    dark:  "radial-gradient(circle at 20% 20%, #1a002b 0%, #00001a 60%) fixed"
+  },
+  "Fresh Mint": {
+    accent: "#00d897",
+    light: "radial-gradient(1200px 600px at 10% -10%, #f0fff4, #ecfff8) fixed",
+    dark:  "radial-gradient(1200px 600px at 10% -10%, #001a12, #000) fixed"
+  }
+};
+
+// ============================================
+// API FUNCTIONS - NEU v1.8.0
+// ============================================
+
+async function loadSettings() {
+  try {
+    const response = await fetch('/api/settings');
+    if (response.ok) {
+      const settings = await response.json();
+      console.log('✅ Settings geladen:', settings);
+      
+      // Apply settings
+      if (settings.theme) {
+        document.getElementById('themeSelect').value = settings.theme;
+        applyTheme(settings.theme);
       }
-    };
-
-    function populateThemeSelect() {
-      const sel = document.getElementById("themeSelect");
-      sel.innerHTML = "";
-      Object.keys(THEMES).forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        sel.appendChild(opt);
-      });
-      sel.addEventListener("change", () => {
-        applyTheme(sel.value);
-        saveTheme(sel.value);
-      });
-    }
-
-    function applyTheme(themeName) {
-      const theme = THEMES[themeName] || THEMES["PlayUp Farben"];
-   
-      document.documentElement.style.setProperty("--accent", theme.accent);
-
-   
-      const isDark = document.body.classList.contains("dark");
-      if (isDark) {
-        document.documentElement.style.setProperty("--bg-dark", theme.dark);
-        document.documentElement.style.setProperty("--bg-light", theme.light);
-      } else {
-        document.documentElement.style.setProperty("--bg-light", theme.light);
-        document.documentElement.style.setProperty("--bg-dark", theme.dark);
+      
+      if (settings.darkMode !== undefined) {
+        document.body.classList.toggle('dark', settings.darkMode);
+        document.documentElement.classList.toggle('dark', settings.darkMode);
+        document.getElementById('themeToggle').checked = settings.darkMode;
       }
-
-   
-      document.querySelectorAll('#preis, #calculatorTitle, .text-[color\\:var\\(--accent\\)]').forEach(el => {
-        el.style.color = theme.accent;
-      });
-
-   
+      
+      if (settings.welcomeShown) {
+        document.getElementById('welcomeModal').style.display = 'none';
+      }
+      
+      if (settings.activeTab) {
+        activeTab = settings.activeTab;
+      }
+      
+      return settings;
     }
-
-    function saveTheme(name) {
-      localStorage.setItem(THEME_KEY, name);
-    }
-
-    function loadTheme() {
-      const saved = localStorage.getItem(THEME_KEY) || "PlayUp Farben";
-      const sel = document.getElementById("themeSelect");
-      if (sel) sel.value = saved;
-      applyTheme(saved);
-    }
-
-   
-    const companyLimits = {
-      "Golf Club": { maxFood: 50, maxDrink: 50 },
-      "Casino": { maxFood: 50, maxDrink: 50 },
-      "SD": { maxFood: 50, maxDrink: 50 },
-      "Army": { maxFood: 25, maxDrink: 25 },
-      "Ranger": { maxFood: 25, maxDrink: 25 },
-      "Tuner": { maxFood: 10, maxDrink: 10 },
-      "SSMC": { maxFood: 50, maxDrink: 50 },
-      "LSMD": { maxFood: 50, maxDrink: 50 },
-      "Alcatraz": { maxFood: 25, maxDrink: 25 },
-      "DDJ": { maxFood: 25, maxDrink: 25 }
-    };
-
-
-    const defaultPreise = {
-      popup: { name: 'Pop UP', price: 300, category: 'ESSEN', id: 'popup' },
-      burnup: { name: 'Burn UP', price: 300, category: 'ESSEN', id: 'burnup' },
-      jellyup: { name: 'Jelly UP', price: 200, category: 'ESSEN', id: 'jellyup'},
-      gumup: { name: 'Gum UP', price: 200, category: 'ESSEN', id: 'gumup' },
-
-      boostup: { name: 'Boost UP', price: 200, category: 'TRINKEN', id: 'boostup' },
-      powerup: { name: 'Power UP', price: 200, category: 'TRINKEN', id: 'powerup' },
-      spritzup: { name: 'Spritz UP', price: 175, category: 'TRINKEN', id: 'spritzup' },
-
-      gutschein3: { name: 'Standard Figur', price: 150000, category: 'FIGUREN', id: 'gutschein3' },
-      gutschein5: { name: 'Couple Figuren', price: 200000, category: 'FIGUREN', id: 'gutschein5' },
-      gutschein6: { name: 'Figuren Accessoires', price: 30000, category: 'FIGUREN', id: 'gutschein6' },
-      gutschein7: { name: 'Figuren Glow', price: 20000, category: 'FIGUREN', id: 'gutschein7' },
-      gutschein8: { name: 'Figuren Seltenheit', price: 20000, category: 'FIGUREN', id: 'gutschein8' },
-
-      coins: { name: 'Play UP Coin', price: 200, category: 'COINS', id: 'coins' },
-      coins1: { name: '100x Play UP Coin', price: 18000, category: 'COINS', id: 'coins1' },
-
-
-      gutschein1: { name: '1 Sticker', price: 5000, category: 'STICKER', id: 'gutschein1' },
-      gutschein2: { name: '5 Sticker', price: 23000, category: 'STICKER', id: 'gutschein2' },
-    
-
-
-    };
-
-    
-    let currentPreise = {};
-    let categories = ['ESSEN', 'TRINKEN', 'COINS', 'STICKER', 'FIGUREN'];
-    let foodCategories = ['ESSEN'];
-    let drinkCategories = ['TRINKEN', 'ALKOHOL'];
-    let rauchwarenCategories = ['COINS'];
-    let miscellaneousCategories = ['STICKER', 'FIGUREN'];
-    let customTitle = 'Play UP Kassenblatt';
-    let customImage = DEFAULT_IMAGE_URL;
-    let previousCustomers = [];
-
-
-    function todayKey() {
-      const t = new Date();
-      const d = String(t.getDate()).padStart(2,'0');
-      const m = String(t.getMonth()+1).padStart(2,'0');
-      const y = t.getFullYear();
-      return `${y}-${m}-${d}`;
-    }
-    function todayPretty() {
-      const t = new Date();
-      const d = String(t.getDate()).padStart(2,'0');
-      const m = String(t.getMonth()+1).padStart(2,'0');
-      return `${d}.${m}.`;
-    }
-
-    function initDarkToggle() {
-      const toggle = document.getElementById('themeToggle');
-      const saved = localStorage.getItem(DARKMODE_KEY);
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const startDark = saved ? (saved === 'dark') : prefersDark;
-      document.documentElement.classList.toggle('dark', startDark);
-      document.body.classList.toggle('dark', startDark);
-      toggle.checked = startDark;
-
-      toggle.addEventListener('change', () => {
-        const nowDark = document.documentElement.classList.toggle('dark');
-        document.body.classList.toggle('dark', nowDark);
-        localStorage.setItem(DARKMODE_KEY, nowDark ? 'dark' : 'light');
-
-        const currentTheme = document.getElementById("themeSelect").value || "PlayUp Farben";
-        applyTheme(currentTheme);
-      });
-    }
-
-    
-    function applyConfig(data) {
-      currentPreise = data.items || { ...defaultPreise };
-      categories = data.categories || ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'];
-      foodCategories = data.foodCategories || ['ESSEN'];
-      drinkCategories = data.drinkCategories || ['TRINKEN', 'ALKOHOL'];
-      rauchwarenCategories = data.rauchwarenCategories || ['COINS'];
-      miscellaneousCategories = data.miscellaneousCategories || ['STICKER', 'FIGUREN'];
-      customTitle = data.title || 'Play UP Kassenblatt';
-      customImage = data.image || DEFAULT_IMAGE_URL;
-    }
-
-    function getConfig() {
-      return {
-        items: currentPreise,
-        categories,
-        foodCategories,
-        drinkCategories,
-        rauchwarenCategories,
-        miscellaneousCategories,
-        title: customTitle,
-        image: customImage
-      };
-    }
-
-    function loadPreise() {
-      applyConfig({
-        items: { ...defaultPreise },
-        categories: ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'],
-        foodCategories: ['ESSEN'],
-        drinkCategories: ['TRINKEN', 'ALKOHOL'],
-        rauchwarenCategories: ['COINS'],
-        miscellaneousCategories: ['STICKER', 'FIGUREN'],
-        title: customTitle,
-        image: DEFAULT_IMAGE_URL
-      });
-      renderCalculatorInputs();
-      updateHeaderDisplay();
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const data = JSON.parse(raw);
-          applyConfig(data);
-          renderCalculatorInputs();
-          updateHeaderDisplay();
-        }
-      } catch(e){ console.error(e); }
-    }
-
-    function savePreise() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(getConfig()));
-    }
-
-    function updateHeaderDisplay() {
-      document.getElementById('htmlTitle').innerText = customTitle;
-      document.getElementById('calculatorTitle').innerText = customTitle;
-      document.getElementById('headerImage').src = customImage;
-      requestAnimationFrame(()=>{
-        document.getElementById('headerImage').classList.add('loaded');
-      });
-    }
-
-    
-    function renderCalculatorInputs() {
-      const grid = document.getElementById('categoriesGrid');
-      grid.innerHTML = '';
-      categories.forEach(category => {
-        const wrap = document.createElement('div');
-        wrap.innerHTML = `
-          <h3 class="text-base font-bold mb-3 text-center tracking-wide">${category.toUpperCase()}</h3>
-          <div class="space-y-3"></div>
-        `;
-        grid.appendChild(wrap);
-        const listEl = wrap.querySelector('.space-y-3');
-        const items = Object.values(currentPreise).filter(i => i.category === category);
-        items.forEach(item => {
-          const row = document.createElement('div');
-          row.className = 'flex items-center justify-between gap-4';
-          row.innerHTML = `
-            <div class="min-w-0">
-              <label for="${item.id}" class="font-medium">${item.name}</label>
-              <div class="text-xs opacity-70">${item.price}$</div>
-            </div>
-            <div class="quantity-control">
-              <button onclick="changeQuantity('${item.id}', -1)">−</button>
-              <input id="${item.id}" type="number" min="0" value="0" oninput="berechne()" />
-              <button onclick="changeQuantity('${item.id}', 1)">+</button>
-            </div>
-          `;
-          listEl.appendChild(row);
-        });
-      });
-    }
-
-    function changeQuantity(id, delta) {
-  const input = document.getElementById(id);
-  if (!input) return;
-  let v = parseInt(input.value) || 0;
-  v += delta;
-  if (v < 0) v = 0;
-  input.value = v;
-  berechne();
-
-
-  input.classList.remove('updated');
-  void input.offsetWidth; 
-  input.classList.add('updated');
+  } catch (error) {
+    console.error('Error loading settings:', error);
+  }
+  return null;
 }
 
-  
-    function initializeCalculatorStates() {
-      for (let i=1;i<=numTabs;i++) {
-        calculatorStates[i] = {
-          inputs:{},
-          grund:'Noch nichts berechnet',
-          preis:'0$',
-          personCount:'0'
+async function saveSettings(updates) {
+  try {
+    const response = await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    
+    if (response.ok) {
+      console.log('✅ Settings gespeichert:', updates);
+    }
+  } catch (error) {
+    console.error('Error saving settings:', error);
+  }
+}
+
+async function loadCalculatorStates() {
+  try {
+    const response = await fetch('/api/calculator-states');
+    if (response.ok) {
+      const states = await response.json();
+      console.log('✅ Calculator States geladen:', Object.keys(states).length, 'Tabs');
+      
+      // Initialize all tabs
+      for (let i = 1; i <= numTabs; i++) {
+        calculatorStates[i] = states[i] || {
+          inputs: {},
+          grund: 'Noch nichts berechnet',
+          preis: '0$',
+          personCount: '0'
         };
       }
-      const saved = localStorage.getItem('calculatorStates');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        for (const t in parsed) {
-          if (calculatorStates[t]) calculatorStates[t] = parsed[t];
-        }
-      }
+      
+      return states;
     }
-
-    function captureCurrentState() {
-      const inputs = {};
-      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => {
-        inputs[i.id] = i.value;
-      });
-      return {
-        activeTab,
-        inputs,
-        grund: document.getElementById('grund').innerText,
-        preis: document.getElementById('preis').innerText,
-        personCount: document.getElementById('personCountInput').value
-      };
-    }
-
-    function pushUndoSnapshot() {
-      undoStack.push(captureCurrentState());
-      if (undoStack.length > 20) undoStack.shift();
-    }
-
-    function restoreStateSnapshot(snap) {
-      activeTab = snap.activeTab || activeTab;
-      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
-      for (const id in snap.inputs) {
-        const el = document.getElementById(id);
-        if (el) el.value = snap.inputs[id];
-      }
-      document.getElementById('grund').innerText = snap.grund;
-      document.getElementById('preis').innerText = snap.preis;
-      document.getElementById('personCountInput').value = snap.personCount;
-    }
-
-    function undoLast() {
-      if (!undoStack.length) return;
-      const snap = undoStack.pop();
-      restoreStateSnapshot(snap);
-      saveCalculatorState();
-      updateUIFromState();
-    }
-
-    function saveCalculatorState() {
-      const s = { inputs:{} };
-      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => {
-        s.inputs[i.id] = i.value;
-      });
-      s.grund = document.getElementById('grund').innerText;
-      s.preis = document.getElementById('preis').innerText;
-      s.personCount = document.getElementById('personCountInput').value;
-      calculatorStates[activeTab] = s;
-      localStorage.setItem('calculatorStates', JSON.stringify(calculatorStates));
-    }
-
-    function loadCalculatorStateForTab() {
-      const s = calculatorStates[activeTab];
-      document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
-      if (s) {
-        for (const id in s.inputs) {
-          const el = document.getElementById(id);
-          if (el) el.value = s.inputs[id];
-        }
-        document.getElementById('grund').innerText = s.grund;
-        document.getElementById('preis').innerText = s.preis;
-        document.getElementById('personCountInput').value = s.personCount || 0;
-      } else {
-        document.getElementById('grund').innerText = 'Noch nichts berechnet';
-        document.getElementById('preis').innerText = '0$';
-        document.getElementById('personCountInput').value = 0;
-      }
-    }
-
-    function updateSliderPosition(tabButton) {
-      const slider = document.getElementById('tabsSlider');
-      const container = document.getElementById('tabsContainer');
-      const b = tabButton.getBoundingClientRect();
-      const c = container.getBoundingClientRect();
-      slider.style.setProperty('--tab-left', `${b.left - c.left}px`);
-      slider.style.setProperty('--tab-width', `${b.width}px`);
-    }
-
-    function switchTab(tabNumber) {
-      if (tabNumber === activeTab) return;
-      saveCalculatorState();
-      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-      const newBtn = document.querySelector(`.tab-button[data-tab=\"${tabNumber}\"]`);
-      if (newBtn) {
-        newBtn.classList.add('active');
-        updateSliderPosition(newBtn);
-      }
-      activeTab = tabNumber;
-      loadCalculatorStateForTab();
-      berechne();
-      localStorage.setItem('activeTab', tabNumber);
-    }
-
-    function updateUIFromState() {
-      loadCalculatorStateForTab();
-    }
-
+  } catch (error) {
+    console.error('Error loading calculator states:', error);
+  }
   
-    function loadSales() {
-      try {
-        const raw = localStorage.getItem(SALES_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch(e){}
-      return {};
-    }
-
-    function saveSales(obj) {
-      localStorage.setItem(SALES_KEY, JSON.stringify(obj));
-    }
-
- 
-    function recordSale(grund, betrag) {
-      const key = todayKey();
-      const sales = loadSales();
-      if (!sales[key]) {
-        sales[key] = { total: 0, entries: [] };
-      }
-      sales[key].total += betrag;
-      sales[key].entries.push({ grund, betrag, ts: Date.now() });
-      saveSales(sales);
-    }
-
-    function listSalesForUI() {
-      const sales = loadSales();
-      const rows = [];
-      Object.keys(sales).sort().forEach(dayKey => {
-        rows.push(`📅 ${dayKey} — Total: ${sales[dayKey].total}$`);
-        sales[dayKey].entries.forEach(e => {
-          rows.push(` • ${e.betrag}$ | ${e.grund}`);
-        });
-      });
-      return rows;
-    }
-
-    function buildStatsChart() {
-      const ctx = document.getElementById('statsChart');
-      if (!ctx) return;
-      const sales = loadSales();
-      const labels = [];
-      const data = [];
-
-      Object.keys(sales).sort().forEach(dayKey => {
-        labels.push(dayKey);
-        data.push(sales[dayKey].total);
-      });
-
-      if (window._statsChart) {
-        window._statsChart.data.labels = labels;
-        window._statsChart.data.datasets[0].data = data;
-        window._statsChart.update('active');
-      } else {
-        window._statsChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels,
-            datasets: [{
-              label: 'Umsatz pro Tag ($)',
-              data: data
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { labels: { color: '#999' } } },
-            scales: {
-              x: { ticks: { color: '#999' } },
-              y: { beginAtZero: true, ticks: { color: '#999' } }
-            }
-          }
-        });
-      }
-
-      document.getElementById('statsList').innerText = listSalesForUI().join('\n');
-      const topProducts = getTopProducts();
-      document.getElementById('statsList').innerText += "\n\n🏆 Top 3 Produkte:\n" + topProducts;
-
-    }
-
-    
-
-function getTopProducts() {
-  const sales = loadSales();
-  const productCounts = {};
-
-  Object.values(sales).forEach(day => {
-    day.entries.forEach(entry => {
-      const match = entry.grund.match(/(\d+)x ([^+|]+)/g);
-      if (match) {
-        match.forEach(item => {
-          const parts = item.match(/(\d+)x (.+)/);
-          if (!parts) return;
-          const qty = parseInt(parts[1]);
-          const name = parts[2].trim();
-          productCounts[name] = (productCounts[name] || 0) + qty;
-        });
-      }
-    });
-  });
-
-  const sorted = Object.entries(productCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
-
-  if (sorted.length === 0) return "Keine Verkäufe bisher.";
-
-  return sorted.map(([name, count]) => `${name} (${count}x)`).join("<br>");
-}
-
-function toggleTopProductsDropdown() {
-  const dropdown = document.getElementById('topProductsDropdown');
-  dropdown.classList.toggle('show');
-}
-
-function updateTopProductsDropdown() {
-  const listEl = document.getElementById('topProductsList');
-  if (!listEl) return;
-  const topProducts = getTopProducts();
-  listEl.innerHTML = topProducts;
-}
-
-function loadProductStats() {
-  try {
-    const raw = localStorage.getItem('lutalo.productStats');
-    if (raw) return JSON.parse(raw);
-  } catch(e){}
+  // Initialize empty states
+  for (let i = 1; i <= numTabs; i++) {
+    calculatorStates[i] = {
+      inputs: {},
+      grund: 'Noch nichts berechnet',
+      preis: '0$',
+      personCount: '0'
+    };
+  }
   return {};
 }
 
-function saveProductStats(stats) {
-  localStorage.setItem('lutalo.productStats', JSON.stringify(stats));
+async function saveCalculatorState(tab, state) {
+  try {
+    const response = await fetch('/api/calculator-states', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tab: tab.toString(), state })
+    });
+    
+    if (response.ok) {
+      console.log('✅ Calculator State gespeichert: Tab', tab);
+    }
+  } catch (error) {
+    console.error('Error saving calculator state:', error);
+  }
 }
 
-function recordProductSale(grund, betrag) {
-  const stats = loadProductStats();
-  const match = grund.match(/(\d+)x ([^+|]+)/g);
-  if (match) {
-    match.forEach(item => {
-      const parts = item.match(/(\d+)x (.+)/);
-      if (!parts) return;
-      const qty = parseInt(parts[1]);
-      const name = parts[2].trim();
-      const found = Object.values(currentPreise).find(i => i.name === name);
-      const pricePerItem = found ? found.price : 0;
-      const amount = qty * pricePerItem;
-      stats[name] = (stats[name] || 0) + amount;
+async function loadStatisticsOverview(period, startDate, endDate) {
+  try {
+    let url = `/api/statistics/overview?period=${period}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    
+    const response = await fetch(url);
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error loading statistics overview:', error);
+  }
+  return null;
+}
+
+async function loadStatisticsTimeline(groupBy, startDate, endDate) {
+  try {
+    let url = `/api/statistics/timeline?groupBy=${groupBy}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    
+    const response = await fetch(url);
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error loading statistics timeline:', error);
+  }
+  return null;
+}
+
+async function loadProductStatistics(period, startDate, endDate) {
+  try {
+    let url = `/api/statistics/products?period=${period}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    
+    const response = await fetch(url);
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Error loading product statistics:', error);
+  }
+  return null;
+}
+
+// ============================================
+// THEME FUNCTIONS
+// ============================================
+
+function populateThemeSelect() {
+  const sel = document.getElementById("themeSelect");
+  sel.innerHTML = "";
+  Object.keys(THEMES).forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener("change", async () => {
+    applyTheme(sel.value);
+    await saveSettings({ theme: sel.value });
+  });
+}
+
+function applyTheme(themeName) {
+  const theme = THEMES[themeName] || THEMES["PlayUp Farben"];
+  
+  document.documentElement.style.setProperty("--accent", theme.accent);
+  
+  const isDark = document.body.classList.contains("dark");
+  if (isDark) {
+    document.documentElement.style.setProperty("--bg-dark", theme.dark);
+    document.documentElement.style.setProperty("--bg-light", theme.light);
+  } else {
+    document.documentElement.style.setProperty("--bg-light", theme.light);
+    document.documentElement.style.setProperty("--bg-dark", theme.dark);
+  }
+  
+  document.querySelectorAll('#preis, #calculatorTitle, .text-\\[color\\:var\\(--accent\\)\\]').forEach(el => {
+    el.style.color = theme.accent;
+  });
+}
+
+async function initDarkToggle() {
+  const toggle = document.getElementById('themeToggle');
+  
+  // Settings werden vom Server geladen
+  const settings = await loadSettings();
+  const startDark = settings?.darkMode || false;
+  
+  document.documentElement.classList.toggle('dark', startDark);
+  document.body.classList.toggle('dark', startDark);
+  toggle.checked = startDark;
+  
+  toggle.addEventListener('change', async () => {
+    const nowDark = document.documentElement.classList.toggle('dark');
+    document.body.classList.toggle('dark', nowDark);
+    
+    await saveSettings({ darkMode: nowDark });
+    
+    const currentTheme = document.getElementById("themeSelect").value || "PlayUp Farben";
+    applyTheme(currentTheme);
+  });
+}
+
+// ============================================
+// STATISTICS FUNCTIONS - NEU v1.8.0
+// ============================================
+
+function setStatsPeriod(period) {
+  currentStatsPeriod = period;
+  
+  // Update UI
+  document.querySelectorAll('[data-period]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.period === period);
+  });
+  
+  // Show/hide custom date range
+  const customRange = document.getElementById('customDateRange');
+  if (period === 'custom') {
+    customRange.classList.remove('hidden');
+    customRange.classList.add('flex');
+  } else {
+    customRange.classList.remove('flex');
+    customRange.classList.add('hidden');
+    customStartDate = null;
+    customEndDate = null;
+  }
+  
+  // Reload statistics
+  if (period !== 'custom') {
+    refreshStatistics();
+  }
+}
+
+function setStatsGrouping(groupBy) {
+  currentStatsGrouping = groupBy;
+  
+  // Update UI
+  document.querySelectorAll('[data-group]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.group === groupBy);
+  });
+  
+  // Reload statistics
+  refreshStatistics();
+}
+
+function applyCustomDateRange() {
+  const startInput = document.getElementById('statsStartDate');
+  const endInput = document.getElementById('statsEndDate');
+  
+  if (!startInput.value || !endInput.value) {
+    showNotification('Bitte beide Daten auswählen', 'warning');
+    return;
+  }
+  
+  customStartDate = startInput.value;
+  customEndDate = endInput.value;
+  
+  refreshStatistics();
+  showNotification('Benutzerdefinierter Zeitraum angewendet', 'success');
+}
+
+async function refreshStatistics() {
+  const period = currentStatsPeriod;
+  const groupBy = currentStatsGrouping;
+  const startDate = customStartDate;
+  const endDate = customEndDate;
+  
+  console.log('📊 Refreshing statistics:', { period, groupBy, startDate, endDate });
+  
+  // Load overview
+  const overview = await loadStatisticsOverview(period, startDate, endDate);
+  if (overview) {
+    updateStatsOverview(overview);
+  }
+  
+  // Load timeline
+  const timeline = await loadStatisticsTimeline(groupBy, startDate, endDate);
+  if (timeline) {
+    updateTimelineChart(timeline);
+  }
+  
+  // Load product stats
+  const products = await loadProductStatistics(period, startDate, endDate);
+  if (products) {
+    updateProductStatsChart(products);
+  }
+}
+
+function updateStatsOverview(overview) {
+  document.getElementById('statsTotalRevenue').textContent = `${overview.totalRevenue}$`;
+  document.getElementById('statsTotalTransactions').textContent = overview.totalTransactions;
+  document.getElementById('statsAvgPerDay').textContent = `${overview.averagePerDay}$`;
+  document.getElementById('statsTotalDays').textContent = overview.totalDays;
+  
+  // Update stats list
+  const statsList = document.getElementById('statsList');
+  let content = `📊 Statistik-Übersicht (${overview.period}):\n\n`;
+  content += `💰 Gesamtumsatz: ${overview.totalRevenue}$\n`;
+  content += `📦 Transaktionen: ${overview.totalTransactions}\n`;
+  content += `📊 Ø pro Transaktion: ${overview.averageTransaction}$\n`;
+  content += `📈 Ø pro Tag: ${overview.averagePerDay}$\n`;
+  content += `📅 Zeitraum: ${overview.dateRange.start} bis ${overview.dateRange.end}\n`;
+  
+  if (overview.bestDay) {
+    content += `\n🏆 Bester Tag: ${overview.bestDay.date} (${overview.bestDay.revenue}$)`;
+  }
+  if (overview.worstDay) {
+    content += `\n📉 Schwächster Tag: ${overview.worstDay.date} (${overview.worstDay.revenue}$)`;
+  }
+  
+  statsList.textContent = content;
+}
+
+function updateTimelineChart(timeline) {
+  const ctx = document.getElementById('timelineChart');
+  if (!ctx) return;
+  
+  const labels = timeline.data.map(d => d.period);
+  const data = timeline.data.map(d => d.revenue);
+  
+  if (window._timelineChart) {
+    window._timelineChart.data.labels = labels;
+    window._timelineChart.data.datasets[0].data = data;
+    window._timelineChart.update('active');
+  } else {
+    window._timelineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Umsatz ($)',
+          data: data,
+          borderColor: 'rgba(75, 0, 130, 1)',
+          backgroundColor: 'rgba(75, 0, 130, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { 
+          legend: { 
+            labels: { color: '#999' } 
+          } 
+        },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { 
+            beginAtZero: true, 
+            ticks: { color: '#999' } 
+          }
+        }
+      }
     });
   }
-  saveProductStats(stats);
+  
+  // Animate
+  ctx.classList.add('chart-updating');
+  setTimeout(() => ctx.classList.remove('chart-updating'), 500);
 }
 
-function buildProductStatsChart() {
+function updateProductStatsChart(products) {
   const ctx = document.getElementById('productStatsChart');
   if (!ctx) return;
-  const stats = loadProductStats();
-  const labels = Object.keys(stats);
-  const data = Object.values(stats);
-
+  
+  const labels = products.products.slice(0, 10).map(p => p.name);
+  const data = products.products.slice(0, 10).map(p => p.revenue);
+  
   if (window._productStatsChart) {
     window._productStatsChart.data.labels = labels;
     window._productStatsChart.data.datasets[0].data = data;
@@ -1555,13 +1584,136 @@ function buildProductStatsChart() {
       data: {
         labels,
         datasets: [{
-          label: 'Umsatz pro Produkt ($)',
-          data: data
+          label: 'Umsatz ($)',
+          data: data,
+          backgroundColor: 'rgba(75, 0, 130, 0.7)'
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { labels: { color: '#999' } } },
+        scales: {
+          x: { ticks: { color: '#999' } },
+          y: { beginAtZero: true, ticks: { color: '#999' } }
+        }
+      }
+    });
+  }
+  
+  // Animate
+  ctx.classList.add('chart-updating');
+  setTimeout(() => ctx.classList.remove('chart-updating'), 500);
+  
+  // Update top products list
+  updateTopProductsList(products.products);
+}
+
+function updateTopProductsList(products) {
+  const listEl = document.getElementById('topProductsList');
+  if (!listEl) return;
+  
+  if (products.length === 0) {
+    listEl.innerHTML = 'Keine Verkäufe im ausgewählten Zeitraum.';
+    return;
+  }
+  
+  const top10 = products.slice(0, 10);
+  listEl.innerHTML = top10.map((p, index) => `
+    <div class="flex justify-between items-center py-2 border-b border-black/10 dark:border-white/10">
+      <div>
+        <span class="font-bold">${index + 1}.</span>
+        <span class="ml-2">${p.name}</span>
+      </div>
+      <div class="text-right">
+        <div class="font-bold">${p.revenue}$</div>
+        <div class="text-xs opacity-70">${p.quantity}x verkauft</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openStats() {
+  document.getElementById('statsModal').style.display = 'flex';
+  refreshStatistics();
+}
+
+function closeStats() {
+  document.getElementById('statsModal').style.display = 'none';
+}
+
+async function resetStats() {
+  if (!confirm('Verlauf wirklich löschen?')) return;
+  
+  try {
+    const response = await fetch('/api/stats', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scope: 'all' })
+    });
+    
+    if (response.ok) {
+      showNotification('Alle Statistiken gelöscht! 🗑️', 'success');
+      refreshStatistics();
+    }
+  } catch (error) {
+    console.error('Error deleting stats:', error);
+    showNotification('Fehler beim Löschen', 'error');
+  }
+}
+
+async function resetProductStats() {
+  if (!confirm('Produktstatistik wirklich löschen?')) return;
+  
+  try {
+    const response = await fetch('/api/stats', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scope: 'products' })
+    });
+    
+    if (response.ok) {
+      showNotification('Produktstatistik gelöscht! 🗑️', 'success');
+      refreshStatistics();
+    }
+  } catch (error) {
+    console.error('Error deleting product stats:', error);
+    showNotification('Fehler beim Löschen', 'error');
+  }
+}
+
+function toggleTopProductsDropdown() {
+  const dropdown = document.getElementById('topProductsDropdown');
+  dropdown.classList.toggle('show');
+}
+
+function toggleRushHourDropdown() {
+  const dropdown = document.getElementById('rushHourDropdown');
+  dropdown.classList.toggle('show');
+  if (dropdown.classList.contains('show')) buildRushHourChart();
+}
+
+function buildRushHourChart() {
+  const ctx = document.getElementById('rushHourDropdownChart');
+  if (!ctx) return;
+  
+  // This will be updated by Socket.IO
+  // For now, just initialize empty chart
+  if (!window._rushHourChart) {
+    window._rushHourChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Array(24).fill(0).map((_, i) => i.toString().padStart(2,'0') + ':00'),
+        datasets: [{
+          label: 'Umsatz pro Stunde ($)',
+          data: Array(24).fill(0),
+          backgroundColor: 'rgba(75, 0, 130, 0.5)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
         scales: {
           x: { ticks: { color: '#999' } },
           y: { beginAtZero: true, ticks: { color: '#999' } }
@@ -1571,77 +1723,231 @@ function buildProductStatsChart() {
   }
 }
 
-function resetProductStats() {
-  if (!confirm('Produktstatistik wirklich löschen?')) return;
+// ============================================
+// CALCULATOR FUNCTIONS
+// ============================================
+
+function changeQuantity(id, delta) {
+  const input = document.getElementById(id);
+  if (!input) return;
+  let v = parseInt(input.value) || 0;
+  v += delta;
+  if (v < 0) v = 0;
+  input.value = v;
+  berechne();
   
-  fetch('/api/stats', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ scope: 'products' })
-  }).then(() => {
-    localStorage.removeItem('lutalo.productStats');
-    buildProductStatsChart();
-    showNotification('Produktstatistik gelöscht! 🗑️', 'success');
-  }).catch(err => {
-    console.error('Error deleting product stats:', err);
-    localStorage.removeItem('lutalo.productStats');
-    buildProductStatsChart();
-    showNotification('Produktstatistik gelöscht (Offline)', 'warning');
-  });
+  input.classList.remove('updated');
+  void input.offsetWidth; 
+  input.classList.add('updated');
 }
 
-function openStats() {
-  document.getElementById('statsModal').style.display = 'flex';
-  buildStatsChart();
-  buildProductStatsChart();
-  updateTopProductsDropdown();
-}
-function closeStats() {
-  document.getElementById('statsModal').style.display = 'none';
-}
-function resetStats() {
-  if (!confirm('Verlauf wirklich löschen?')) return;
+function berechne() {
+  pushUndoSnapshot();
   
-  fetch('/api/stats', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ scope: 'all' })
-  }).then(() => {
-    localStorage.removeItem(SALES_KEY);
-    buildStatsChart();
-    buildProductStatsChart();
-    updateTopProductsDropdown();
-    showNotification('Alle Statistiken gelöscht! 🗑️', 'success');
-  }).catch(err => {
-    console.error('Error deleting stats:', err);
-    localStorage.removeItem(SALES_KEY);
-    buildStatsChart();
-    buildProductStatsChart();
-    updateTopProductsDropdown();
-    showNotification('Statistiken gelöscht (Offline)', 'warning');
-  });
+  let summe = 0, foodCount = 0, drinkCount = 0, rauchwarenCount = 0;
+  const orderedItems = [], miscItems = [];
+  
+  const companyInput = document.querySelector('input[name="company"]:checked');
+  const selectedCompany = companyInput ? companyInput.value : "";
+  const isCompanyOrder = selectedCompany !== "";
+  const companyLimit = companyLimits[selectedCompany];
+  
+  const manualPersonCount = parseInt(document.getElementById('personCountInput').value) || 0;
+  
+  for (const key in currentPreise) {
+    const el = document.getElementById(key);
+    if (!el) continue;
+    const anzahl = parseInt(el.value) || 0;
+    if (!anzahl) continue;
+    
+    summe += anzahl * currentPreise[key].price;
+    const cat = currentPreise[key].category;
+    const line = `${anzahl}x ${currentPreise[key].name}`;
+    
+    if (foodCategories.includes(cat)) { foodCount += anzahl; orderedItems.push(line); }
+    else if (drinkCategories.includes(cat)) { drinkCount += anzahl; orderedItems.push(line); }
+    else if (rauchwarenCategories.includes(cat)) { rauchwarenCount += anzahl; orderedItems.push(line); }
+    else if (miscellaneousCategories.includes(cat)) { miscItems.push(line); }
+  }
+  
+  document.getElementById('preis').innerText = `${summe}$`;
+  
+  let grund = '';
+  const totalItems = foodCount + drinkCount + rauchwarenCount + miscItems.length;
+  const dateString = todayPretty();
+  
+  if (totalItems > 0 || manualPersonCount > 0) {
+    const overText = [];
+    if (isCompanyOrder && companyLimit) {
+      if (foodCount > companyLimit.maxFood)  overText.push(`Essen überschreitet Limit (${foodCount}/${companyLimit.maxFood})!`);
+      if (drinkCount > companyLimit.maxDrink) overText.push(`Trinken überschreitet Limit (${drinkCount}/${companyLimit.maxDrink})!`);
+    }
+    
+    const parts = [`PlayUP | ${dateString}`];
+    if (isCompanyOrder) {
+      parts.push(`Kantine ${selectedCompany}`);
+    } else if (manualPersonCount > 0) {
+      parts.push(`${manualPersonCount}P`);
+    } else {
+      const pc = Math.max(foodCount, drinkCount) > 0 ? Math.ceil(Math.max(foodCount, drinkCount) / itemsPerPerson) : 0;
+      if (pc > 0) parts.push(`${pc}P`);
+    }
+    
+    const allItems = [...orderedItems, ...miscItems];
+    if (allItems.length > 0) parts.push(allItems.join(' + '));
+    
+    const cats = [];
+    if (foodCount > 0) cats.push('Essen');
+    if (drinkCount > 0) cats.push('Trinken');
+    if (rauchwarenCount > 0) cats.push('Coins');
+    if (cats.length > 0) parts.push(cats.join(' & '));
+    
+    if (overText.length > 0) {
+      parts.push(`⚠️${overText.join(' ')}`);
+    }
+    
+    grund = parts.join(' | ');
+  } else {
+    grund = 'Noch nichts berechnet';
+  }
+  
+  document.getElementById('grund').innerText = grund;
+  
+  // Auto-save calculator state
+  saveCurrentCalculatorState();
 }
 
-function showReceipt(grund, betrag, rabatt=false) {
-  const receipt = document.getElementById('receiptPopup');
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
+function saveCurrentCalculatorState() {
+  const state = captureCurrentState();
+  calculatorStates[activeTab] = state;
+  
+  // Save to backend (debounced)
+  clearTimeout(window._saveStateTimeout);
+  window._saveStateTimeout = setTimeout(async () => {
+    await saveCalculatorState(activeTab, state);
+  }, 1000);
+}
 
-  receipt.innerHTML = `
-    <div class="font-bold text-center mb-2">${customTitle}</div>
-    <div>${todayPretty()} ${hh}:${mm}</div>
-    <div class="mt-2 break-words">${grund}</div>
-    <div class="mt-2 font-bold text-right">${betrag}$</div>
-    ${rabatt ? '<div class="text-purple-600 font-bold text-right">Lutalo Rabatt ✔</div>' : ''}
-  `;
+function captureCurrentState() {
+  const inputs = {};
+  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => {
+    inputs[i.id] = i.value;
+  });
+  return {
+    inputs,
+    grund: document.getElementById('grund').innerText,
+    preis: document.getElementById('preis').innerText,
+    personCount: document.getElementById('personCountInput').value
+  };
+}
 
-  receipt.classList.add('showing');
+function pushUndoSnapshot() {
+  undoStack.push(captureCurrentState());
+  if (undoStack.length > 20) undoStack.shift();
+}
 
-  setTimeout(()=>{
-    receipt.classList.remove('showing');
-    receipt.style.display = 'none';
-  },3000);
+function restoreStateSnapshot(snap) {
+  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
+  for (const id in snap.inputs) {
+    const el = document.getElementById(id);
+    if (el) el.value = snap.inputs[id];
+  }
+  document.getElementById('grund').innerText = snap.grund;
+  document.getElementById('preis').innerText = snap.preis;
+  document.getElementById('personCountInput').value = snap.personCount;
+}
+
+function undoLast() {
+  if (!undoStack.length) return;
+  const snap = undoStack.pop();
+  restoreStateSnapshot(snap);
+  saveCurrentCalculatorState();
+}
+
+function resetRechner() {
+  pushUndoSnapshot();
+  document.getElementById('personCountInput').value = 0;
+  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(inp => inp.value = 0);
+  document.getElementById('grund').innerText = 'Noch nichts berechnet';
+  document.getElementById('preis').innerText = '0$';
+  saveCurrentCalculatorState();
+}
+
+function applyLutaloRabatt() {
+  pushUndoSnapshot();
+  const grundEl = document.getElementById('grund');
+  const preisEl = document.getElementById('preis');
+  
+  const altGrund = grundEl.innerText;
+  const rabattGrund = altGrund.includes('[Lutalo Rabatt]') ? altGrund : altGrund + ' | [Lutalo Rabatt]';
+  grundEl.innerText = rabattGrund;
+  preisEl.innerText = '1$';
+  
+  saveCurrentCalculatorState();
+  
+  preisEl.style.color = '#8b5cf6';
+  setTimeout(()=>{ preisEl.style.color = ''; },600);
+}
+
+async function copyText(id){ 
+  copyToClipboard(document.getElementById(id).innerText);
+  if (id === 'grund') {
+    const grund = document.getElementById('grund').innerText;
+    const preisText = document.getElementById('preis').innerText;
+    const preisNum = parseInt(preisText.replace('$','')) || 0;
+    if (preisNum > 0) {
+      try {
+        const response = await fetch('/api/sales/entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            grund: grund, 
+            betrag: preisNum,
+            ts: Date.now()
+          })
+        });
+        
+        if (response.ok) {
+          showReceipt(grund, preisNum);
+          showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
+        } else {
+          throw new Error('API call failed');
+        }
+      } catch (error) {
+        console.error('Error saving sale:', error);
+        showNotification(`Fehler beim Speichern!`, 'error');
+      }
+    }
+  }
+}
+
+async function copyPriceText(){ 
+  copyToClipboard(document.getElementById('preis').innerText.replace('$',''));
+  const grund = document.getElementById('grund').innerText;
+  const preisNum = parseInt(document.getElementById('preis').innerText.replace('$','')) || 0;
+  if (preisNum > 0) {
+    try {
+      const response = await fetch('/api/sales/entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          grund: grund, 
+          betrag: preisNum,
+          ts: Date.now()
+        })
+      });
+      
+      if (response.ok) {
+        showReceipt(grund, preisNum);
+        showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
+      } else {
+        throw new Error('API call failed');
+      }
+    } catch (error) {
+      console.error('Error saving sale:', error);
+      showNotification(`Fehler beim Speichern!`, 'error');
+    }
+  }
 }
 
 function copyToClipboard(text) {
@@ -1658,279 +1964,174 @@ function copyToClipboard(text) {
     document.body.removeChild(t);
   }
 }
+
 function showCopied(){
   const h = document.getElementById('kopiertHinweis');
   h.classList.remove('hidden');
   setTimeout(()=>h.classList.add('hidden'),2000);
 }
-async function copyText(id){ 
-  copyToClipboard(document.getElementById(id).innerText);
-  if (id === 'grund') {
-    const grund = document.getElementById('grund').innerText;
-    const preisText = document.getElementById('preis').innerText;
-    const preisNum = parseInt(preisText.replace('$','')) || 0;
-    if (preisNum > 0) {
-      // API Call zum Backend für persistente Speicherung
-      try {
-        const response = await fetch('/api/sales/entry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            grund: grund, 
-            betrag: preisNum,
-            ts: Date.now()
-          })
-        });
-        
-        if (response.ok) {
-          const result = await response.json();
-          // Lokale Daten als Backup aktualisieren
-          recordSale(grund, preisNum);
-          recordProductSale(grund, preisNum);
-          showReceipt(grund, preisNum);
-          
-          showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
-        } else {
-          throw new Error('API call failed');
-        }
-      } catch (error) {
-        console.error('Error saving sale:', error);
-        // Fallback auf lokale Speicherung
-        recordSale(grund, preisNum);
-        recordProductSale(grund, preisNum);
-        showReceipt(grund, preisNum);
-        buildStatsChart();
-        buildProductStatsChart();
-        updateTopProductsDropdown();
-        showNotification(`Verkauf gespeichert (Offline) 💰`, 'warning');
-      }
-    }
-  }
-}
 
-async function copyPriceText(){ 
-  copyToClipboard(document.getElementById('preis').innerText.replace('$',''));
-  const grund = document.getElementById('grund').innerText;
-  const preisNum = parseInt(document.getElementById('preis').innerText.replace('$','')) || 0;
-  if (preisNum > 0) {
-    // API Call zum Backend für persistente Speicherung
-    try {
-      const response = await fetch('/api/sales/entry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          grund: grund, 
-          betrag: preisNum,
-          ts: Date.now()
-        })
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        // Lokale Daten als Backup aktualisieren
-        recordSale(grund, preisNum);
-        recordProductSale(grund, preisNum);
-        showReceipt(grund, preisNum);
-        
-        showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
-      } else {
-        throw new Error('API call failed');
-      }
-    } catch (error) {
-      console.error('Error saving sale:', error);
-      // Fallback auf lokale Speicherung
-      recordSale(grund, preisNum);
-      recordProductSale(grund, preisNum);
-      showReceipt(grund, preisNum);
-      buildStatsChart();
-      buildProductStatsChart();
-      updateTopProductsDropdown();
-      showNotification(`Verkauf gespeichert (Offline) 💰`, 'warning');
-    }
-  }
-}
-
-function resetRechner() {
-  pushUndoSnapshot();
-  document.getElementById('personCountInput').value = 0;
-  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(inp => inp.value = 0);
-  document.getElementById('grund').innerText = 'Noch nichts berechnet';
-  document.getElementById('preis').innerText = '0$';
-  saveCalculatorState();
-}
-
-function applyLutaloRabatt() {
-  pushUndoSnapshot();
-  const grundEl = document.getElementById('grund');
-  const preisEl = document.getElementById('preis');
-
-  const altGrund = grundEl.innerText;
-  const rabattGrund = altGrund.includes('[Lutalo Rabatt]') ? altGrund : altGrund + ' | [Lutalo Rabatt]';
-  grundEl.innerText = rabattGrund;
-  preisEl.innerText = '1$';
-
-  saveCalculatorState();
-
-  preisEl.style.color = '#8b5cf6';
-  setTimeout(()=>{ preisEl.style.color = ''; },600);
-}
-
-function berechne() {
-  pushUndoSnapshot();
-
-  let summe = 0, foodCount = 0, drinkCount = 0, rauchwarenCount = 0;
-  const orderedItems = [], miscItems = [];
-
-  const companyInput = document.querySelector('input[name="company"]:checked');
-  const selectedCompany = companyInput ? companyInput.value : "";
-  const isCompanyOrder = selectedCompany !== "";
-  const companyLimit = companyLimits[selectedCompany];
-
-  const manualPersonCount = parseInt(document.getElementById('personCountInput').value) || 0;
-
-  for (const key in currentPreise) {
-    const el = document.getElementById(key);
-    if (!el) continue;
-    const anzahl = parseInt(el.value) || 0;
-    if (!anzahl) continue;
-
-    summe += anzahl * currentPreise[key].price;
-    const cat = currentPreise[key].category;
-    const line = `${anzahl}x ${currentPreise[key].name}`;
-
-    if (foodCategories.includes(cat)) { foodCount += anzahl; orderedItems.push(line); }
-    else if (drinkCategories.includes(cat)) { drinkCount += anzahl; orderedItems.push(line); }
-    else if (rauchwarenCategories.includes(cat)) { rauchwarenCount += anzahl; orderedItems.push(line); }
-    else if (miscellaneousCategories.includes(cat)) { miscItems.push(line); }
-  }
-
-  document.getElementById('preis').innerText = `${summe}$`;
-
-  let grund = '';
-  const totalItems = foodCount + drinkCount + rauchwarenCount + miscItems.length;
-  const dateString = todayPretty();
-
-  if (totalItems > 0 || manualPersonCount > 0) {
-    const overText = [];
-    if (isCompanyOrder && companyLimit) {
-      if (foodCount > companyLimit.maxFood)  overText.push(`Essen überschreitet Limit (${foodCount}/${companyLimit.maxFood})!`);
-      if (drinkCount > companyLimit.maxDrink) overText.push(`Trinken überschreitet Limit (${drinkCount}/${companyLimit.maxDrink})!`);
-    }
-
-    const parts = [`PlayUP | ${dateString}`];
-    if (isCompanyOrder) {
-      parts.push(`Kantine ${selectedCompany}`);
-    } else if (manualPersonCount > 0) {
-      parts.push(`${manualPersonCount}P`);
-    } else {
-      const pc = Math.max(foodCount, drinkCount) > 0 ? Math.ceil(Math.max(foodCount, drinkCount) / itemsPerPerson) : 0;
-      if (pc > 0) parts.push(`${pc}P`);
-    }
-
-    const allItems = [...orderedItems, ...miscItems];
-    if (allItems.length > 0) parts.push(allItems.join(' + '));
-
-    const cats = [];
-    if (foodCount > 0) cats.push('Essen');
-    if (drinkCount > 0) cats.push('Trinken');
-    if (rauchwarenCount > 0) cats.push('Coins');
-    if (cats.length > 0) parts.push(cats.join(' & '));
-
-    if (overText.length > 0) {
-      parts.push(`⚠️${overText.join(' ')}`);
-    }
-
-    grund = parts.join(' | ');
-  } else {
-    grund = 'Noch nichts berechnet';
-  }
-
-  document.getElementById('grund').innerText = grund;
-  saveCalculatorState();
-
-  const preisText = document.getElementById('preis').innerText;
-  const preisNum = parseInt(preisText.replace('$','')) || 0;
+function showReceipt(grund, betrag, rabatt=false) {
+  const receipt = document.getElementById('receiptPopup');
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  
+  receipt.innerHTML = `
+    <div class="font-bold text-center mb-2">${customTitle}</div>
+    <div>${todayPretty()} ${hh}:${mm}</div>
+    <div class="mt-2 break-words">${grund}</div>
+    <div class="mt-2 font-bold text-right">${betrag}$</div>
+    ${rabatt ? '<div class="text-purple-600 font-bold text-right">Lutalo Rabatt ✔</div>' : ''}
+  `;
+  
+  receipt.classList.add('showing');
+  
+  setTimeout(()=>{
+    receipt.classList.remove('showing');
+    receipt.style.display = 'none';
+  },3000);
 }
 
 function toggleDropdown() {
   document.getElementById('unternehmenDropdown').classList.toggle('show');
 }
 
-function toggleRushHourDropdown() {
-  const dropdown = document.getElementById('rushHourDropdown');
-  dropdown.classList.toggle('show');
-  if (dropdown.classList.contains('show')) buildRushHourChart();
+async function switchTab(tabNumber) {
+  if (tabNumber === activeTab) return;
+  
+  // Save current tab first
+  saveCurrentCalculatorState();
+  
+  document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+  const newBtn = document.querySelector(`.tab-button[data-tab="${tabNumber}"]`);
+  if (newBtn) {
+    newBtn.classList.add('active');
+    updateSliderPosition(newBtn);
+  }
+  
+  activeTab = tabNumber;
+  
+  // Load state for new tab
+  loadCalculatorStateForTab();
+  berechne();
+  
+  // Save active tab to settings
+  await saveSettings({ activeTab: tabNumber });
 }
 
-function buildRushHourChart() {
-  const ctx = document.getElementById('rushHourDropdownChart');
-  if (!ctx) return;
-  const sales = loadSales();
-  const hourlyTotals = Array(24).fill(0);
-  
-  Object.values(sales).forEach(day => {
-    if (day.entries) {
-      day.entries.forEach(entry => {
-        if (entry.ts) {
-          const hour = new Date(entry.ts).getHours();
-          hourlyTotals[hour] += entry.betrag;
-        }
-      });
+function loadCalculatorStateForTab() {
+  const s = calculatorStates[activeTab];
+  document.querySelectorAll('#calculatorContent input[type="number"]').forEach(i => i.value = 0);
+  if (s && s.inputs) {
+    for (const id in s.inputs) {
+      const el = document.getElementById(id);
+      if (el) el.value = s.inputs[id];
     }
-  });
-  
-  const labels = hourlyTotals.map((_, i) => i.toString().padStart(2,'0') + ':00');
-  const top3 = [...hourlyTotals].sort((a,b)=>b-a).slice(0,3);
-  const bgColors = hourlyTotals.map(v => top3.includes(v) ? 'rgba(255,99,132,0.8)' : 'rgba(75,0,130,0.5)');
-  
-  if (window._rushHourChart) {
-    window._rushHourChart.data.labels = labels;
-    window._rushHourChart.data.datasets[0].data = hourlyTotals;
-    window._rushHourChart.data.datasets[0].backgroundColor = bgColors;
-    window._rushHourChart.update('active');
+    document.getElementById('grund').innerText = s.grund || 'Noch nichts berechnet';
+    document.getElementById('preis').innerText = s.preis || '0$';
+    document.getElementById('personCountInput').value = s.personCount || 0;
   } else {
-    window._rushHourChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Umsatz pro Stunde ($)',
-          data: hourlyTotals,
-          backgroundColor: bgColors
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#999' } },
-          y: { beginAtZero: true, ticks: { color: '#999' } }
-        }
-      }
+    document.getElementById('grund').innerText = 'Noch nichts berechnet';
+    document.getElementById('preis').innerText = '0$';
+    document.getElementById('personCountInput').value = 0;
+  }
+}
+
+function updateSliderPosition(tabButton) {
+  const slider = document.getElementById('tabsSlider');
+  const container = document.getElementById('tabsContainer');
+  const b = tabButton.getBoundingClientRect();
+  const c = container.getBoundingClientRect();
+  slider.style.setProperty('--tab-left', `${b.left - c.left}px`);
+  slider.style.setProperty('--tab-width', `${b.width}px`);
+}
+
+function applyConfig(data) {
+  currentPreise = data.items || { ...defaultPreise };
+  categories = data.categories || ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'];
+  foodCategories = data.foodCategories || ['ESSEN'];
+  drinkCategories = data.drinkCategories || ['TRINKEN', 'ALKOHOL'];
+  rauchwarenCategories = data.rauchwarenCategories || ['COINS'];
+  miscellaneousCategories = data.miscellaneousCategories || ['STICKER', 'FIGUREN'];
+  customTitle = data.title || 'Play UP Kassenblatt';
+  customImage = data.image || DEFAULT_IMAGE_URL;
+}
+
+function loadPreise() {
+  applyConfig({
+    items: { ...defaultPreise },
+    categories: ['ESSEN', 'TRINKEN', 'FIGUREN', 'COINS', 'STICKER'],
+    foodCategories: ['ESSEN'],
+    drinkCategories: ['TRINKEN', 'ALKOHOL'],
+    rauchwarenCategories: ['COINS'],
+    miscellaneousCategories: ['STICKER', 'FIGUREN'],
+    title: customTitle,
+    image: DEFAULT_IMAGE_URL
+  });
+  renderCalculatorInputs();
+  updateHeaderDisplay();
+}
+
+function updateHeaderDisplay() {
+  document.getElementById('htmlTitle').innerText = customTitle;
+  document.getElementById('calculatorTitle').innerText = customTitle;
+  document.getElementById('headerImage').src = customImage;
+  requestAnimationFrame(()=>{
+    document.getElementById('headerImage').classList.add('loaded');
+  });
+}
+
+function renderCalculatorInputs() {
+  const grid = document.getElementById('categoriesGrid');
+  grid.innerHTML = '';
+  categories.forEach(category => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `
+      <h3 class="text-base font-bold mb-3 text-center tracking-wide">${category.toUpperCase()}</h3>
+      <div class="space-y-3"></div>
+    `;
+    grid.appendChild(wrap);
+    const listEl = wrap.querySelector('.space-y-3');
+    const items = Object.values(currentPreise).filter(i => i.category === category);
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center justify-between gap-4';
+      row.innerHTML = `
+        <div class="min-w-0">
+          <label for="${item.id}" class="font-medium">${item.name}</label>
+          <div class="text-xs opacity-70">${item.price}$</div>
+        </div>
+        <div class="quantity-control">
+          <button onclick="changeQuantity('${item.id}', -1)">−</button>
+          <input id="${item.id}" type="number" min="0" value="0" oninput="berechne()" />
+          <button onclick="changeQuantity('${item.id}', 1)">+</button>
+        </div>
+      `;
+      listEl.appendChild(row);
     });
-  }
+  });
 }
 
-function closeWelcome() {
-  const modal = document.getElementById('welcomeModal');
-  if (modal) {
-    modal.style.opacity = '1';
-    modal.style.transition = 'opacity 0.5s ease';
-    modal.style.opacity = '0';
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 500);
-  }
+function todayKey() {
+  const t = new Date();
+  const d = String(t.getDate()).padStart(2,'0');
+  const m = String(t.getMonth()+1).padStart(2,'0');
+  const y = t.getFullYear();
+  return `${y}-${m}-${d}`;
 }
 
-document.getElementById('versionBadge').addEventListener('click', ()=>{
-  document.getElementById('changelogModal').style.display = 'flex';
-});
-function closeChangelog(){
-  document.getElementById('changelogModal').style.display = 'none';
+function todayPretty() {
+  const t = new Date();
+  const d = String(t.getDate()).padStart(2,'0');
+  const m = String(t.getMonth()+1).padStart(2,'0');
+  return `${d}.${m}.`;
 }
 
-// Treuepunkte Functions
+// ============================================
+// TREUEPUNKTE FUNCTIONS
+// ============================================
+
 function loadPunkte() {
   try {
     const raw = localStorage.getItem(PUNKTE_KEY);
@@ -1947,23 +2148,23 @@ window.addPunkte = async function() {
   const punkteEl = document.getElementById("punkteAnzahl");
   const name = nameEl.value.trim();
   const punkte = parseInt(punkteEl.value);
-
+  
   if (!name || isNaN(punkte)) {
     showNotification("Bitte Namen und Punktezahl eingeben!", "warning");
     return;
   }
-
+  
   try {
     const response = await fetch('/api/loyalty', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, points: punkte })
     });
-
+    
     if (!response.ok) {
       throw new Error('API call failed');
     }
-
+    
     const result = await response.json();
     
     const daten = loadPunkte();
@@ -1971,9 +2172,9 @@ window.addPunkte = async function() {
     savePunkte(daten);
     
     renderPunkteListe();
-
+    
     showNotification(`${punkte} Punkte an ${name} vergeben! 🎁`, "success");
-
+    
     nameEl.value = "";
     punkteEl.value = "";
     
@@ -1981,45 +2182,83 @@ window.addPunkte = async function() {
     console.error('Error adding points:', error);
     
     const daten = loadPunkte();
-    const oldPoints = daten[name] || 0;
-    daten[name] = oldPoints + punkte;
+    daten[name] = (daten[name] || 0) + punkte;
     savePunkte(daten);
     renderPunkteListe();
     
-    const customer = {
-      name: name,
-      points: daten[name],
-      pointsChange: punkte,
-      level: calculateLevelForPoints(daten[name])
-    };
-    
-    showLoyaltyPointsAnimation(customer);
-    
-    const oldLevel = calculateLevelForPoints(oldPoints);
-    const newLevel = calculateLevelForPoints(daten[name]);
-    
-    if (oldLevel !== newLevel) {
-      setTimeout(() => {
-        showLevelUpCelebration(customer);
-      }, 500);
-    }
-    
-    showNotification(`${punkte} Punkte an ${name} vergeben! (Offline-Modus)`, "warning");
+    showNotification(`${punkte} Punkte an ${name} vergeben! (Offline)`, "warning");
     
     nameEl.value = "";
     punkteEl.value = "";
   }
 };
 
+window.removePunkte = async function(name) {
+  if (!confirm(`${name} wirklich aus der Treuepunkte-Liste löschen?`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/loyalty', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    
+    if (!response.ok) {
+      throw new Error('API call failed');
+    }
+    
+    const daten = loadPunkte();
+    delete daten[name];
+    savePunkte(daten);
+    
+    renderPunkteListe();
+    
+    showNotification(`${name} wurde entfernt`, "info");
+    
+  } catch (error) {
+    console.error('Error removing customer:', error);
+    
+    const daten = loadPunkte();
+    delete daten[name];
+    savePunkte(daten);
+    renderPunkteListe();
+    
+    showNotification(`${name} wurde entfernt (Offline)`, "warning");
+  }
+};
+
+window.calculateLevelForPoints = function(points) {
+  if (points >= 200) return 'Platinum';
+  if (points >= 150) return 'Gold';
+  if (points >= 75) return 'Silver';
+  return 'Bronze';
+};
+
+window.getLevelIcon = function(level) {
+  const icons = {
+    'Bronze': '🥉',
+    'Silver': '🥈',
+    'Gold': '🥇',
+    'Platinum': '💎'
+  };
+  return icons[level] || '🎁';
+};
+
+window.getLevelClass = function(level) {
+  return `level-${level.toLowerCase()}`;
+};
+
 function renderPunkteListe() {
   const daten = loadPunkte();
   const listEl = document.getElementById("punkteListe");
-
+  
   if (Object.keys(daten).length === 0) {
     listEl.innerHTML = "Noch keine Punkte vergeben.";
     return;
   }
-
+  
   const customers = Object.entries(daten).map(([name, points]) => ({
     name,
     points
@@ -2091,63 +2330,6 @@ function renderPunkteListe() {
     </table>`;
 }
 
-window.removePunkte = async function(name) {
-  if (!confirm(`${name} wirklich aus der Treuepunkte-Liste löschen?`)) {
-    return;
-  }
-  
-  try {
-    const response = await fetch('/api/loyalty', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name })
-    });
-
-    if (!response.ok) {
-      throw new Error('API call failed');
-    }
-
-    const daten = loadPunkte();
-    delete daten[name];
-    savePunkte(daten);
-    
-    renderPunkteListe();
-    
-    showNotification(`${name} wurde entfernt`, "info");
-    
-  } catch (error) {
-    console.error('Error removing customer:', error);
-    
-    const daten = loadPunkte();
-    delete daten[name];
-    savePunkte(daten);
-    renderPunkteListe();
-    
-    showNotification(`${name} wurde entfernt (Offline-Modus)`, "warning");
-  }
-};
-
-window.calculateLevelForPoints = function(points) {
-  if (points >= 200) return 'Platinum';
-  if (points >= 150) return 'Gold';
-  if (points >= 75) return 'Silver';
-  return 'Bronze';
-};
-
-window.getLevelIcon = function(level) {
-  const icons = {
-    'Bronze': '🥉',
-    'Silver': '🥈',
-    'Gold': '🥇',
-    'Platinum': '💎'
-  };
-  return icons[level] || '🎁';
-};
-
-window.getLevelClass = function(level) {
-  return `level-${level.toLowerCase()}`;
-};
-
 function showLoyaltyPointsAnimation(customer) {
   const row = document.querySelector(`[data-customer="${CSS.escape(customer.name)}"]`);
   
@@ -2207,7 +2389,7 @@ function showLevelUpCelebration(customer) {
 }
 
 // ============================================
-// LIVE UPDATES SYSTEM
+// NOTIFICATION SYSTEM
 // ============================================
 
 window.showNotification = function(message, type = 'info', options = {}) {
@@ -2259,7 +2441,10 @@ window.showNotification = function(message, type = 'info', options = {}) {
   return notification;
 };
 
-// Socket.IO Live Updates Manager
+// ============================================
+// SOCKET.IO LIVE UPDATES
+// ============================================
+
 class LiveUpdatesManager {
   constructor() {
     this.socket = null;
@@ -2319,9 +2504,6 @@ class LiveUpdatesManager {
       this.reconnectAttempts = 0;
       this.updateConnectionStatus('connected');
       showNotification('Live-Updates aktiviert! 🎉', 'success', { duration: 2000 });
-      
-      // NEU: Lade initiale Daten vom Server
-      this.loadInitialData();
     });
     
     this.socket.on('disconnect', (reason) => {
@@ -2353,16 +2535,20 @@ class LiveUpdatesManager {
       handleLoyaltyUpdate(data);
     });
     
-    // Sales Updates - NEU
+    // Sales Updates
     this.socket.on('sales:update', (data) => {
       console.log('[Socket] sales:update', data);
-      handleSalesUpdate(data);
+      if (document.getElementById('statsModal').style.display === 'flex') {
+        refreshStatistics();
+      }
     });
     
-    // Products Updates - NEU
+    // Products Updates
     this.socket.on('products:update', (data) => {
       console.log('[Socket] products:update', data);
-      handleProductsUpdate(data);
+      if (document.getElementById('statsModal').style.display === 'flex') {
+        refreshStatistics();
+      }
     });
     
     // Rush Hour Updates
@@ -2371,64 +2557,41 @@ class LiveUpdatesManager {
       updateRushHourChart(data);
     });
     
-    // Stats Deleted - NEU
+    // Stats Deleted
     this.socket.on('stats:deleted', (data) => {
       console.log('[Socket] stats:deleted', data);
-      handleStatsDeleted(data);
+      showNotification(`Statistiken gelöscht: ${data.scope}`, 'info');
+      if (document.getElementById('statsModal').style.display === 'flex') {
+        refreshStatistics();
+      }
     });
     
     // Top Products Updates
     this.socket.on('top-products:update', (data) => {
       console.log('[Socket] top-products:update', data);
-      updateTopProductsDropdown();
     });
     
     // Config Updates
     this.socket.on('config:update', (data) => {
       console.log('[Socket] config:update', data);
     });
-  }
-  
-  // NEU: Lade initiale Daten vom Server
-  async loadInitialData() {
-    try {
-      // Sales laden
-      const salesResponse = await fetch('/api/sales');
-      if (salesResponse.ok) {
-        const salesData = await salesResponse.json();
-        saveSales(salesData);
-        console.log('✅ Sales loaded from server:', Object.keys(salesData).length, 'days');
+    
+    // Settings Updates
+    this.socket.on('settings:update', (data) => {
+      console.log('[Socket] settings:update', data);
+    });
+    
+    // Calculator Updates
+    this.socket.on('calculator:update', ({ tab, state }) => {
+      console.log('[Socket] calculator:update', tab, state);
+      if (tab != activeTab) {
+        calculatorStates[tab] = state;
       }
-      
-      // Products laden
-      const productsResponse = await fetch('/api/products');
-      if (productsResponse.ok) {
-        const productsData = await productsResponse.json();
-        
-        // Konvertiere zu produktStats Format
-        const stats = {};
-        for (const [name, data] of Object.entries(productsData)) {
-          if (data.revenue) {
-            stats[name] = data.revenue;
-          }
-        }
-        saveProductStats(stats);
-        console.log('✅ Products loaded from server:', Object.keys(productsData).length, 'products');
-      }
-      
-      // Loyalty laden
-      const loyaltyResponse = await fetch('/api/loyalty');
-      if (loyaltyResponse.ok) {
-        const loyaltyData = await loyaltyResponse.json();
-        savePunkte(loyaltyData);
-        renderPunkteListe();
-        console.log('✅ Loyalty loaded from server:', Object.keys(loyaltyData).length, 'customers');
-      }
-      
-    } catch (error) {
-      console.error('Error loading initial data:', error);
-      console.log('⚠️ Using local data as fallback');
-    }
+    });
+    
+    this.socket.on('calculator:init', (allStates) => {
+      console.log('[Socket] calculator:init', Object.keys(allStates).length, 'states');
+    });
   }
   
   disconnect() {
@@ -2452,123 +2615,42 @@ class LiveUpdatesManager {
 
 window.liveUpdates = new LiveUpdatesManager();
 
-// === NEUE HANDLER FUNCTIONS ===
-
-function handleSalesUpdate(sales) {
-  console.log('Updating sales data...', sales);
+function handleLoyaltyUpdate(data) {
+  updateLoyaltyPointsListLive(data);
   
-  // Lokale Daten aktualisieren
-  saveSales(sales);
-  
-  // Charts neu rendern wenn Stats Modal geöffnet ist
-  const modal = document.getElementById('statsModal');
-  if (modal && modal.style.display === 'flex') {
-    buildStatsChart();
+  if (data.action === 'add' && data.customer && data.customer.pointsChange > 0) {
+    showLoyaltyPointsAnimation(data.customer);
     
-    // Animiere Chart Update
-    const chartCanvas = document.getElementById('statsChart');
-    if (chartCanvas) {
-      chartCanvas.classList.add('chart-updating');
-      setTimeout(() => chartCanvas.classList.remove('chart-updating'), 500);
-    }
-    
-    // Aktualisiere statsList
-    document.getElementById('statsList').innerText = listSalesForUI().join('\n');
-    const topProducts = getTopProducts();
-    document.getElementById('statsList').innerText += "\n\n🏆 Top 3 Produkte:\n" + topProducts;
-  }
-  
-  // Zeige Notification für neuen Verkauf
-  const latestDay = Object.keys(sales).sort().pop();
-  if (latestDay && sales[latestDay].entries.length > 0) {
-    const latestEntry = sales[latestDay].entries[sales[latestDay].entries.length - 1];
-    const now = Date.now();
-    
-    // Nur wenn Verkauf vor weniger als 5 Sekunden war
-    if (now - latestEntry.ts < 5000) {
-      showNotification(
-        `Neuer Verkauf: ${latestEntry.betrag}$ 💰`,
-        'success',
-        { duration: 3000 }
-      );
+    if (data.levelUp || isLevelUp(data.customer)) {
+      showLevelUpCelebration(data.customer);
     }
   }
 }
 
-function handleProductsUpdate(products) {
-  console.log('Updating products data...', products);
+function updateLoyaltyPointsListLive(data) {
+  const customers = data.allCustomers || [];
   
-  // Berechne Stats aus products Objekt
-  const stats = {};
-  for (const [name, data] of Object.entries(products)) {
-    if (data.revenue) {
-      stats[name] = data.revenue;
-    }
-  }
+  if (customers.length === 0) return;
   
-  // Lokale Daten aktualisieren
-  saveProductStats(stats);
+  // Update local storage
+  const punkteData = {};
+  customers.forEach(c => {
+    punkteData[c.name] = c.points;
+  });
+  savePunkte(punkteData);
   
-  // Chart neu rendern wenn Stats Modal geöffnet ist
-  const modal = document.getElementById('statsModal');
-  if (modal && modal.style.display === 'flex') {
-    buildProductStatsChart();
-    updateTopProductsDropdown();
-    
-    // Animiere Chart Update
-    const chartCanvas = document.getElementById('productStatsChart');
-    if (chartCanvas) {
-      chartCanvas.classList.add('chart-updating');
-      setTimeout(() => chartCanvas.classList.remove('chart-updating'), 500);
-    }
-  }
+  // Re-render
+  renderPunkteListe();
 }
 
-function handleStatsDeleted(data) {
-  console.log('Stats deleted:', data);
+function isLevelUp(customer) {
+  if (!customer.pointsChange) return false;
   
-  // Zeige Notification
-  showNotification(
-    `Statistiken gelöscht: ${data.scope} (${data.affectedRecords} Einträge)`,
-    'warning',
-    { duration: 5000 }
-  );
+  const previousPoints = customer.points - customer.pointsChange;
+  const previousLevel = calculateLevelForPoints(previousPoints);
+  const currentLevel = customer.level || calculateLevelForPoints(customer.points);
   
-  // Lösche entsprechende lokale Daten
-  if (data.scope === 'all') {
-    localStorage.removeItem(SALES_KEY);
-    localStorage.removeItem('lutalo.productStats');
-  } else if (data.scope === 'products') {
-    localStorage.removeItem('lutalo.productStats');
-  } else if (data.scope === 'today') {
-    const sales = loadSales();
-    const today = todayKey();
-    delete sales[today];
-    saveSales(sales);
-  }
-  
-  // Charts neu rendern wenn Modal geöffnet ist
-  const modal = document.getElementById('statsModal');
-  if (modal && modal.style.display === 'flex') {
-    buildStatsChart();
-    buildProductStatsChart();
-    updateTopProductsDropdown();
-    
-    // Animiere beide Charts
-    ['statsChart', 'productStatsChart'].forEach(id => {
-      const canvas = document.getElementById(id);
-      if (canvas) {
-        canvas.classList.add('chart-updating');
-        setTimeout(() => canvas.classList.remove('chart-updating'), 500);
-      }
-    });
-  }
-  
-  // Rush Hour Chart aktualisieren wenn geöffnet
-  const rushHourDropdown = document.getElementById('rushHourDropdown');
-  if (rushHourDropdown && rushHourDropdown.classList.contains('show')) {
-    buildRushHourChart();
-  }
+  return previousLevel !== currentLevel;
 }
 
 function updateRushHourChart(data) {
@@ -2588,167 +2670,107 @@ function updateRushHourChart(data) {
   window._rushHourChart.data.datasets[0].backgroundColor = bgColors;
   window._rushHourChart.update('active');
   
-  // Animiere Chart Update
   const canvas = document.getElementById('rushHourDropdownChart');
   if (canvas) {
     canvas.classList.add('chart-updating');
     setTimeout(() => canvas.classList.remove('chart-updating'), 500);
   }
-  
-  if (data.currentHourRevenue > 0) {
-    console.log(`💰 Aktuelle Stunde: ${data.currentHourRevenue.toFixed(2)}$`);
-  }
 }
 
-function handleLoyaltyUpdate(data) {
-  updateLoyaltyPointsListLive(data);
-  
-  if (data.action === 'add' && data.customer && data.customer.pointsChange > 0) {
-    showLoyaltyPointsAnimation(data.customer);
-    
-    if (data.levelUp || isLevelUp(data.customer)) {
-      showLevelUpCelebration(data.customer);
-    }
-  }
-}
+// ============================================
+// MODAL FUNCTIONS
+// ============================================
 
-function updateLoyaltyPointsListLive(data) {
-  const listEl = document.getElementById("punkteListe");
-  if (!listEl) return;
-  
-  const customers = data.allCustomers || [];
-  
-  if (customers.length === 0) {
-    listEl.innerHTML = "Noch keine Punkte vergeben.";
-    return;
+async function closeWelcome() {
+  const modal = document.getElementById('welcomeModal');
+  if (modal) {
+    modal.style.opacity = '1';
+    modal.style.transition = 'opacity 0.5s ease';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 500);
   }
   
-  const sortedCustomers = [...customers].sort((a, b) => b.points - a.points);
-  
-  const stats = data.statistics || {
-    totalCustomers: customers.length,
-    totalPointsGiven: customers.reduce((sum, c) => sum + c.points, 0),
-    averagePoints: customers.reduce((sum, c) => sum + c.points, 0) / customers.length
-  };
-  
-  listEl.innerHTML = `
-    <div class="loyalty-statistics mb-4 p-3 bg-black/5 dark:bg-white/10 rounded-lg">
-      <div class="grid grid-cols-3 gap-2 text-sm">
-        <div>
-          <div class="opacity-70">Kunden</div>
-          <div class="font-bold text-lg">${stats.totalCustomers}</div>
-        </div>
-        <div>
-          <div class="opacity-70">Ø Punkte</div>
-          <div class="font-bold text-lg">${stats.averagePoints.toFixed(1)}</div>
-        </div>
-        <div>
-          <div class="opacity-70">Gesamt</div>
-          <div class="font-bold text-lg">${stats.totalPointsGiven}</div>
-        </div>
-      </div>
-    </div>
-    
-    <table class="w-full text-left text-sm">
-      <thead>
-        <tr class="border-b border-black/10 dark:border-white/10">
-          <th class="py-2 font-semibold">Kunde</th>
-          <th class="py-2 font-semibold">Punkte</th>
-          <th class="py-2 font-semibold">Level</th>
-          <th class="py-2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sortedCustomers.map((customer, index) => {
-          const level = calculateLevelForPoints(customer.points);
-          return `
-            <tr class="border-t border-black/10 dark:border-white/10 hover:bg-black/5 
-                       dark:hover:bg-white/10 transition fade-in ${index < 3 ? 'top-customer' : ''}"
-                data-customer="${customer.name}"
-                style="animation-delay: ${index * 0.05}s">
-              <td class="py-2 font-medium">
-                ${index < 3 ? `<span class="rank-badge ${index === 0 ? 'rank-top' : ''}">${index + 1}</span>` : ''}
-                ${customer.name}
-              </td>
-              <td class="py-2">
-                <span class="points-badge ${getLevelClass(level)}">
-                  ${customer.points} <span class="opacity-70">Pkt</span>
-                </span>
-              </td>
-              <td class="py-2">
-                <span class="level-badge ${getLevelClass(level)}">
-                  ${getLevelIcon(level)} ${level}
-                </span>
-              </td>
-              <td class="py-2 text-right">
-                <button onclick="removePunkte('${customer.name}')" 
-                        class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
-                  Löschen
-                </button>
-              </td>
-            </tr>
-          `;
-        }).join('')}
-      </tbody>
-    </table>
-  `;
-  
-  previousCustomers = sortedCustomers.map(c => ({ name: c.name, points: c.points }));
+  // Save to backend
+  await saveSettings({ welcomeShown: true });
 }
 
-function isLevelUp(customer) {
-  if (!customer.pointsChange) return false;
-  
-  const previousPoints = customer.points - customer.pointsChange;
-  const previousLevel = calculateLevelForPoints(previousPoints);
-  const currentLevel = customer.level || calculateLevelForPoints(customer.points);
-  
-  return previousLevel !== currentLevel;
+function closeChangelog() {
+  document.getElementById('changelogModal').style.display = 'none';
 }
 
-// === INITIALISIERUNG ===
+document.getElementById('versionBadge').addEventListener('click', ()=>{
+  document.getElementById('changelogModal').style.display = 'flex';
+});
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Initializing Application...');
+// ============================================
+// INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🚀 Initializing Play UP v1.8.0...');
   
-  initDarkToggle();
+  // 1. Load settings from backend
+  const settings = await loadSettings();
+  console.log('✅ Settings loaded');
+  
+  // 2. Initialize dark mode & theme
+  await initDarkToggle();
   populateThemeSelect();
-  loadTheme();
+  console.log('✅ Theme initialized');
+  
+  // 3. Load prices & render calculator
   loadPreise();
-
-  initializeCalculatorStates();
-  const savedTab = localStorage.getItem('activeTab');
-  if (savedTab) activeTab = parseInt(savedTab);
+  console.log('✅ Calculator rendered');
+  
+  // 4. Load calculator states from backend
+  await loadCalculatorStates();
+  console.log('✅ Calculator states loaded');
+  
+  // 5. Initialize tabs
+  const initialTab = settings?.activeTab || 1;
+  activeTab = initialTab;
   const initialBtn = document.querySelector(`.tab-button[data-tab="${activeTab}"]`) || document.querySelector('.tab-button[data-tab="1"]');
   if (initialBtn) {
     initialBtn.classList.add('active');
     updateSliderPosition(initialBtn);
   }
   loadCalculatorStateForTab();
-
+  
+  // 6. Setup tab event listeners
   document.querySelectorAll('.tab-button').forEach(btn => {
     btn.addEventListener('click', () => switchTab(parseInt(btn.dataset.tab)));
   });
   
+  // 7. Render loyalty
   renderPunkteListe();
+  console.log('✅ Loyalty rendered');
   
-  // Socket.IO Live Updates starten
+  // 8. Start Socket.IO
   liveUpdates.connect();
+  console.log('✅ Live updates started');
   
-  // Cleanup beim Verlassen
+  // 9. Show welcome modal if needed
+  if (!settings?.welcomeShown) {
+    document.getElementById('welcomeModal').style.display = 'flex';
+  }
+  
+  // 10. Window resize handler
+  window.addEventListener('resize', () => {
+    const btn = document.querySelector(`.tab-button[data-tab="${activeTab}"]`);
+    if (btn) updateSliderPosition(btn);
+  });
+  
+  // 11. Cleanup on unload
   window.addEventListener('beforeunload', () => {
     liveUpdates.disconnect();
   });
   
-  console.log('✅ Application initialized');
+  console.log('✅ Play UP v1.8.0 initialized successfully!');
 });
 
-window.addEventListener('resize', () => {
-  const btn = document.querySelector(`.tab-button[data-tab="${activeTab}"]`);
-  if (btn) updateSliderPosition(btn);
-});
-
-// Globale Funktionen verfügbar machen
+// Global function exports
 window.toggleDropdown = toggleDropdown;
 window.changeQuantity = changeQuantity;
 window.copyText = copyText;
@@ -2762,11 +2784,14 @@ window.closeStats = closeStats;
 window.resetStats = resetStats;
 window.closeChangelog = closeChangelog;
 window.closeWelcome = closeWelcome;
-window.toggleRushHourDropdown = toggleRushHourDropdown;
+window.setStatsPeriod = setStatsPeriod;
+window.setStatsGrouping = setStatsGrouping;
+window.applyCustomDateRange = applyCustomDateRange;
 window.toggleTopProductsDropdown = toggleTopProductsDropdown;
+window.toggleRushHourDropdown = toggleRushHourDropdown;
 window.resetProductStats = resetProductStats;
 
+console.log('📦 Play UP v1.8.0 Script loaded');
 </script>
-
 </body>
 </html>
