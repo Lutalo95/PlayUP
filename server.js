@@ -29,35 +29,6 @@ let DATA = {
   }
 };
 
-/*
-VOLLSTÄNDIG PERSISTENTE DATENSTRUKTUR:
-{
-  sales: { 
-    "2025-10-30": { 
-      total: 123.45,
-      entries: [{ grund:"...", betrag:50, ts: 1730200000000 }]
-    }
-  },
-  products: { 
-    "Pop UP": { qty: 12, revenue: 600.00 }
-  },
-  loyalty: { 
-    "Kunde A": 120 
-  },
-  calculatorStates: { 
-    "1": { inputs: {popup:2, burnup:1}, grund: "...", preis: "900$", personCount: "2" },
-    "2": { ... },
-    "3-5": { ... }
-  },
-  settings: {
-    theme: "PlayUp Farben",
-    darkMode: false,
-    welcomeShown: true,
-    activeTab: 1
-  }
-}
-*/
-
 // Lade Daten beim Start
 try {
   if (fs.existsSync(DATA_FILE)) {
@@ -84,6 +55,7 @@ try {
 function persist() {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(DATA, null, 2));
+    console.log('💾 Daten gespeichert');
   } catch(e){
     console.error('❌ Fehler beim Speichern:', e);
   }
@@ -94,7 +66,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ============================================
-// SETTINGS / EINSTELLUNGEN (NEU)
+// SETTINGS / EINSTELLUNGEN
 // ============================================
 
 app.get('/api/settings', (req, res) => {
@@ -109,7 +81,7 @@ app.post('/api/settings', (req, res) => {
 });
 
 // ============================================
-// CALCULATOR STATES (NEU)
+// CALCULATOR STATES
 // ============================================
 
 app.get('/api/calculator-states', (req, res) => {
@@ -148,7 +120,7 @@ app.post('/api/config', (req,res) => {
 });
 
 // ============================================
-// SALES / UMSATZ
+// SALES / UMSATZ - KORRIGIERT
 // ============================================
 
 app.get('/api/sales', (req,res) => {
@@ -167,57 +139,74 @@ app.post('/api/sales/entry', (req,res) => {
   const time = new Date(ts || Date.now());
   const key = `${time.getFullYear()}-${String(time.getMonth()+1).padStart(2,'0')}-${String(time.getDate()).padStart(2,'0')}`;
 
+  console.log('📝 Neuer Verkauf:', { grund, betrag, key });
+
   if (!DATA.sales[key]) DATA.sales[key] = { total:0, entries:[] };
   const amount = Number(betrag || 0);
   DATA.sales[key].total += amount;
-  DATA.sales[key].entries.push({ grund, betrag: amount, ts: ts || Date.now() });
+  const entryTs = ts || Date.now();
+  DATA.sales[key].entries.push({ grund, betrag: amount, ts: entryTs });
 
-  // Extrahiere einzelne Produkte
+  // Extrahiere einzelne Produkte - KORRIGIERT
+  let productsUpdated = [];
   if (grund) {
     const products = parseProductsFromGrund(grund);
+    console.log('🔍 Gefundene Produkte:', products);
     
-    products.forEach(product => {
-      const productName = product.name;
-      const quantity = product.qty;
-      const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
-      const revenueForProduct = totalQty > 0 ? (amount * quantity / totalQty) : amount;
-      
-      if (!DATA.products[productName]) {
-        DATA.products[productName] = { qty: 0, revenue: 0 };
-      }
-      DATA.products[productName].qty += quantity;
-      DATA.products[productName].revenue += revenueForProduct;
-    });
+    if (products.length > 0) {
+      products.forEach(product => {
+        const productName = product.name;
+        const quantity = product.qty;
+        const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
+        const revenueForProduct = totalQty > 0 ? (amount * quantity / totalQty) : amount;
+        
+        if (!DATA.products[productName]) {
+          DATA.products[productName] = { qty: 0, revenue: 0 };
+        }
+        DATA.products[productName].qty += quantity;
+        DATA.products[productName].revenue = Math.round((DATA.products[productName].revenue + revenueForProduct) * 100) / 100;
+        
+        productsUpdated.push({
+          name: productName,
+          qty: quantity,
+          revenue: Math.round(revenueForProduct * 100) / 100
+        });
+        
+        console.log(`  ✅ ${productName}: +${quantity}x, +${revenueForProduct.toFixed(2)}$ (Total: ${DATA.products[productName].qty}x, ${DATA.products[productName].revenue.toFixed(2)}$)`);
+      });
+    }
   }
 
   persist();
 
+  console.log('✅ Verkauf gespeichert:', {
+    day: key,
+    amount: amount,
+    productsUpdated: productsUpdated.length,
+    totalProducts: Object.keys(DATA.products).length
+  });
+
+  // Emit updates
   io.emit('sales:update', DATA.sales);
   io.emit('products:update', DATA.products);
   io.emit('rush-hour:update', calculateRushHourData());
   io.emit('top-products:update', calculateTopProducts('all'));
 
   res.json({
-    ok:true,
-    day:key,
-    sales:DATA.sales[key],
-    productStats: DATA.products
+    ok: true,
+    day: key,
+    sales: DATA.sales[key],
+    productStats: DATA.products,
+    productsUpdated: productsUpdated
   });
 });
 
 // ============================================
-// ERWEITERTE STATISTIKEN (NEU)
+// ERWEITERTE STATISTIKEN
 // ============================================
 
 app.get('/api/statistics/overview', (req, res) => {
   const { period, startDate, endDate } = req.query;
-  
-  /*
-    period: 'all' | 'daily' | 'weekly' | 'monthly'
-    startDate: '2025-10-01' (optional)
-    endDate: '2025-10-31' (optional)
-  */
-  
   const stats = calculateStatistics(period, startDate, endDate);
   res.json(stats);
 });
@@ -230,7 +219,6 @@ app.get('/api/statistics/products', (req, res) => {
 
 app.get('/api/statistics/timeline', (req, res) => {
   const { groupBy, startDate, endDate } = req.query;
-  // groupBy: 'day' | 'week' | 'month'
   const timeline = calculateTimeline(groupBy || 'day', startDate, endDate);
   res.json(timeline);
 });
@@ -240,6 +228,7 @@ app.get('/api/statistics/timeline', (req, res) => {
 // ============================================
 
 app.get('/api/products', (req,res) => {
+  console.log('📊 Produkt-Anfrage - Aktuell:', Object.keys(DATA.products).length, 'Produkte');
   res.json(DATA.products || {});
 });
 
@@ -350,6 +339,8 @@ app.delete('/api/stats', (req, res) => {
   let affectedSales = false;
   let affectedProducts = false;
   
+  console.log('🗑️ Lösche Statistiken:', scope);
+  
   switch(scope) {
     case 'all':
       deletedCount = Object.keys(DATA.sales).length + Object.keys(DATA.products).length;
@@ -357,12 +348,14 @@ app.delete('/api/stats', (req, res) => {
       affectedProducts = Object.keys(DATA.products).length > 0;
       DATA.sales = {};
       DATA.products = {};
+      console.log('  ✅ Alle Daten gelöscht');
       break;
       
     case 'products':
       deletedCount = Object.keys(DATA.products).length;
       affectedProducts = true;
       DATA.products = {};
+      console.log('  ✅ Produktstatistiken gelöscht');
       break;
       
     case 'today':
@@ -371,6 +364,7 @@ app.delete('/api/stats', (req, res) => {
         deletedCount = DATA.sales[today].entries.length;
         affectedSales = true;
         delete DATA.sales[today];
+        console.log('  ✅ Heutige Verkäufe gelöscht');
       }
       break;
       
@@ -386,6 +380,7 @@ app.delete('/api/stats', (req, res) => {
           affectedSales = true;
         }
       }
+      console.log('  ✅ Wöchentliche Verkäufe gelöscht');
       break;
       
     case 'month':
@@ -400,6 +395,7 @@ app.delete('/api/stats', (req, res) => {
           affectedSales = true;
         }
       }
+      console.log('  ✅ Monatliche Verkäufe gelöscht');
       break;
   }
   
@@ -439,21 +435,26 @@ app.delete('/api/stats', (req, res) => {
 
 function parseProductsFromGrund(grund) {
   const products = [];
-  const regex = /(\d+)x\s*([^+|]+?)(?=\s*(?:\+|$|\|))/g;
+  
+  // Regex Pattern für "5x Pop UP" oder "2x Burn UP"
+  const regex = /(\d+)x\s*([^+|]+?)(?=\s*(?:\+|\||$))/gi;
   let match;
   
   while ((match = regex.exec(grund)) !== null) {
     const qty = parseInt(match[1]);
     const name = match[2].trim();
     
+    // Filter out dates, person counts, and too short names
     if (name && 
-        !name.match(/^\d{1,2}\.\d{1,2}\.?$/) &&
-        !name.match(/^\d+P$/) &&
+        !name.match(/^\d{1,2}\.\d{1,2}\.?$/) &&  // Nicht "31.10."
+        !name.match(/^\d+P$/) &&                   // Nicht "2P"
+        !name.match(/^(Essen|Trinken|Coins|Sticker|Figuren)$/i) && // Nicht Kategorien
         name.length > 1) {
       products.push({ name, qty });
     }
   }
   
+  console.log(`  🔎 Parse: "${grund}" → ${products.length} Produkte:`, products);
   return products;
 }
 
@@ -486,7 +487,8 @@ function calculateStatistics(period, startDate, endDate) {
       firstSale: null,
       lastSale: null,
       bestDay: null,
-      worstDay: null
+      worstDay: null,
+      dateRange: { start: null, end: null }
     };
   }
   
@@ -597,7 +599,6 @@ function calculateTimeline(groupBy, startDate, endDate) {
   let grouped = {};
   
   if (groupBy === 'day') {
-    // Täglich: Daten wie sie sind
     dates.forEach(date => {
       grouped[date] = {
         period: date,
@@ -606,7 +607,6 @@ function calculateTimeline(groupBy, startDate, endDate) {
       };
     });
   } else if (groupBy === 'week') {
-    // Wöchentlich: Gruppiere nach Wochen
     dates.forEach(dateKey => {
       const date = new Date(dateKey);
       const weekStart = getWeekStart(date);
@@ -623,7 +623,6 @@ function calculateTimeline(groupBy, startDate, endDate) {
       grouped[weekKey].transactions += salesData[dateKey].entries.length;
     });
   } else if (groupBy === 'month') {
-    // Monatlich: Gruppiere nach Monaten
     dates.forEach(dateKey => {
       const date = new Date(dateKey);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -660,7 +659,7 @@ function calculateTimeline(groupBy, startDate, endDate) {
 function getWeekStart(date) {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Montag als Wochenstart
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(d.setDate(diff));
 }
 
@@ -798,6 +797,7 @@ function calculateTopProducts(period) {
   const sortedProducts = Object.values(productStats)
     .map(p => ({
       ...p,
+      revenue: Math.round(p.revenue * 100) / 100,
       percentage: totalRevenue > 0 ? (p.revenue / totalRevenue * 100).toFixed(1) : 0,
       trend: 'stable'
     }))
@@ -810,7 +810,7 @@ function calculateTopProducts(period) {
     period,
     products: sortedProducts,
     totalProducts: Object.keys(productStats).length,
-    totalRevenue
+    totalRevenue: Math.round(totalRevenue * 100) / 100
   };
 }
 
@@ -869,12 +869,13 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, ()=> {
   console.log(`
   ╔═══════════════════════════════════════════╗
-  ║   🎮 Play UP Server v1.8.0               ║
+  ║   🎮 Play UP Server v1.8.0 FIXED         ║
   ║   🚀 Running on http://localhost:${PORT}   ║
   ║                                           ║
   ║   ✅ Vollständige Persistenz aktiv       ║
-  ║   📊 Erweiterte Statistiken verfügbar    ║
+  ║   📊 Statistiken jetzt synchronisiert    ║
   ║   🔴 Live-Updates aktiviert              ║
+  ║   🐛 Produkt-Tracking korrigiert         ║
   ╚═══════════════════════════════════════════╝
   `);
 });
