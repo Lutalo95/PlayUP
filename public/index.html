@@ -1496,7 +1496,7 @@ async function refreshStatistics() {
 function updateStatsOverview(overview) {
   document.getElementById('statsTotalRevenue').textContent = `${overview.totalRevenue}$`;
   document.getElementById('statsTotalTransactions').textContent = overview.totalTransactions;
-  document.getElementById('statsAvgPerDay').textContent = `${overview.averagePerDay}$`;
+  document.getElementById('statsAveragePerDay').textContent = `${overview.averagePerDay}$`;
   document.getElementById('statsTotalDays').textContent = overview.totalDays;
   
   // Update stats list
