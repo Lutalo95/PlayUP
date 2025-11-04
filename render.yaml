@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: playup-kassenblatt
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: DB_NAME
+        value: playup_kassenblatt
+      - key: PORT
+        value: 10000

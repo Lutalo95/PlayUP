@@ -1948,58 +1948,14 @@ async function copyText(id) {
 }
 
 async function copyPriceText() {
-  console.log('📋 copyPriceText() aufgerufen');
+  console.log('📋 copyPriceText() aufgerufen - NUR Kopieren, KEIN Verkauf');
   
   // Preis in Zwischenablage kopieren
   const preisText = document.getElementById('preis').innerText.replace('$','');
   copyToClipboard(preisText);
   
-  // Verkauf speichern
-  const grund = document.getElementById('grund').innerText;
-  const preisNum = parseInt(preisText) || 0;
-  
-  console.log('💰 Verkauf wird gespeichert:', { grund, preisNum });
-  
-  // WICHTIG: Nur speichern wenn gültige Daten
-  if (preisNum > 0 && grund !== 'Noch nichts berechnet') {
-    try {
-      console.log('🚀 Sende API Request...');
-      
-      const response = await fetch('/api/sales/entry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          grund: grund, 
-          betrag: preisNum,
-          ts: Date.now()
-        })
-      });
-      
-      console.log('📥 Response Status:', response.status);
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ API Response:', result);
-        
-        showReceipt(grund, preisNum);
-        showNotification(`Verkauf gespeichert: ${preisNum}$ 💰`, 'success', { duration: 2000 });
-        
-        // Zeige gefundene Produkte in Console
-        if (result.productsUpdated && result.productsUpdated.length > 0) {
-          console.log('📦 Produkte aktualisiert:', result.productsUpdated);
-        }
-      } else {
-        const errorText = await response.text();
-        console.error('❌ API Error:', response.status, errorText);
-        throw new Error(`API call failed: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('❌ Fehler beim Speichern:', error);
-      showNotification(`Fehler beim Speichern: ${error.message}`, 'error');
-    }
-  } else {
-    console.log('⚠️ Verkauf nicht gespeichert (Betrag:', preisNum, ', Grund:', grund, ')');
-  }
+  // NEU v2.0: KEIN Verkauf mehr beim Preis-Copy!
+  console.log('✅ Preis kopiert:', preisText, '(KEIN Verkauf erstellt)');
 }
 
 function copyToClipboard(text) {
